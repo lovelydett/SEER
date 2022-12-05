@@ -4,11 +4,17 @@
 
 #ifndef GOGO_DUMMYTASK_H
 #define GOGO_DUMMYTASK_H
-#include
+
+#include "DummyMessage.h"
+#include "Task.h"
+using gogort::Task;
+using message::DummyMessage;
 
 namespace task {
 
-class DummyTask : public  {};
+class DummyTask : Task<DummyMessage> {
+  bool Deal(const std::shared_ptr<DummyMessage> &);
+};
 
 } // namespace task
 

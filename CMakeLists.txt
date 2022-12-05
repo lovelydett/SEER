@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 project(gogo)
 
-# GoogleTest requires at least C++14
 set(CMAKE_CXX_STANDARD 20)
 
 # Yuting: add dependency for google test
@@ -15,5 +14,5 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 # Yuting: add sub directories
-# add_subdirectory(src)
+add_subdirectory(src)
 add_subdirectory(experimental)
