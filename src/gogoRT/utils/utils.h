@@ -12,6 +12,7 @@ typedef long long int64;
 typedef unsigned long long uint64;
 typedef short int16;
 typedef unsigned short uint16;
+typedef uint64 time_t;
 
 // Util functions
 uint64 get_next_uuid();
