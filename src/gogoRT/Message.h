@@ -14,7 +14,11 @@ private:
   uint64 timestamp_;
 
 public:
-  Message() : timestamp_(get_next_uuid()) {;}
+  Message() : timestamp_(get_next_uuid()) { ; }
+  // Message should do hard-copied.
+  virtual Message &operator=(const Message &&other_msg) {
+    timestamp_ = other_msg.timestamp_;
+  }
   virtual ~Message() = 0;
   virtual std::string to_string() = 0;
   uint64 get_timestamp() { return timestamp_; }

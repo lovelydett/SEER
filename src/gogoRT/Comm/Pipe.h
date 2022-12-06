@@ -11,6 +11,7 @@
 #include <unordered_map>
 
 #include "../Message.h"
+#include "../utils/utils.h"
 
 namespace gogort {
 
@@ -30,19 +31,17 @@ private:
 
 public:
   Pipe(const std::string pipe_name) : pipe_name_(pipe_name) { init_config(); }
-
   // This function can be multi-threaded.
   bool Enqueue(std::shared_ptr<Message> &message) {
     // Todo(yuting): publish message to this pipe
     inner_msg_ = message;
     return true;
   }
-
   // This function can be multi-threaded.
   bool Dequeue() { return true; }
-
   // This function can be multi-threaded.
   std::shared_ptr<Message> Top() { return inner_msg_; }
+  time_t get_timestamp() const { return inner_msg_->get_timestamp(); }
 };
 
 } // namespace gogort
