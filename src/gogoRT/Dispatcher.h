@@ -9,9 +9,32 @@
 #ifndef GOGO_DISPATCHER_H
 #define GOGO_DISPATCHER_H
 
+#include "Task.h"
+#include <unordered_map>
+
 namespace gogort {
 
-class Dispatcher {};
+class Dispatcher {
+private:
+  static Dispatcher *instance_;
+  bool is_init_ = false;
+  std::unordered
+
+private:
+  Dispatcher();
+  Dispatcher(Dispatcher &&) = delete;
+  Dispatcher &operator=(Dispatcher &&) = delete;
+  bool init_config();
+  bool load_tasks();
+  bool init_comm();
+
+public:
+  static Dispatcher *Instance_();
+  bool isInit() const;
+
+  // The whole program happens here
+  bool Run();
+};
 
 } // namespace gogort
 

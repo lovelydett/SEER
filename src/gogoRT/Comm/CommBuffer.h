@@ -5,15 +5,16 @@
 #ifndef GOGO_COMMBUFFER_H
 #define GOGO_COMMBUFFER_H
 
-#include <unordered_map>
-#include <mutex>
-#include <queue>
-#include <string>
 #include <memory>
 #include <mutex>
+#include <optional>
+#include <queue>
+#include <string>
+#include <unordered_map>
 
 #include "Pipe.h"
-#include "../Task.h"
+#include "PipeReader.h"
+#include "PipeWriter.h"
 
 namespace gogort {
 
@@ -27,16 +28,27 @@ private:
   static CommBuffer *instance_;
   static std::mutex mtx_;
   // Pipe name to pipe
-  std::unordered_map<std::string, std::unique_ptr<Pipe>> name_to_pipe_;
-  // Task name to pipe name
-  std::unordered_map<std::string, std::string> task_to_pipe_;
-  // Task name to task
-  std::unordered_map<std::string, TaskBase*> name_to_task_;
+  std::unordered_map<std::string, std::shared_ptr<Pipe>> name_to_pipe_;
 
 public:
-  CommBuffer *Instance();
+  static CommBuffer *Instance();
+
+  // Tell CommBuffer you need a reader
+  template <class MSG>
+  std::optional<PipeReader<MSG>> AcquireReader(const std::string pipe_name) {
+    return std::nullopt;
+  }
+
   // CommBuffer will prepare the messages in pipe-of-interest for the task.
-  bool RegisterTask(const TaskBase * const task, const std::string pipe_name);
+  template <class MSG>
+  std::optional<PipeWriter<MSG>> AcquireWriter(const std::string pipe_name) {
+    auto it = name_to_pipe_.find(pipe_name);
+    if (name_to_pipe_.end() != it) {
+      return std::nullopt;
+    }
+    // This pipe exists, use it to initialize a writer.
+    return PipeWriter<MSG>(it->second);
+  }
 };
 
 } // namespace gogort

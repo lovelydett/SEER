@@ -5,23 +5,22 @@
 #ifndef GOGO_PIPEREADER_H
 #define GOGO_PIPEREADER_H
 
-#include <string>
+#include "Pipe.h"
+#include <memory>
 
 namespace gogort {
 
-template <class MSG>
-class PipeReader {
+template <class MSG> class PipeReader {
 private:
-  std::string pipe_name_;
+  std::weak_ptr<Pipe *const> pipe_;
 
 public:
   PipeReader() = delete;
   PipeReader(const PipeReader &) = delete;
   PipeReader &operator=(const PipeReader &) = delete;
   PipeReader(PipeReader &&) = delete;
-  PipeReader(std::string pipe_name) : pipe_name_(pipe_name) {}
+  PipeReader(const std::shared_ptr<Pipe *const> &pipe) : pipe_(pipe) {}
   virtual ~PipeReader() = default;
-
 };
 
 } // namespace gogort

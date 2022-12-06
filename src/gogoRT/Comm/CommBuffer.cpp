@@ -25,14 +25,4 @@ CommBuffer *CommBuffer::Instance() {
   return instance_;
 }
 
-bool CommBuffer::RegisterTask(const TaskBase * const task, const std::string pipe_name) {
-//  if (!is_init_) {
-//    return false;
-//  }
-  if (pipes_.find(pipe_name) == pipes_.end()) {
-    return false;
-  }
-  task->get_task_name();
-}
-
 } // namespace gogort

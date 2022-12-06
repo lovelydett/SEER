@@ -5,6 +5,7 @@
 #ifndef GOGO_PIPE_H
 #define GOGO_PIPE_H
 
+#include <memory>
 #include <queue>
 #include <string>
 #include <unordered_map>
@@ -16,7 +17,8 @@ namespace gogort {
 class Pipe {
 private:
   const std::string pipe_name_;
-  const Message* inner_msg_; // Yuting@2022-12-5: For now we only store 1 message.
+  std::shared_ptr<Message>
+      inner_msg_; // Yuting@2022-12-5: For now we only store 1 message.
   // std::queue<MSG> inner_queue_;
 
 private:
@@ -27,26 +29,20 @@ private:
   }
 
 public:
-  Pipe(const std::string pipe_name) : pipe_name_(pipe_name) {
-    init_config();
-  }
+  Pipe(const std::string pipe_name) : pipe_name_(pipe_name) { init_config(); }
 
   // This function can be multi-threaded.
-  bool Enqueue(const Message * const message) {
+  bool Enqueue(std::shared_ptr<Message> &message) {
     // Todo(yuting): publish message to this pipe
     inner_msg_ = message;
     return true;
   }
 
   // This function can be multi-threaded.
-  bool Dequeue() {
-    return true;
-  }
+  bool Dequeue() { return true; }
 
   // This function can be multi-threaded.
-  Message* Top() {
-    return const_cast<Messgage*>(inner_msg_);
-  }
+  std::shared_ptr<Message> Top() { return inner_msg_; }
 };
 
 } // namespace gogort
