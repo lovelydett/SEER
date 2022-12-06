@@ -4,15 +4,20 @@
 #ifndef GOGO_MESSAGE_H
 #define GOGO_MESSAGE_H
 
+#include "utils/utils.h"
 #include <string>
 
 namespace gogort {
 
 class Message {
+private:
+  uint64 timestamp_;
+
 public:
-  Message() = delete;
+  Message() : timestamp_(get_next_uuid()) {;}
   virtual ~Message() = 0;
   virtual std::string to_string() = 0;
+  uint64 get_timestamp() { return timestamp_; }
 };
 
 } // namespace gogort

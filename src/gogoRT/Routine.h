@@ -11,10 +11,11 @@ namespace gogort {
 class Routine {
 public:
   Routine(std::function<void()>);
+  // At the end of routine lifespan, it should clean up all message pointers it maintains
   ~Routine();
-  bool bind(std::function<void()>);
-  bool launch();
-  bool yield();
+  bool Bind(std::function<void()>);
+  bool Launch();
+  bool Yield();
 
 private:
   std::function<void()> func_;
