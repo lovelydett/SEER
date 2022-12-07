@@ -10,7 +10,9 @@
 #define GOGO_DISPATCHER_H
 
 #include "Comm/CommBuffer.h"
+#include "Routine.h"
 #include "Task.h"
+#include "Worker.h"
 #include <unordered_map>
 
 namespace gogort {
@@ -21,8 +23,9 @@ private:
   bool is_init_ = false;
   std::string config_path_;
   CommBuffer *comm_buffer_;
-  std::unordered_map<task_id_t, std::shared_ptr<TaskBase>> tasks_;
-  std::unordered_map<std::string, task_id_t> task_name_to_id_;
+  std::unordered_map<uuid_t, std::shared_ptr<TaskBase>> id_to_task_;
+  std::unordered_map<std::string, uuid_t> task_name_to_id_;
+  std::unordered_map<uuid_t, std::unique_ptr<Worker>> id_to_worker_;
 
 private:
   Dispatcher();
@@ -31,6 +34,9 @@ private:
   bool init_config();
   bool load_tasks();
   bool init_comm();
+
+  // Worker thread executes this callback
+  void worker_callback();
 
 public:
   static Dispatcher *Instance_();

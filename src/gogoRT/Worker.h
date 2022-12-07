@@ -19,6 +19,7 @@ private:
   std::unordered_set<int16> affinity_;
   bool is_running_;
   uint16 priority_;
+  uuid_t uuid_;
 
 public:
   Worker();

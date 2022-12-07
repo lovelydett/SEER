@@ -5,6 +5,8 @@
 #ifndef GOGO_UTILS_H
 #define GOGO_UTILS_H
 
+#include <atomic>
+
 // Define some integer types.
 typedef int int32;
 typedef unsigned uint32;
@@ -12,9 +14,23 @@ typedef long long int64;
 typedef unsigned long long uint64;
 typedef short int16;
 typedef unsigned short uint16;
-typedef uint64 time_t;
+
+typedef uint16 uuid_t;
+
+namespace gogort {
 
 // Util functions
-uint64 get_next_uuid();
+class IdGenerator {
+private:
+  static std::atomic<uint16> uuid_;
+
+public:
+  IdGenerator() = default;
+  uint16 operator()();
+};
+
+} // namespace gogort
+
+gogort::IdGenerator get_next_uuid;
 
 #endif // GOGO_UTILS_H

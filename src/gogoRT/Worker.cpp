@@ -12,8 +12,7 @@ bool Worker::BindAndStart(std::function<void()> func) {
   // This worker dies here.
   return true;
 }
-Worker::Worker() : inner_thread_(nullptr), is_running_(false) {
-
-}
+Worker::Worker()
+    : inner_thread_(nullptr), is_running_(false), uuid_(get_next_uuid()) {}
 
 } // namespace gogort
