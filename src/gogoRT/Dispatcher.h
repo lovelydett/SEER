@@ -11,6 +11,7 @@
 
 #include "Comm/CommBuffer.h"
 #include "Routine.h"
+#include "Scheduler.h"
 #include "Task.h"
 #include "Worker.h"
 #include <unordered_map>
@@ -26,6 +27,7 @@ private:
   std::unordered_map<uuid_t, std::shared_ptr<TaskBase>> id_to_task_;
   std::unordered_map<std::string, uuid_t> task_name_to_id_;
   std::unordered_map<uuid_t, std::unique_ptr<Worker>> id_to_worker_;
+  std::unique_ptr<Scheduler> scheduler_;
 
 private:
   Dispatcher();

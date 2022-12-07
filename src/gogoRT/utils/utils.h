@@ -28,9 +28,11 @@ public:
   IdGenerator() = default;
   uint16 operator()();
 };
-
 } // namespace gogort
-
 gogort::IdGenerator get_next_uuid;
+
+// Random functions
+int random_int();
+double random_double();
 
 #endif // GOGO_UTILS_H

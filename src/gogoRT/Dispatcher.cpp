@@ -3,14 +3,17 @@
 // 2022/12/2
 #include "Dispatcher.h"
 #include "TaskFactory.h"
+#include "schedulers/DummyScheduler.h"
 #include <array>
 
 namespace gogort {
 
-// Todo(yuting): load this from GFLAGS
-static const int16 kMaxWorkerNum = 8;
+Dispatcher::Dispatcher() {
+  init_config();
 
-Dispatcher::Dispatcher() { init_config(); }
+  // Mock now, should acquire from factory according to flags or config.
+  scheduler_ = std::make_unique<DummyScheduler>();
+}
 
 bool Dispatcher::init_config() {
   // Mock for now, should be read from config file
@@ -42,8 +45,7 @@ void Dispatcher::worker_callback() {
 }
 
 bool Dispatcher::Run() {
-  // 1. Init worker pool
-  std::array<Worker, kMaxWorkerNum> workers;
+  // 1. Init scheduler
 
   // 2. Launch workers
   // 3. Join workers

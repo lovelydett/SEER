@@ -5,21 +5,28 @@
 #ifndef GOGO_WORKER_H
 #define GOGO_WORKER_H
 
+#include "Routine.h"
 #include "utils/utils.h"
 #include <functional>
 #include <memory>
 #include <thread>
 #include <unordered_set>
+#include <vector>
 
 namespace gogort {
 
+class Scheduler;
+
 class Worker {
+  friend class Scheduler;
+
 private:
   std::unique_ptr<std::thread> inner_thread_;
   std::unordered_set<int16> affinity_;
   bool is_running_;
   uint16 priority_;
   uuid_t uuid_;
+  std::vector<Routine> wait_list_;
 
 public:
   Worker();
@@ -28,7 +35,8 @@ public:
   Worker(Worker &&) = delete;
   ~Worker() = default;
 
-  bool BindAndStart(std::function<void()>);
+  bool Start(std::function<void()>);
+  std::vector<Routine> &get_wait_list();
 };
 
 } // namespace gogort
