@@ -12,8 +12,13 @@ using message::DummyMessage;
 
 namespace task {
 
-class DummyTask : Task<DummyMessage> {
-  bool Deal(const std::shared_ptr<DummyMessage> &);
+class DummyTask : public Task<DummyMessage> {
+private:
+  bool init_config(const std::string) override;
+
+public:
+  DummyTask() : Task("DummyTask"){};
+  bool Deal(const std::shared_ptr<DummyMessage> &) override;
 };
 
 } // namespace task

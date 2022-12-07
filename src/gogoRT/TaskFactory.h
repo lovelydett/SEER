@@ -5,6 +5,9 @@
 #ifndef GOGO_TASKFACTORY_H
 #define GOGO_TASKFACTORY_H
 
+#include "Task.h"
+#include <memory>
+
 namespace gogort {
 
 class TaskFactory {
@@ -15,16 +18,9 @@ private:
   TaskFactory() = default;
 
 public:
-  TaskFactory* Instance() {
-    if (instance_ == nullptr) {
-      instance_ = new TaskFactory();
-    }
-    return instance_;
-  }
-
-
-
-
+  static TaskFactory *Instance();
+  std::shared_ptr<TaskBase> CreateTask(const std::string task_name,
+                                       const std::string config_path);
 };
 
 } // namespace gogort
