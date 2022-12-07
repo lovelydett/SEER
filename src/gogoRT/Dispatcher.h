@@ -9,6 +9,7 @@
 #ifndef GOGO_DISPATCHER_H
 #define GOGO_DISPATCHER_H
 
+#include "Comm/CommBuffer.h"
 #include "Task.h"
 #include <unordered_map>
 
@@ -18,6 +19,8 @@ class Dispatcher {
 private:
   static Dispatcher *instance_;
   bool is_init_ = false;
+  std::string config_path_;
+  CommBuffer *comm_buffer_;
   std::unordered_map<task_id_t, std::shared_ptr<TaskBase>> tasks_;
   std::unordered_map<std::string, task_id_t> task_name_to_id_;
 
