@@ -18,7 +18,8 @@ class Dispatcher {
 private:
   static Dispatcher *instance_;
   bool is_init_ = false;
-  std::unordered
+  std::unordered_map<task_id_t, std::shared_ptr<TaskBase>> tasks_;
+  std::unordered_map<std::string, task_id_t> task_name_to_id_;
 
 private:
   Dispatcher();
