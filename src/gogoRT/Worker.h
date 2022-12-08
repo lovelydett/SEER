@@ -11,7 +11,6 @@
 #include <memory>
 #include <thread>
 #include <unordered_set>
-#include <vector>
 
 namespace gogort {
 
@@ -26,7 +25,7 @@ private:
   bool is_running_;
   uint16 priority_;
   uuid_t uuid_;
-  std::vector<Routine> wait_list_;
+  std::shared_ptr<Routine> next_routine_;
 
 public:
   Worker();
@@ -36,7 +35,9 @@ public:
   ~Worker() = default;
 
   bool Start(std::function<void()>);
-  std::vector<Routine> &get_wait_list();
+  bool Assign(std::shared_ptr<Routine>);
+  bool Release();
+  bool isBusy() const;
 };
 
 } // namespace gogort

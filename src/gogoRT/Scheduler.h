@@ -7,6 +7,7 @@
 #include "Routine.h"
 #include "Worker.h"
 #include <array>
+#include <list>
 #include <memory>
 
 // Todo(yuting): load this from GFLAGS
@@ -16,7 +17,8 @@ namespace gogort {
 
 class Scheduler {
 protected:
-  std::array<std::shared_ptr<Worker>, kMaxWorkerNum> workers;
+  std::array<std::shared_ptr<Worker>, kMaxWorkerNum> workers_;
+  std::list<std::shared_ptr<Routine>> routines_;
 
 public:
   // This function should rearrange all worker's wait-list and sets their next.

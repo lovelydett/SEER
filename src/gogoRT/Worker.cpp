@@ -4,6 +4,8 @@
 
 #include "Worker.h"
 
+#include <utility>
+
 namespace gogort {
 
 Worker::Worker()
@@ -11,11 +13,26 @@ Worker::Worker()
 
 bool Worker::Start(std::function<void()> func) {
   is_running_ = true;
-  inner_thread_ = std::make_unique<std::thread>(std::move(func));
+  auto inner_func = [&]() {
+    // Todo(yuting): set affinity and priority, fixed once set
+    func();
+  };
+  inner_thread_ = std::make_unique<std::thread>(std::move(inner_func));
   // This worker dies here.
   return true;
 }
+bool Worker::Assign(std::shared_ptr<Routine> routine) {
+  if (next_routine_ != nullptr) {
+    return false;
+  }
+  next_routine_ = std::move(routine);
+  return false;
+}
+bool Worker::isBusy() const { return next_routine_ != nullptr; }
 
-std::vector<Routine> &Worker::get_wait_list() { return wait_list_; }
+bool Worker::Release() {
+  next_routine_ = nullptr;
+  return true;
+}
 
 } // namespace gogort
