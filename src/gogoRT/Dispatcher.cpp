@@ -18,7 +18,7 @@ Dispatcher::Dispatcher() : scheduler_(nullptr) {
 
 bool Dispatcher::init_workers() {
   for (auto &worker : workers_) {
-    worker = std::make_shared<Worker>();
+    worker = std::make_shared<Worker>(*this);
   }
   return true;
 }

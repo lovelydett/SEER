@@ -18,6 +18,13 @@ namespace gogort {
 class Dispatcher;
 
 class Worker {
+  enum WORKER_STAGE {
+    STAGE_NONE = 0,
+    STAGE_PENDING_COMM,
+    STAGE_PENDING_SCHED,
+    STAGE_PENDING_EXEC,
+  };
+
 private:
   std::unique_ptr<std::thread> inner_thread_;
   std::unordered_set<int16> affinity_;
@@ -25,15 +32,21 @@ private:
   uint16 priority_;
   uuid_t uuid_;
   std::shared_ptr<Routine> next_routine_;
+  Dispatcher &dispatcher_;
+  WORKER_STAGE worker_stage_;
 
 public:
-  Worker();
+  Worker() = delete;
+  explicit Worker(Dispatcher &dispatcher);
   Worker(const Worker &) = delete;
   Worker &operator=(const Worker &) = delete;
   Worker(Worker &&) = delete;
   ~Worker() = default;
 
-  bool Start(Dispatcher &dispatcher);
+  // The whole process of a worker happens here
+  bool StartStateMachine();
+
+  // Other utils to manage current worker
   bool Assign(std::shared_ptr<Routine> routine);
   bool Release();
   bool isBusy() const;
