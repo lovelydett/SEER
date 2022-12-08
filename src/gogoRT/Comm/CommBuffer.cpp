@@ -15,11 +15,11 @@ bool CommBuffer::init_config(const std::string config_path) {
   return false;
 }
 
-CommBuffer *CommBuffer::Instance() {
+std::shared_ptr<CommBuffer>CommBuffer::Instance() {
   if (instance_ == nullptr) {
     std::lock_guard<std::mutex> lock(mtx_);
     if (instance_ == nullptr) {
-      instance_ = new CommBuffer();
+      instance_ = std::shared_ptr<CommBuffer> (new CommBuffer());
     }
   }
   return instance_;

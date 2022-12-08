@@ -14,10 +14,9 @@ private:
   std::function<void()> func_;
 
 public:
-  Routine(std::function<void()>);
-  // At the end of routine lifespan, it should clean up all message pointers it
-  // maintains
+  explicit Routine(std::function<void()>);
   ~Routine();
+  bool Run();
 };
 
 } // namespace gogort

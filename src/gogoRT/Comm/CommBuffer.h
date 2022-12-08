@@ -25,13 +25,13 @@ private:
 
 private:
   bool is_init_ = false;
-  static CommBuffer *instance_;
+  static std::shared_ptr<CommBuffer> instance_;
   static std::mutex mtx_;
   // Pipe name to pipe
   std::unordered_map<std::string, std::shared_ptr<Pipe>> name_to_pipe_;
 
 public:
-  static CommBuffer *Instance();
+  static std::shared_ptr<CommBuffer> Instance();
 
   // Tell CommBuffer you need a reader
   template <class MSG>

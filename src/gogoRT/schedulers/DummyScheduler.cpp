@@ -3,7 +3,6 @@
 // 2022/12/8
 
 #include "DummyScheduler.h"
-#include "../utils/utils.h"
 
 namespace gogort {
 

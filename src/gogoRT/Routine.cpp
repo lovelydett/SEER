@@ -15,4 +15,9 @@ Routine::Routine(std::function<void()> func) {
     is_finished_ = true;
   };
 }
+Routine::~Routine() {}
+bool Routine::Run() {
+  func_();
+  return true;
+}
 } // namespace gogort

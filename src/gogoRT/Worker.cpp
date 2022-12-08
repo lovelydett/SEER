@@ -3,7 +3,8 @@
 // 22-12-7
 
 #include "Worker.h"
-
+#include "Dispatcher.h"
+#include <assert.h>
 #include <utility>
 
 namespace gogort {
@@ -11,16 +12,6 @@ namespace gogort {
 Worker::Worker()
     : inner_thread_(nullptr), is_running_(false), uuid_(get_next_uuid()) {}
 
-bool Worker::Start(std::function<void()> func) {
-  is_running_ = true;
-  auto inner_func = [&]() {
-    // Todo(yuting): set affinity and priority, fixed once set
-    func();
-  };
-  inner_thread_ = std::make_unique<std::thread>(std::move(inner_func));
-  // This worker dies here.
-  return true;
-}
 bool Worker::Assign(std::shared_ptr<Routine> routine) {
   if (next_routine_ != nullptr) {
     return false;
@@ -30,8 +21,21 @@ bool Worker::Assign(std::shared_ptr<Routine> routine) {
 }
 bool Worker::isBusy() const { return next_routine_ != nullptr; }
 
-bool Worker::Release() {
-  next_routine_ = nullptr;
+bool Worker::Start(Dispatcher &dispatcher) {
+  assert(inner_thread_ == nullptr);
+  inner_thread_ = std::make_unique<std::thread>([&]() {
+    while (true) {
+      // 1. Dispatcher do scheduling, this sets all routines
+      dispatcher.DoSchedule();
+      // 2. Check if current worker is assigned a routine
+      if (next_routine_ != nullptr) {
+        next_routine_->Run(); // The job gets done here
+      }
+      // 3. Update routines based on comm_buffer
+      // 4. Release the routine
+      next_routine_ = nullptr;
+    }
+  });
   return true;
 }
 

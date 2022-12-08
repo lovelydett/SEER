@@ -11,7 +11,7 @@
 
 #include "Comm/CommBuffer.h"
 #include "Routine.h"
-#include "Scheduler.h"
+#include "SchedulerFactory.h"
 #include "Task.h"
 #include "Worker.h"
 #include <unordered_map>
@@ -20,32 +20,30 @@ namespace gogort {
 
 class Dispatcher {
 private:
-  static Dispatcher *instance_;
+  static std::shared_ptr<Dispatcher> instance_;
   bool is_init_ = false;
   std::string config_path_;
-  CommBuffer *comm_buffer_;
   std::unordered_map<uuid_t, std::shared_ptr<TaskBase>> id_to_task_;
   std::unordered_map<std::string, uuid_t> task_name_to_id_;
-  std::unordered_map<uuid_t, std::unique_ptr<Worker>> id_to_worker_;
-  std::unique_ptr<Scheduler> scheduler_;
+  std::vector<std::shared_ptr<Worker>> workers_;
+  std::shared_ptr<Scheduler> scheduler_;
+  std::shared_ptr<CommBuffer> comm_buffer_;
 
 private:
   Dispatcher();
   Dispatcher(Dispatcher &&) = delete;
   Dispatcher &operator=(Dispatcher &&) = delete;
   bool init_config();
-  bool load_tasks();
+  bool init_workers();
   bool init_comm();
 
-  // Worker thread executes this callback
-  void worker_callback();
-
 public:
-  static Dispatcher *Instance_();
-  bool isInit() const;
+  static std::shared_ptr<Dispatcher> Instance_();
 
   // The whole program happens here
   bool Run();
+  bool DoSchedule();
+  bool UpdateRoutine();
 };
 
 } // namespace gogort

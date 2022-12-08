@@ -14,19 +14,19 @@ namespace gogort {
 
 template <class MSG> class PipeReader {
 private:
-  std::weak_ptr<Pipe *const> pipe_;
+  std::weak_ptr<Pipe> pipe_;
 
   // Yuting@2022.12.6: the status of readability should be maintained by a
   // reader rather a pipe, since readers are task-owned, a piece of message may
   // expire for some tasks while still alive for the others not yet consume it.
-  time_t ts_updated_;
+  time_t ts_updated_{};
 
 public:
   PipeReader() = delete;
   PipeReader(const PipeReader &) = delete;
   PipeReader &operator=(const PipeReader &) = delete;
   PipeReader(PipeReader &&) = delete;
-  PipeReader(const std::shared_ptr<Pipe *const> &pipe) : pipe_(pipe) {}
+  explicit PipeReader(const std::shared_ptr<Pipe> &pipe) : pipe_(pipe) {}
   virtual ~PipeReader() = default;
 
   bool isUpdated() const {

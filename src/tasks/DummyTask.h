@@ -5,8 +5,10 @@
 #ifndef GOGO_DUMMYTASK_H
 #define GOGO_DUMMYTASK_H
 
-#include "DummyMessage.h"
+#include "../messages/DummyMessage.h"
 #include "Task.h"
+#include <memory>
+
 using gogort::Task;
 using message::DummyMessage;
 
@@ -17,7 +19,7 @@ private:
   bool init_config(const std::string) override;
 
 public:
-  DummyTask() : Task("DummyTask"){};
+  DummyTask() : Task<DummyMessage>("DummyTask"){};
   bool Deal(const std::shared_ptr<DummyMessage> &) override;
 };
 

@@ -5,6 +5,7 @@
 #ifndef GOGO_WORKER_H
 #define GOGO_WORKER_H
 
+#include "Dispatcher.h"
 #include "Routine.h"
 #include "utils/utils.h"
 #include <functional>
@@ -14,11 +15,9 @@
 
 namespace gogort {
 
-class Scheduler;
+class Dispatcher;
 
 class Worker {
-  friend class Scheduler;
-
 private:
   std::unique_ptr<std::thread> inner_thread_;
   std::unordered_set<int16> affinity_;
@@ -34,8 +33,8 @@ public:
   Worker(Worker &&) = delete;
   ~Worker() = default;
 
-  bool Start(std::function<void()>);
-  bool Assign(std::shared_ptr<Routine>);
+  bool Start(Dispatcher &dispatcher);
+  bool Assign(std::shared_ptr<Routine> routine);
   bool Release();
   bool isBusy() const;
 };
