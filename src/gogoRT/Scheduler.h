@@ -9,6 +9,7 @@
 #include "utils/utils.h"
 #include <list>
 #include <memory>
+#include <mutex>
 #include <vector>
 
 namespace gogort {
@@ -23,11 +24,16 @@ protected:
   bool is_init_ = false;
   std::vector<std::shared_ptr<Worker>> &workers_;
   std::list<std::shared_ptr<Routine>> routines_;
+  // The thread that gets this lock does schedule, other rest.
+  std::mutex mtx_scheduler_;
+
+private:
+  virtual bool DoOnce() = 0;
 
 public:
   // This function should rearrange all worker's wait-list and sets their next.
   explicit Scheduler(std::vector<std::shared_ptr<Worker>> &);
-  virtual bool DoOnce() = 0;
+  bool DoSchedule();
   virtual bool AddRoutine(std::shared_ptr<Routine> routine);
 };
 

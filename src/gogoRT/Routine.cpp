@@ -7,7 +7,7 @@
 #include <utility>
 
 namespace gogort {
-Routine::Routine(std::function<void()> func) {
+Routine::Routine(std::function<void()> func) : id_(get_next_uuid()) {
   // At generation, set this routine as not finished.
   is_finished_ = false;
   func_ = [&]() {
@@ -20,4 +20,7 @@ bool Routine::Run() {
   func_();
   return true;
 }
+
+gogo_id_t Routine::get_id() const { return id_; }
+
 } // namespace gogort

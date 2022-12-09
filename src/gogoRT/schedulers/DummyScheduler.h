@@ -9,9 +9,11 @@
 namespace gogort {
 
 class DummyScheduler : public Scheduler {
-public:
-  explicit DummyScheduler(std::vector<std::shared_ptr<Worker>>&);
+private:
   bool DoOnce() override;
+
+public:
+  explicit DummyScheduler(std::vector<std::shared_ptr<Worker>> &);
 };
 
 } // namespace gogort

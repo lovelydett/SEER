@@ -21,8 +21,10 @@ Dispatcher::Dispatcher() : scheduler_(nullptr) {
 }
 
 bool Dispatcher::init_workers() {
-  for (auto &worker : workers_) {
-    worker = std::make_shared<Worker>(*this);
+  workers_.reserve(4);
+  // Mock for now
+  for (int i = 0; i < 4; i++) {
+    workers_.emplace_back(std::make_shared<Worker>(*this));
   }
   return true;
 }
@@ -59,7 +61,7 @@ std::shared_ptr<Dispatcher> Dispatcher::Instance() {
   }
   return instance_;
 }
-bool Dispatcher::DoSchedule() { return scheduler_->DoOnce(); }
+bool Dispatcher::DoSchedule() { return scheduler_->DoSchedule(); }
 bool Dispatcher::UpdateRoutine() {
   // Todo(yuting): check for each task, whether there are enough inputs.
 

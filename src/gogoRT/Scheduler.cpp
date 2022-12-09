@@ -13,5 +13,12 @@ bool Scheduler::AddRoutine(std::shared_ptr<Routine> routine) {
   routines_.emplace_back(routine);
   return true;
 }
+bool Scheduler::DoSchedule() {
+  if (mtx_scheduler_.try_lock()) {
+    DoOnce();
+    mtx_scheduler_.unlock();
+  }
+  return true;
+}
 
 } // namespace gogort

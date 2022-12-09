@@ -8,6 +8,8 @@
 
 int main(int argc, char *argv[]) {
   google::InitGoogleLogging(argv[0]);
+  FLAGS_colorlogtostderr = true;
+  FLAGS_logtostderr = true;
   google::SetStderrLogging(google::GLOG_INFO);
 
   LOG(INFO) << "Gogo starts";

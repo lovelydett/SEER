@@ -2,10 +2,12 @@
 // Created by Yuting Xie on 03/12/2022.
 
 #include "DummyTask.h"
+#include <glog/logging.h>
 
 namespace task {
 bool DummyTask::Deal(const std::shared_ptr<DummyMessage> &msg) {
   // DummyTask simply do matmul
+  LOG(INFO) << "DummyTask::Deal() starts";
   double res[M_SIZE];
   auto matmul = [&]() {
     for (int i = 0; i < M_SIZE; ++i) {
@@ -19,6 +21,7 @@ bool DummyTask::Deal(const std::shared_ptr<DummyMessage> &msg) {
     matmul();
   }
   // Todo(yuting): publish msg again
+  LOG(INFO) << "DummyTask::Deal() ends";
   return true;
 }
 bool DummyTask::init_config(const std::string) { return true; }
