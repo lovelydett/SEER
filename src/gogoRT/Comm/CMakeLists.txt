@@ -5,6 +5,6 @@ set(CMAKE_CXX_STANDARD 20)
 FILE(GLOB SRC_LIST "*.cpp" "*.h")
 
 add_library(${PROJECT_NAME} STATIC ${SRC_LIST})
-target_link_libraries(${PROJECT_NAME} gogort_utils)
+target_link_libraries(${PROJECT_NAME} gogort_utils glog)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ./)

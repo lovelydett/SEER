@@ -15,9 +15,9 @@ typedef unsigned long long uint64;
 typedef short int16;
 typedef unsigned short uint16;
 
-typedef uint16 uuid_t;
+typedef uint16 gogo_id_t;
 
-uuid_t get_next_uuid();
+gogo_id_t get_next_uuid();
 
 // Random functions
 int random_int();

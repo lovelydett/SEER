@@ -9,8 +9,6 @@
 #include <memory>
 #include <string>
 
-typedef uint16 uuid_t;
-
 namespace gogort {
 
 // Represent null type, facilitate variant template arguments
@@ -19,7 +17,7 @@ class NullClass {};
 // TaskBase
 class TaskBase {
 private:
-  uuid_t id_;
+  gogo_id_t id_;
   const std::string task_name_;
 
 private:
@@ -28,7 +26,7 @@ private:
 public:
   TaskBase() = delete;
   TaskBase(const std::string task_name) : task_name_(task_name), id_(0){};
-  bool Init(const uuid_t id, const std::string config_path) {
+  bool Init(const gogo_id_t id, const std::string config_path) {
     if (id == 0) {
       return false;
     }
@@ -36,7 +34,7 @@ public:
     return init_config(config_path);
   }
   std::string get_task_name() const { return task_name_; }
-  uuid_t get_task_id() const { return id_; }
+  gogo_id_t get_task_id() const { return id_; }
 };
 
 // The original template class that supports at most 4 types of input messages

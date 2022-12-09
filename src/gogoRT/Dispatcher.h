@@ -25,8 +25,8 @@ private:
   static std::shared_ptr<Dispatcher> instance_;
   bool is_init_ = false;
   std::string config_path_;
-  std::unordered_map<uuid_t, std::shared_ptr<TaskBase>> id_to_task_;
-  std::unordered_map<std::string, uuid_t> task_name_to_id_;
+  std::unordered_map<gogo_id_t, std::shared_ptr<TaskBase>> id_to_task_;
+  std::unordered_map<std::string, gogo_id_t> task_name_to_id_;
   std::vector<std::shared_ptr<Worker>> workers_;
   std::shared_ptr<Scheduler> scheduler_;
   std::shared_ptr<CommBuffer> comm_buffer_;

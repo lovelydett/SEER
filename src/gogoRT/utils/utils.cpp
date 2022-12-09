@@ -5,7 +5,7 @@
 #include "utils.h"
 #include <random>
 
-uuid_t get_next_uuid() {
+gogo_id_t get_next_uuid() {
   static std::atomic<uint16> uuid_ = 0;
   uuid_ += 1;
   return uuid_.load();

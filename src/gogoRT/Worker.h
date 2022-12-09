@@ -30,7 +30,7 @@ private:
   std::unordered_set<int16> affinity_;
   bool is_running_;
   uint16 priority_;
-  uuid_t uuid_;
+  gogo_id_t uuid_;
   std::shared_ptr<Routine> next_routine_;
   Dispatcher &dispatcher_;
   WORKER_STAGE worker_stage_;
