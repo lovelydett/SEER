@@ -10,6 +10,8 @@
 
 namespace gogort {
 
+class Worker;
+
 class SchedulerFactory {
 private:
   static SchedulerFactory *instance_;
@@ -17,8 +19,7 @@ private:
 public:
   static SchedulerFactory *Instance();
   std::shared_ptr<Scheduler>
-  CreateScheduler(const std::string scheduler_name,
-                  const std::string config_path,
+  CreateScheduler(std::string scheduler_name, std::string config_path,
                   std::vector<std::shared_ptr<Worker>> &workers);
 };
 

@@ -7,7 +7,12 @@
 
 namespace message {
 
-class DummyMessage {};
+#define M_SIZE (1024)
+
+class DummyMessage {
+public:
+  double matrix[M_SIZE][M_SIZE];
+};
 
 } // namespace message
 

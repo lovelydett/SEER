@@ -19,7 +19,7 @@ public:
   PipeWriter(const PipeWriter &) = delete;
   PipeWriter &operator=(const PipeWriter &) = delete;
   PipeWriter(PipeWriter &&) = delete;
-  explicit PipeWriter(const std::shared_ptr<Pipe> &pipe) : pipe_(pipe) {}
+  explicit PipeWriter(const std::shared_ptr<Pipe> pipe) : pipe_(pipe) {}
   virtual ~PipeWriter() = default;
 
   bool Publish(MSG &&message) {

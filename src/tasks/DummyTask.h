@@ -16,6 +16,7 @@ namespace task {
 
 class DummyTask : public Task<DummyMessage> {
 private:
+  double vec[M_SIZE];
   bool init_config(const std::string) override;
 
 public:

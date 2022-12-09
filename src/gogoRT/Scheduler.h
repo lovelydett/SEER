@@ -6,13 +6,14 @@
 #define GOGORT_SCHEDULER_H
 
 #include "Routine.h"
-#include "Worker.h"
 #include "utils/utils.h"
 #include <list>
 #include <memory>
 #include <vector>
 
 namespace gogort {
+
+class Worker;
 
 // Todo(yuting): load this from GFLAGS
 // static const int16 kMaxWorkerNum = 8;

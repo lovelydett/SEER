@@ -26,7 +26,7 @@ public:
   PipeReader(const PipeReader &) = delete;
   PipeReader &operator=(const PipeReader &) = delete;
   PipeReader(PipeReader &&) = delete;
-  explicit PipeReader(const std::shared_ptr<Pipe> &pipe) : pipe_(pipe) {}
+  explicit PipeReader(const std::shared_ptr<Pipe> pipe) : pipe_(pipe) {}
   virtual ~PipeReader() = default;
 
   bool isUpdated() const {

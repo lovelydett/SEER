@@ -11,6 +11,7 @@ Scheduler::Scheduler(std::vector<std::shared_ptr<Worker>> &workers)
 
 bool Scheduler::AddRoutine(std::shared_ptr<Routine> routine) {
   routines_.emplace_back(routine);
+  return true;
 }
 
 } // namespace gogort

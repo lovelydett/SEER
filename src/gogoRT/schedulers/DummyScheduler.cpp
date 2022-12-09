@@ -3,8 +3,12 @@
 // 2022/12/8
 
 #include "DummyScheduler.h"
+#include "../Worker.h"
 
 namespace gogort {
+
+DummyScheduler::DummyScheduler(std::vector<std::shared_ptr<Worker>> &workers)
+    : Scheduler(workers) {}
 
 bool DummyScheduler::DoOnce() {
   // Simply pick the first routine for next worker.

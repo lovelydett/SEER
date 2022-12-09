@@ -6,9 +6,13 @@
 #include "../tasks/DummyTask.h"
 #include "SchedulerFactory.h"
 #include "TaskFactory.h"
+#include "Worker.h"
 #include <array>
+#include <chrono>
 
 namespace gogort {
+
+std::shared_ptr<Dispatcher> Dispatcher::instance_ = nullptr;
 
 Dispatcher::Dispatcher() : scheduler_(nullptr) {
   init_workers();
@@ -34,20 +38,22 @@ bool Dispatcher::init_config() {
 }
 
 bool Dispatcher::init_comm() {
-  comm_buffer_ = CommBuffer::Instance();
-  return comm_buffer_ != nullptr;
+  // comm_buffer_ = CommBuffer::Instance();
+  // assert(comm_buffer_ != nullptr);
+  return true;
 }
 
 bool Dispatcher::Run() {
   // 1. Launch workers
   for (auto &worker : workers_) {
-    worker->Start(*this);
+    worker->StartStateMachine();
   }
   // 2. Join workers
   // Simply sleep for now
   std::this_thread::sleep_for(std::chrono::seconds(5));
+  return true;
 }
-std::shared_ptr<Dispatcher> Dispatcher::Instance_() {
+std::shared_ptr<Dispatcher> Dispatcher::Instance() {
   if (instance_ == nullptr) {
     instance_ = std::shared_ptr<Dispatcher>(new Dispatcher());
   }

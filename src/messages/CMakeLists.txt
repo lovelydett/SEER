@@ -3,7 +3,7 @@ project(messages)
 
 FILE(GLOB SRC_LIST "*.cpp")
 
-add_library(${PROJECT_NAME} ${SRC_LIST})
+add_library(${PROJECT_NAME} STATIC ${SRC_LIST})
 
 target_link_libraries(${PROJECT_NAME} gogort)
 

@@ -4,7 +4,8 @@
 
 #include "Worker.h"
 #include "Dispatcher.h"
-#include <assert.h>
+#include "utils/utils.h"
+#include <cassert>
 #include <utility>
 
 namespace gogort {
@@ -47,6 +48,8 @@ bool Worker::StartStateMachine() {
         worker_stage_ = STAGE_PENDING_COMM;
         break;
       }
+      default:
+        assert(false);
       }
     }
   };

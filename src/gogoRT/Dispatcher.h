@@ -13,10 +13,12 @@
 #include "Routine.h"
 #include "SchedulerFactory.h"
 #include "Task.h"
-#include "Worker.h"
 #include <unordered_map>
 
 namespace gogort {
+
+class Worker;
+class Scheduler;
 
 class Dispatcher {
 private:
@@ -38,7 +40,7 @@ private:
   bool init_comm();
 
 public:
-  static std::shared_ptr<Dispatcher> Instance_();
+  static std::shared_ptr<Dispatcher> Instance();
 
   // The whole program happens here
   bool Run();

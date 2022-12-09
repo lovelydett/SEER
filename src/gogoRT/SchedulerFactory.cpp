@@ -4,6 +4,7 @@
 
 #include "SchedulerFactory.h"
 #include "schedulers/DummyScheduler.h"
+#include <string>
 
 namespace gogort {
 
@@ -16,7 +17,7 @@ SchedulerFactory *SchedulerFactory::Instance() {
   return instance_;
 }
 std::shared_ptr<Scheduler> SchedulerFactory::CreateScheduler(
-    const std::string scheduler_name, const std::string config_path,
+    std::string scheduler_name, std::string config_path,
     std::vector<std::shared_ptr<Worker>> &workers) {
   if (scheduler_name == "DummyScheduler") {
     return std::make_shared<DummyScheduler>(workers);

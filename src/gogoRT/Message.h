@@ -18,6 +18,7 @@ public:
   // Message should do hard-copied.
   virtual Message &operator=(const Message &&other_msg) {
     timestamp_ = other_msg.timestamp_;
+    return *this;
   }
   virtual ~Message() = 0;
   virtual std::string to_string() = 0;

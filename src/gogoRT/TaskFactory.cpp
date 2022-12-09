@@ -16,9 +16,13 @@ TaskFactory *TaskFactory::Instance() {
   return instance_;
 }
 
-std::shared_ptr<TaskBase> TaskFactory::CreateTask(const std::string task_name, const std::string config_path) {
+std::shared_ptr<TaskBase>
+TaskFactory::CreateTask(const std::string task_name,
+                        const std::string config_path) {
   if (task_name == "DummyTask") {
     return std::make_shared<task::DummyTask>();
   }
   return nullptr;
+}
+
 } // namespace gogort
