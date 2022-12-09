@@ -68,9 +68,9 @@ bool Dispatcher::UpdateRoutine() {
   // Mocking below, should be deleted
   auto d_message = std::make_shared<message::DummyMessage>();
   auto d_task = std::make_shared<task::DummyTask>();
-  auto d_routine =
-      std::make_shared<Routine>([&]() { d_task->Deal(d_message); });
-  scheduler_->AddRoutine(d_routine);
+  scheduler_->AddRoutine(
+      std::make_shared<Routine>([&]() { // d_task->Deal(d_message);
+        int a = 1; }));
   // Mocking above
 
   return true;

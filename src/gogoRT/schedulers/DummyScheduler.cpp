@@ -25,10 +25,12 @@ bool DummyScheduler::DoOnce() {
     if (worker->isBusy()) {
       continue;
     }
+    LOG(INFO) << "routine.size(): " << routines_.size();
+    // First assign, then pop!
     auto routine = routines_.front();
-    routines_.pop_front();
     worker->Assign(routine);
-    LOG(INFO) << "Assign routine " << routine->get_id() << " to worker ";
+    LOG(INFO) << "Assigning routine " << routine->get_id() << " to worker ";
+    routines_.pop_front();
   }
   return true;
 }

@@ -10,10 +10,7 @@ namespace gogort {
 Routine::Routine(std::function<void()> func) : id_(get_next_uuid()) {
   // At generation, set this routine as not finished.
   is_finished_ = false;
-  func_ = [&]() {
-    func();
-    is_finished_ = true;
-  };
+  func_ = func;
 }
 Routine::~Routine() {}
 bool Routine::Run() {
