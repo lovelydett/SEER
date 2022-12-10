@@ -21,7 +21,7 @@ Dispatcher::Dispatcher() : scheduler_(nullptr) {
 }
 
 bool Dispatcher::init_workers() {
-  const int num_workers = 2; // set num of workers as 1 to debug
+  const int num_workers = 4; // set num of workers as 1 to debug
   workers_.reserve(num_workers);
   // Mock for now
   for (int i = 0; i < num_workers; i++) {
@@ -66,12 +66,14 @@ bool Dispatcher::UpdateRoutine() {
   // Todo(yuting): check for each task, whether there are enough inputs.
 
   // Mocking below, should be deleted
-  auto d_message = std::make_shared<message::DummyMessage>();
-  auto d_task = std::make_shared<task::DummyTask>();
-  scheduler_->AddRoutine(
-      std::make_shared<Routine>([&]() { // d_task->Deal(d_message);
-        int a = 1;
-      }));
+  //  auto d_message = std::make_shared<message::DummyMessage>();
+  //  auto d_task = std::make_shared<task::DummyTask>();
+  //  scheduler_->AddRoutine(
+  //      std::make_shared<Routine>([&]() { d_task->Deal(d_message); }));
+  scheduler_->AddRoutine(std::make_shared<Routine>([&]() {
+    std::make_shared<task::DummyTask>()->Deal(
+        std::make_shared<message::DummyMessage>());
+  }));
   // Mocking above
 
   return true;
