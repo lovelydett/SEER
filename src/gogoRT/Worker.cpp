@@ -12,11 +12,9 @@
 namespace gogort {
 
 bool Worker::Assign(std::shared_ptr<Routine> routine) {
-  if (next_routine_ != nullptr) {
-    return false;
-  }
-  // next_routine_ = std::move(routine);
-  next_routine_ = routine;
+  assert(next_routine_ == nullptr);
+  next_routine_ = std::move(routine);
+  // next_routine_ = routine;
   return true;
 }
 bool Worker::isBusy() const { return next_routine_ != nullptr; }
@@ -32,15 +30,24 @@ bool Worker::StartStateMachine() {
     worker_stage_ = STAGE_PENDING_COMM;
     while (true) {
       switch (worker_stage_) {
+        // Yuting@2022/12/10: Lock the whole dispatcher before doing sched.
       case STAGE_PENDING_COMM: {
         LOG(INFO) << "Thread " << inner_thread_->get_id() << " pending comm";
-        dispatcher_.UpdateRoutine();
+        if (dispatcher_.AcquireSchedLock()) {
+          dispatcher_.UpdateRoutine();
+          dispatcher_.ReleaseSchedLock();
+          LOG(INFO) << "Comm done";
+        }
         worker_stage_ = STAGE_PENDING_SCHED;
         break;
       }
       case STAGE_PENDING_SCHED: {
         LOG(INFO) << "Thread " << inner_thread_->get_id() << " pending sched";
-        dispatcher_.DoSchedule();
+        if (dispatcher_.AcquireSchedLock()) {
+          dispatcher_.DoSchedule();
+          dispatcher_.ReleaseSchedLock();
+          LOG(INFO) << "Sched done";
+        }
         worker_stage_ = STAGE_PENDING_EXEC;
         break;
       }
@@ -48,7 +55,7 @@ bool Worker::StartStateMachine() {
         LOG(INFO) << "Thread " << inner_thread_->get_id() << " pending exec";
         if (next_routine_ != nullptr) {
           LOG(INFO) << "Thread " << inner_thread_->get_id()
-                    << " has a routine to run";
+                    << " is executing routine " << next_routine_->get_id();
           next_routine_->Run();
           next_routine_ = nullptr;
         }
@@ -63,6 +70,11 @@ bool Worker::StartStateMachine() {
   inner_thread_ = std::make_unique<std::thread>(state_machine);
   LOG(INFO) << "Thread " << inner_thread_->get_id() << " starts state-machine";
   return true;
+}
+void Worker::Join() {
+  if (inner_thread_ != nullptr) {
+    inner_thread_->join();
+  }
 }
 
 } // namespace gogort

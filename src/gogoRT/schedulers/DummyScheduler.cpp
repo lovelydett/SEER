@@ -25,9 +25,11 @@ bool DummyScheduler::DoOnce() {
     if (worker->isBusy()) {
       continue;
     }
-    LOG(INFO) << "routine.size(): " << routines_.size();
+    auto p = routines_.front().get();
+    LOG(INFO) << "AAAAAAA";
+    LOG(INFO) << "Routine id = " << p->get_id();
     // First assign, then pop!
-    auto routine = routines_.front();
+    std::shared_ptr<Routine> routine = routines_.front();
     worker->Assign(routine);
     LOG(INFO) << "Assigning routine " << routine->get_id() << " to worker ";
     routines_.pop_front();

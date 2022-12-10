@@ -21,9 +21,10 @@ Dispatcher::Dispatcher() : scheduler_(nullptr) {
 }
 
 bool Dispatcher::init_workers() {
-  workers_.reserve(4);
+  const int num_workers = 2; // set num of workers as 1 to debug
+  workers_.reserve(num_workers);
   // Mock for now
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < num_workers; i++) {
     workers_.emplace_back(std::make_shared<Worker>(*this));
   }
   return true;
@@ -51,8 +52,7 @@ bool Dispatcher::Run() {
     worker->StartStateMachine();
   }
   // 2. Join workers
-  // Simply sleep for now
-  std::this_thread::sleep_for(std::chrono::seconds(5));
+  JoinWorkers();
   return true;
 }
 std::shared_ptr<Dispatcher> Dispatcher::Instance() {
@@ -70,10 +70,18 @@ bool Dispatcher::UpdateRoutine() {
   auto d_task = std::make_shared<task::DummyTask>();
   scheduler_->AddRoutine(
       std::make_shared<Routine>([&]() { // d_task->Deal(d_message);
-        int a = 1; }));
+        int a = 1;
+      }));
   // Mocking above
 
   return true;
 }
+void Dispatcher::JoinWorkers() {
+  for (auto &worker : workers_) {
+    worker->Join();
+  }
+}
+bool Dispatcher::AcquireSchedLock() { return mtx_sched_.try_lock(); }
+void Dispatcher::ReleaseSchedLock() { mtx_sched_.unlock(); }
 
 } // namespace gogort

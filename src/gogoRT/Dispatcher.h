@@ -13,6 +13,7 @@
 #include "Routine.h"
 #include "SchedulerFactory.h"
 #include "Task.h"
+#include <mutex>
 #include <unordered_map>
 
 namespace gogort {
@@ -30,6 +31,8 @@ private:
   std::vector<std::shared_ptr<Worker>> workers_;
   std::shared_ptr<Scheduler> scheduler_;
   std::shared_ptr<CommBuffer> comm_buffer_;
+  // When one worker is scheduling, nobody gets work.
+  std::mutex mtx_sched_;
 
 private:
   Dispatcher();
@@ -46,6 +49,9 @@ public:
   bool Run();
   bool DoSchedule();
   bool UpdateRoutine();
+  void JoinWorkers();
+  bool AcquireSchedLock();
+  void ReleaseSchedLock();
 };
 
 } // namespace gogort

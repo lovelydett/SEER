@@ -3,8 +3,7 @@
 //
 
 #include "Routine.h"
-
-#include <utility>
+#include <glog/logging.h>
 
 namespace gogort {
 Routine::Routine(std::function<void()> func) : id_(get_next_uuid()) {
@@ -12,7 +11,8 @@ Routine::Routine(std::function<void()> func) : id_(get_next_uuid()) {
   is_finished_ = false;
   func_ = func;
 }
-Routine::~Routine() {}
+Routine::~Routine() { // LOG(INFO) << "Routine " << id_ << " is destroyed";
+}
 bool Routine::Run() {
   func_();
   return true;

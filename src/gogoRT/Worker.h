@@ -50,6 +50,7 @@ public:
   bool Assign(std::shared_ptr<Routine> routine);
   bool Release();
   bool isBusy() const;
+  void Join();
 };
 
 } // namespace gogort
