@@ -23,7 +23,6 @@ public:
   virtual ~PipeWriter() = default;
 
   bool Publish(MSG &&message) {
-    // Todo(yuting): publish message to this pipe
     auto valid_pipe = pipe_.lock();
     return valid_pipe->Enqueue(message);
   }

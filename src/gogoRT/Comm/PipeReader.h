@@ -33,6 +33,12 @@ public:
     auto valid_pipe = pipe_.lock();
     return ts_updated_ < valid_pipe->get_timestamp();
   }
+  std::shared_ptr<MSG> Read() {
+    auto valid_pipe = pipe_.lock();
+    auto ret = std::make_shared<MSG>(*(MSG *)valid_pipe->Top());
+    assert(ret != nullptr);
+    return ret;
+  }
 };
 
 } // namespace gogort
