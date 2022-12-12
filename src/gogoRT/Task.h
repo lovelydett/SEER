@@ -8,8 +8,11 @@
 #include "utils/utils.h"
 #include <memory>
 #include <string>
+#include <utility>
 
 namespace gogort {
+
+class InvokerBase;
 
 // Represent null type, facilitate variant template arguments
 class NullClass {};
@@ -21,20 +24,21 @@ private:
   const std::string task_name_;
 
 private:
-  virtual bool init_config(const std::string) = 0;
+  virtual bool init_config(std::string) = 0;
 
 public:
   TaskBase() = delete;
-  TaskBase(const std::string task_name) : task_name_(task_name), id_(0){};
-  bool Init(const gogo_id_t id, const std::string config_path) {
+  explicit TaskBase(std::string task_name)
+      : task_name_(std::move(task_name)), id_(0){};
+  bool Init(const gogo_id_t id, const std::string &config_path) {
     if (id == 0) {
       return false;
     }
     id_ = id;
     return init_config(config_path);
   }
-  std::string get_task_name() const { return task_name_; }
-  gogo_id_t get_task_id() const { return id_; }
+  [[nodiscard]] std::string get_task_name() const { return task_name_; }
+  [[nodiscard]] gogo_id_t get_task_id() const { return id_; }
 };
 
 // The original template class that supports at most 4 types of input messages
