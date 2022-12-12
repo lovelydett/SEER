@@ -32,8 +32,6 @@ public:
   static std::shared_ptr<CommBuffer> Instance();
   // Pipe name to pipe
   std::unordered_map<std::string, std::shared_ptr<Pipe>> name_to_pipe_;
-  // Pipe name to pipe reader
-  std::unordered_map<std::string, std::shared_ptr<PipeReader>> name_to_reader_;
 };
 
 // Tell CommBuffer you need a reader

@@ -20,6 +20,10 @@ private:
   // reader rather a pipe, since readers are task-owned, a piece of message may
   // expire for some tasks while still alive for the others not yet consume it.
   time_t ts_updated_{};
+  bool isUpdated() const {
+    auto valid_pipe = pipe_.lock();
+    return ts_updated_ < valid_pipe->get_timestamp();
+  }
 
 public:
   PipeReader() = delete;
@@ -29,15 +33,12 @@ public:
   explicit PipeReader(const std::shared_ptr<Pipe> pipe) : pipe_(pipe) {}
   virtual ~PipeReader() = default;
 
-  bool isUpdated() const {
-    auto valid_pipe = pipe_.lock();
-    return ts_updated_ < valid_pipe->get_timestamp();
-  }
   std::shared_ptr<MSG> Read() {
-    auto valid_pipe = pipe_.lock();
-    auto ret = std::make_shared<MSG>(*(MSG *)valid_pipe->Top());
-    assert(ret != nullptr);
-    return ret;
+    if (isUpdated()) {
+      auto valid_pipe = pipe_.lock();
+      return std::make_shared<MSG>(*(MSG *)valid_pipe->Top());
+    }
+    return nullptr;
   }
 };
 

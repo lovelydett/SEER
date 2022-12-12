@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
-project(gogo_proj)
-
 set(CMAKE_CXX_STANDARD 20)
+project(gogo_proj)
 
 # Yuting: add dependency for google test
 include(FetchContent)
