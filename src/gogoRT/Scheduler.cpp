@@ -10,7 +10,7 @@ Scheduler::Scheduler(std::vector<std::shared_ptr<Worker>> &workers)
     : workers_(workers) {}
 
 bool Scheduler::AddRoutine(std::shared_ptr<Routine> routine) {
-  routines_.push_back(routine);
+  routines_.emplace_back(std::move(routine));
   return true;
 }
 bool Scheduler::DoSchedule() { return DoOnce(); }

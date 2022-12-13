@@ -4,10 +4,10 @@
 #include "Dispatcher.h"
 #include "../messages/DummyMessage.h"
 #include "../tasks/DummyTask.h"
+#include "Invoker.h"
 #include "SchedulerFactory.h"
 #include "TaskFactory.h"
 #include "Worker.h"
-#include "Invoker.h"
 
 #include <cassert>
 
@@ -19,10 +19,11 @@ Dispatcher::Dispatcher() : scheduler_(nullptr) {
   init_workers();
   init_config();
   init_comm();
+  init_tasks();
 }
 
 bool Dispatcher::init_workers() {
-  const int num_workers = 4; // set num of workers as 1 to debug
+  const int num_workers = 1; // set num of workers as 1 to debug
   workers_.reserve(num_workers);
   // Mock for now
   for (int i = 0; i < num_workers; i++) {
@@ -42,19 +43,8 @@ bool Dispatcher::init_tasks() {
                                                              "", workers_);
 
   // Create tasks according to their inputs
-  int num_of_inputs = 1;
-  std::string task_name = "DummyTask";
-  std::vector<std::string> input_pipe_names = {"DummyPipe"};
-  switch (num_of_inputs) {
-  case 1: {
-    auto task = TaskFactory::Instance()->CreateTask(task_name, "");
-    // Todo(yuting): get pipe readers from commbuffer.
-    GetInvoker(&task, )
-    break;
-  }
-  default:
-    assert(false);
-
+  for (auto &[name, task] : id_to_task_) {
+    invokers_.emplace_back(task->get_invoker());
   }
 
   return true;
@@ -84,17 +74,12 @@ std::shared_ptr<Dispatcher> Dispatcher::Instance() {
 bool Dispatcher::DoSchedule() { return scheduler_->DoSchedule(); }
 bool Dispatcher::UpdateRoutine() {
   // Todo(yuting): check for each task, whether there are enough inputs.
-
-  // Mocking below, should be deleted
-  //  auto d_message = std::make_shared<message::DummyMessage>();
-  //  auto d_task = std::make_shared<task::DummyTask>();
-  //  scheduler_->AddRoutine(
-  //      std::make_shared<Routine>([&]() { d_task->Deal(d_message); }));
-  scheduler_->AddRoutine(std::make_shared<Routine>([&]() {
-    std::make_shared<task::DummyTask>()->Deal(
-        std::make_shared<message::DummyMessage>());
-  }));
-  // Mocking above
+  for (auto &invoker : invokers_) {
+    auto routine = invoker->Invoke();
+    if (routine) {
+      scheduler_->AddRoutine(routine);
+    }
+  }
 
   return true;
 }

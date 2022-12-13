@@ -14,16 +14,13 @@ namespace gogort {
 
 template <class MSG> class PipeReader {
 private:
-  std::weak_ptr<Pipe> pipe_;
+  std::shared_ptr<Pipe> pipe_;
 
   // Yuting@2022.12.6: the status of readability should be maintained by a
   // reader rather a pipe, since readers are task-owned, a piece of message may
   // expire for some tasks while still alive for the others not yet consume it.
   time_t ts_updated_{};
-  bool isUpdated() const {
-    auto valid_pipe = pipe_.lock();
-    return ts_updated_ < valid_pipe->get_timestamp();
-  }
+  bool isUpdated() const { return ts_updated_ < pipe_->get_timestamp(); }
 
 public:
   PipeReader() = delete;
@@ -35,8 +32,9 @@ public:
 
   std::shared_ptr<MSG> Read() {
     if (isUpdated()) {
-      auto valid_pipe = pipe_.lock();
-      return std::make_shared<MSG>(*(MSG *)valid_pipe->Top());
+      std::shared_ptr<MSG> msg = std::dynamic_pointer_cast<MSG>(pipe_->Top());
+      // Todo(yuting): Messages should implement copy constructor.
+      return msg;
     }
     return nullptr;
   }

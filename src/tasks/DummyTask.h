@@ -5,6 +5,7 @@
 #ifndef GOGO_DUMMYTASK_H
 #define GOGO_DUMMYTASK_H
 
+#include "../gogoRT/Invoker.h"
 #include "../messages/DummyMessage.h"
 #include "Task.h"
 #include <memory>
@@ -22,6 +23,7 @@ private:
 public:
   DummyTask() : Task<DummyMessage>("DummyTask"){};
   bool Deal(const std::shared_ptr<DummyMessage> &) override;
+  std::shared_ptr<gogort::InvokerBase> get_invoker() override;
 };
 
 } // namespace task

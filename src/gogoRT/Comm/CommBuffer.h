@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <mutex>
-#include <optional>
 #include <queue>
 #include <string>
 #include <unordered_map>
@@ -36,20 +35,27 @@ public:
 
 // Tell CommBuffer you need a reader
 template <class MSG>
-std::optional<PipeReader<MSG>> AcquireReader(const std::string pipe_name) {
-  return std::nullopt;
-}
-
-// CommBuffer will prepare the messages in pipe-of-interest for the task.
-template <class MSG>
-std::optional<PipeWriter<MSG>> AcquireWriter(const std::string pipe_name) {
+std::shared_ptr<PipeReader<MSG>> AcquireReader(const std::string pipe_name) {
   auto &name_to_pipe = CommBuffer::Instance()->name_to_pipe_;
   auto it = name_to_pipe.find(pipe_name);
   if (name_to_pipe.end() != it) {
-    return std::nullopt;
+    return nullptr;
+  }
+  // This pipe exists, use it to initialize a reader.
+  auto pipe = it->second;
+  return std::make_shared<PipeReader<MSG>>(pipe);
+}
+
+// Get the writer of a pipe.
+template <class MSG>
+std::shared_ptr<PipeReader<MSG>> AcquireWriter(const std::string pipe_name) {
+  auto &name_to_pipe = CommBuffer::Instance()->name_to_pipe_;
+  auto it = name_to_pipe.find(pipe_name);
+  if (name_to_pipe.end() != it) {
+    return nullptr;
   }
   // This pipe exists, use it to initialize a writer.
-  return PipeWriter<MSG>(it->second);
+  return std::make_shared<PipeWriter<MSG>>(it->second);
 }
 
 } // namespace gogort

@@ -39,6 +39,7 @@ public:
   }
   [[nodiscard]] std::string get_task_name() const { return task_name_; }
   [[nodiscard]] gogo_id_t get_task_id() const { return id_; }
+  [[nodiscard]] virtual std::shared_ptr<InvokerBase> get_invoker() = 0;
 };
 
 // The original template class that supports at most 4 types of input messages

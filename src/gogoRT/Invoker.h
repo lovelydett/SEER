@@ -29,7 +29,7 @@ template <class MSG0, class MSG1 = NullClass, class MSG2 = NullClass,
           class MSG3 = NullClass>
 class Invoker : public InvokerBase {
 private:
-  std::shared_ptr<TaskBase> task_;
+  std::shared_ptr<Task<MSG0, MSG1, MSG2, MSG3>> task_;
   std::shared_ptr<PipeReader<MSG0>> pipe0_;
   std::shared_ptr<PipeReader<MSG1>> pipe1_;
   std::shared_ptr<PipeReader<MSG2>> pipe2_;
@@ -37,10 +37,10 @@ private:
 
 private:
   std::shared_ptr<Routine> InnerInvoke() override {
-    auto msg0 = pipe0_.Read();
-    auto msg1 = pipe1_.Read();
-    auto msg2 = pipe2_.Read();
-    auto msg3 = pipe3_.Read();
+    auto msg0 = pipe0_->Read();
+    auto msg1 = pipe1_->Read();
+    auto msg2 = pipe2_->Read();
+    auto msg3 = pipe3_->Read();
     if (msg0 && msg1 && msg2 && msg3) {
       return std::make_shared<Routine>(std::bind(
           &Task<MSG0, MSG1, MSG2, MSG3>::Deal, &task_, msg0, msg1, msg2, msg3));
@@ -49,7 +49,7 @@ private:
   }
 
 public:
-  Invoker(std::shared_ptr<TaskBase> task,
+  Invoker(std::shared_ptr<Task<MSG0, MSG1, MSG2, MSG3>> task,
           std::shared_ptr<PipeReader<MSG0>> pipe0,
           std::shared_ptr<PipeReader<MSG1>> pipe1,
           std::shared_ptr<PipeReader<MSG2>> pipe2,
@@ -63,21 +63,21 @@ public:
 template <class MSG0>
 class Invoker<MSG0, NullClass, NullClass, NullClass> : public InvokerBase {
 private:
-  std::shared_ptr<TaskBase> task_;
+  std::shared_ptr<Task<MSG0>> task_;
   std::shared_ptr<PipeReader<MSG0>> pipe0_;
 
 private:
   std::shared_ptr<Routine> InnerInvoke() override {
-    auto msg0 = pipe0_.Read();
+    auto msg0 = pipe0_->Read();
     if (msg0) {
       return std::make_shared<Routine>(
-          std::bind(&Task<MSG0>::Deal, &task_, msg0));
+          std::bind(&Task<MSG0>::Deal, task_, msg0));
     }
     return nullptr;
   }
 
 public:
-  Invoker(std::shared_ptr<TaskBase> task,
+  Invoker(std::shared_ptr<Task<MSG0>> task,
           std::shared_ptr<PipeReader<MSG0>> pipe0)
       : task_(std::move(task)), pipe0_(std::move(pipe0)) {}
   ~Invoker() override = default;
@@ -93,11 +93,11 @@ private:
 
 private:
   std::shared_ptr<Routine> InnerInvoke() override {
-    auto msg0 = pipe0_.Read();
-    auto msg1 = pipe1_.Read();
+    auto msg0 = pipe0_->Read();
+    auto msg1 = pipe1_->Read();
     if (msg0 && msg1) {
       return std::make_shared<Routine>(
-          std::bind(&Task<MSG0, MSG1>::Deal, &task_, msg0, msg1));
+          std::bind(&Task<MSG0, MSG1>::Deal, task_, msg0, msg1));
     }
     return nullptr;
   }
@@ -122,12 +122,12 @@ private:
 
 private:
   std::shared_ptr<Routine> InnerInvoke() override {
-    auto msg0 = pipe0_.Read();
-    auto msg1 = pipe1_.Read();
-    auto msg2 = pipe2_.Read();
+    auto msg0 = pipe0_->Read();
+    auto msg1 = pipe1_->Read();
+    auto msg2 = pipe2_->Read();
     if (msg0 && msg1 && msg2) {
       return std::make_shared<Routine>(
-          std::bind(&Task<MSG0, MSG1, MSG2>::Deal, &task_, msg0, msg1, msg2));
+          std::bind(&Task<MSG0, MSG1, MSG2>::Deal, task_, msg0, msg1, msg2));
     }
     return nullptr;
   }

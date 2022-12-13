@@ -2,6 +2,7 @@
 // Created by Yuting Xie on 03/12/2022.
 
 #include "DummyTask.h"
+#include "../gogoRT/Comm/CommBuffer.h"
 #include <glog/logging.h>
 
 namespace task {
@@ -25,4 +26,11 @@ bool DummyTask::Deal(const std::shared_ptr<DummyMessage> &msg) {
   return true;
 }
 bool DummyTask::init_config(const std::string) { return true; }
+
+std::shared_ptr<gogort::InvokerBase> DummyTask::get_invoker() {
+  auto comm_buffer = gogort::CommBuffer::Instance();
+  return std::make_shared<gogort::Invoker<DummyMessage>>(
+      static_cast<std::shared_ptr<Task<DummyMessage>>>(this),
+      gogort::AcquireReader<DummyMessage>("DummyPipe"));
+}
 } // namespace task

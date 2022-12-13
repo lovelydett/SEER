@@ -10,6 +10,7 @@
 #define GOGO_DISPATCHER_H
 
 #include "Comm/CommBuffer.h"
+#include "Invoker.h"
 #include "Routine.h"
 #include "SchedulerFactory.h"
 #include "Task.h"
@@ -33,6 +34,8 @@ private:
   std::shared_ptr<CommBuffer> comm_buffer_;
   // When one worker is scheduling, nobody gets work.
   std::mutex mtx_sched_;
+  // All invokers
+  std::vector<std::shared_ptr<InvokerBase>> invokers_;
 
 private:
   Dispatcher();
