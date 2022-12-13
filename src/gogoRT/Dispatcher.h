@@ -40,6 +40,7 @@ private:
   Dispatcher &operator=(Dispatcher &&) = delete;
   bool init_config();
   bool init_workers();
+  bool init_tasks();
   bool init_comm();
 
 public:

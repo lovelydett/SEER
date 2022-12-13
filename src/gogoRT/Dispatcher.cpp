@@ -7,8 +7,9 @@
 #include "SchedulerFactory.h"
 #include "TaskFactory.h"
 #include "Worker.h"
-#include <array>
-#include <chrono>
+#include "Invoker.h"
+
+#include <cassert>
 
 namespace gogort {
 
@@ -30,13 +31,32 @@ bool Dispatcher::init_workers() {
   return true;
 }
 
-bool Dispatcher::init_config() {
+bool Dispatcher::init_config() { return true; }
+
+bool Dispatcher::init_tasks() {
   // Mock for now, should be read from config file
   auto d_task = TaskFactory::Instance()->CreateTask("DummyTask", "");
   id_to_task_.insert({d_task->get_task_id(), d_task});
   task_name_to_id_.insert({d_task->get_task_name(), d_task->get_task_id()});
   scheduler_ = SchedulerFactory::Instance()->CreateScheduler("DummyScheduler",
                                                              "", workers_);
+
+  // Create tasks according to their inputs
+  int num_of_inputs = 1;
+  std::string task_name = "DummyTask";
+  std::vector<std::string> input_pipe_names = {"DummyPipe"};
+  switch (num_of_inputs) {
+  case 1: {
+    auto task = TaskFactory::Instance()->CreateTask(task_name, "");
+    // Todo(yuting): get pipe readers from commbuffer.
+    GetInvoker(&task, )
+    break;
+  }
+  default:
+    assert(false);
+
+  }
+
   return true;
 }
 
