@@ -4,7 +4,6 @@
 #include "Dispatcher.h"
 #include "../messages/DummyMessage.h"
 #include "../tasks/DummyTask.h"
-#include "Invoker.h"
 #include "SchedulerFactory.h"
 #include "TaskFactory.h"
 #include "Worker.h"
@@ -16,10 +15,10 @@ namespace gogort {
 std::shared_ptr<Dispatcher> Dispatcher::instance_ = nullptr;
 
 Dispatcher::Dispatcher() : scheduler_(nullptr) {
+  init_tasks();
   init_workers();
   init_config();
   init_comm();
-  init_tasks();
 }
 
 bool Dispatcher::init_workers() {
@@ -47,6 +46,10 @@ bool Dispatcher::init_tasks() {
     invokers_.emplace_back(task->get_invoker());
   }
 
+  // Mock the first message to trigger the system
+  auto writer = AcquireWriter<message::DummyMessage>("dummy_pipe");
+  writer->Publish(std::make_shared<message::DummyMessage>());
+
   return true;
 }
 
@@ -71,9 +74,14 @@ std::shared_ptr<Dispatcher> Dispatcher::Instance() {
   }
   return instance_;
 }
-bool Dispatcher::DoSchedule() { return scheduler_->DoSchedule(); }
+bool Dispatcher::DoSchedule() {
+  if (scheduler_ == nullptr) {
+    LOG(INFO) << "Scheduler not yet initialized";
+    return false;
+  }
+  return scheduler_->DoSchedule();
+}
 bool Dispatcher::UpdateRoutine() {
-  // Todo(yuting): check for each task, whether there are enough inputs.
   for (auto &invoker : invokers_) {
     auto routine = invoker->Invoke();
     if (routine) {

@@ -46,7 +46,7 @@ std::shared_ptr<PipeReader<MSG>> AcquireReader(const std::string pipe_name) {
 
 // Get the writer of a pipe.
 template <class MSG>
-std::shared_ptr<PipeReader<MSG>> AcquireWriter(const std::string pipe_name) {
+std::shared_ptr<PipeWriter<MSG>> AcquireWriter(const std::string pipe_name) {
   auto pipe = CommBuffer::Instance()->GetPipe(pipe_name);
   if (pipe) {
     return std::make_shared<PipeWriter<MSG>>(pipe);

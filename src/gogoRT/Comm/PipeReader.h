@@ -34,7 +34,6 @@ public:
   PipeReader(PipeReader &&) = delete;
   explicit PipeReader(const std::shared_ptr<Pipe> pipe) : pipe_(pipe) {
     assert(pipe_ != nullptr);
-    LOG(INFO) << pipe_->get_pipe_name() << ": " << pipe_.use_count();
   }
   virtual ~PipeReader() = default;
 

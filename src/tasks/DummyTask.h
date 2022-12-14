@@ -19,12 +19,13 @@ namespace task {
 
 class DummyTask : public Task<DummyMessage> {
 private:
+  int count;
   double vec[M_SIZE];
   bool init_config(const std::string) override;
   std::shared_ptr<gogort::PipeWriter<DummyMessage>> writer_;
 
 public:
-  DummyTask() : Task<DummyMessage>("DummyTask"){};
+  DummyTask();
   bool Deal(const std::shared_ptr<DummyMessage> &) override;
   std::shared_ptr<gogort::InvokerBase> get_invoker() override;
 };
