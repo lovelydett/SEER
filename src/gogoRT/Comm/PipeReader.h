@@ -7,6 +7,8 @@
 
 #include "../utils/utils.h"
 #include "Pipe.h"
+#include <cassert>
+#include <glog/logging.h>
 #include <memory>
 #include <optional>
 
@@ -20,14 +22,20 @@ private:
   // reader rather a pipe, since readers are task-owned, a piece of message may
   // expire for some tasks while still alive for the others not yet consume it.
   time_t ts_updated_{};
-  bool isUpdated() const { return ts_updated_ < pipe_->get_timestamp(); }
+  bool isUpdated() const {
+    assert(pipe_ != nullptr);
+    return ts_updated_ < pipe_->get_timestamp();
+  }
 
 public:
   PipeReader() = delete;
   PipeReader(const PipeReader &) = delete;
   PipeReader &operator=(const PipeReader &) = delete;
   PipeReader(PipeReader &&) = delete;
-  explicit PipeReader(const std::shared_ptr<Pipe> pipe) : pipe_(pipe) {}
+  explicit PipeReader(const std::shared_ptr<Pipe> pipe) : pipe_(pipe) {
+    assert(pipe_ != nullptr);
+    LOG(INFO) << pipe_->get_pipe_name() << ": " << pipe_.use_count();
+  }
   virtual ~PipeReader() = default;
 
   std::shared_ptr<MSG> Read() {

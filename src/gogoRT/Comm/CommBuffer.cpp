@@ -14,6 +14,9 @@ CommBuffer::CommBuffer() { init_config(""); }
 bool CommBuffer::init_config(const std::string config_path) {
   // TODO: read config file and init pipes_
   is_init_ = true;
+
+  // Mock
+  name_to_pipe_.insert({"dummy_pipe", std::make_shared<Pipe>("dummy_pipe")});
   return false;
 }
 

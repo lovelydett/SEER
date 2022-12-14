@@ -31,6 +31,6 @@ std::shared_ptr<gogort::InvokerBase> DummyTask::get_invoker() {
   auto comm_buffer = gogort::CommBuffer::Instance();
   return std::make_shared<gogort::Invoker<DummyMessage>>(
       static_cast<std::shared_ptr<Task<DummyMessage>>>(this),
-      gogort::AcquireReader<DummyMessage>("DummyPipe"));
+      gogort::AcquireReader<DummyMessage>("dummy_pipe"));
 }
 } // namespace task

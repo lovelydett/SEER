@@ -38,12 +38,12 @@ template <class MSG>
 std::shared_ptr<PipeReader<MSG>> AcquireReader(const std::string pipe_name) {
   auto &name_to_pipe = CommBuffer::Instance()->name_to_pipe_;
   auto it = name_to_pipe.find(pipe_name);
-  if (name_to_pipe.end() != it) {
+  if (name_to_pipe.end() == it) {
     return nullptr;
   }
   // This pipe exists, use it to initialize a reader.
-  auto pipe = it->second;
-  return std::make_shared<PipeReader<MSG>>(pipe);
+  LOG(INFO) << it->second->get_pipe_name() << " exists";
+  return std::make_shared<PipeReader<MSG>>(it->second);
 }
 
 // Get the writer of a pipe.
