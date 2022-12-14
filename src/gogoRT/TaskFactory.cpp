@@ -19,8 +19,10 @@ TaskFactory *TaskFactory::Instance() {
 std::shared_ptr<TaskBase>
 TaskFactory::CreateTask(const std::string task_name,
                         const std::string config_path) {
+  static int count = 0;
   if (task_name == "DummyTask") {
-    return std::make_shared<task::DummyTask>();
+    return std::make_shared<task::DummyTask>(task_name +
+                                             std::to_string(++count));
   }
   return nullptr;
 }

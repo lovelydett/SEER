@@ -6,11 +6,12 @@
 #include <glog/logging.h>
 
 namespace task {
-DummyTask::DummyTask() : Task<DummyMessage>("DummyTask"), count(0) {
+DummyTask::DummyTask(const std::string task_name)
+    : Task<DummyMessage>(task_name), count(0) {
   writer_ = gogort::AcquireWriter<DummyMessage>("dummy_pipe");
 }
 
-bool DummyTask::Deal(const std::shared_ptr<DummyMessage> &msg) {
+bool DummyTask::Deal(const std::shared_ptr<DummyMessage> msg) {
   // DummyTask simply do matmul
   LOG(INFO) << "DummyTask::Deal() starts";
   double res[M_SIZE];

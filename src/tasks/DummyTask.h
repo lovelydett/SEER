@@ -21,12 +21,13 @@ class DummyTask : public Task<DummyMessage> {
 private:
   int count;
   double vec[M_SIZE];
-  bool init_config(const std::string) override;
+  bool init_config(std::string) override;
   std::shared_ptr<gogort::PipeWriter<DummyMessage>> writer_;
 
 public:
-  DummyTask();
-  bool Deal(const std::shared_ptr<DummyMessage> &) override;
+  DummyTask() = delete;
+  explicit DummyTask(std::string);
+  bool Deal(std::shared_ptr<DummyMessage>) override;
   std::shared_ptr<gogort::InvokerBase> get_invoker() override;
 };
 

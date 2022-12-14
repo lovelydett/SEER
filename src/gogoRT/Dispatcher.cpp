@@ -22,7 +22,7 @@ Dispatcher::Dispatcher() : scheduler_(nullptr) {
 }
 
 bool Dispatcher::init_workers() {
-  const int num_workers = 1; // set num of workers as 1 to debug
+  const int num_workers = 8; // set num of workers as 1 to debug
   workers_.reserve(num_workers);
   // Mock for now
   for (int i = 0; i < num_workers; i++) {
@@ -35,9 +35,14 @@ bool Dispatcher::init_config() { return true; }
 
 bool Dispatcher::init_tasks() {
   // Mock for now, should be read from config file
-  auto d_task = TaskFactory::Instance()->CreateTask("DummyTask", "");
-  id_to_task_.insert({d_task->get_task_id(), d_task});
-  task_name_to_id_.insert({d_task->get_task_name(), d_task->get_task_id()});
+  auto d_task1 = TaskFactory::Instance()->CreateTask("DummyTask", "");
+  auto d_task2 = TaskFactory::Instance()->CreateTask("DummyTask", "");
+  id_to_task_.insert({d_task1->get_task_id(), d_task1});
+  task_name_to_id_.insert({d_task1->get_task_name(), d_task1->get_task_id()});
+  id_to_task_.insert({d_task2->get_task_id(), d_task2});
+  task_name_to_id_.insert({d_task2->get_task_name(), d_task2->get_task_id()});
+  LOG(INFO) << d_task1->get_task_name() << " " << d_task1->get_task_id();
+  LOG(INFO) << d_task2->get_task_name() << " " << d_task2->get_task_id();
   scheduler_ = SchedulerFactory::Instance()->CreateScheduler("DummyScheduler",
                                                              "", workers_);
 
@@ -68,12 +73,14 @@ bool Dispatcher::Run() {
   JoinWorkers();
   return true;
 }
+
 std::shared_ptr<Dispatcher> Dispatcher::Instance() {
   if (instance_ == nullptr) {
     instance_ = std::shared_ptr<Dispatcher>(new Dispatcher());
   }
   return instance_;
 }
+
 bool Dispatcher::DoSchedule() {
   if (scheduler_ == nullptr) {
     LOG(INFO) << "Scheduler not yet initialized";
@@ -81,22 +88,30 @@ bool Dispatcher::DoSchedule() {
   }
   return scheduler_->DoSchedule();
 }
+
 bool Dispatcher::UpdateRoutine() {
+  int count = 0;
   for (auto &invoker : invokers_) {
     auto routine = invoker->Invoke();
     if (routine) {
       scheduler_->AddRoutine(routine);
+      count++;
     }
   }
+  LOG(INFO) << "In total, " << count << "/" << invokers_.size()
+            << " routines are updated";
 
   return true;
 }
+
 void Dispatcher::JoinWorkers() {
   for (auto &worker : workers_) {
     worker->Join();
   }
 }
+
 bool Dispatcher::AcquireSchedLock() { return mtx_sched_.try_lock(); }
+
 void Dispatcher::ReleaseSchedLock() { mtx_sched_.unlock(); }
 
 } // namespace gogort

@@ -29,7 +29,7 @@ private:
 public:
   TaskBase() = delete;
   explicit TaskBase(std::string task_name)
-      : task_name_(std::move(task_name)), id_(0){};
+      : task_name_(std::move(task_name)), id_(get_next_uuid()){};
   bool Init(const gogo_id_t id, const std::string &config_path) {
     if (id == 0) {
       return false;
@@ -49,10 +49,9 @@ class Task : public TaskBase {
 public:
   Task() = delete;
   Task(const std::string task_name) : TaskBase(task_name){};
-  virtual bool Deal(const std::shared_ptr<MSG0> &,
-                    const std::shared_ptr<MSG1> &,
-                    const std::shared_ptr<MSG2> &,
-                    const std::shared_ptr<MSG3> &) = 0;
+  virtual bool Deal(const std::shared_ptr<MSG0>, const std::shared_ptr<MSG1>,
+                    const std::shared_ptr<MSG2>,
+                    const std::shared_ptr<MSG3>) = 0;
 };
 
 // Yuting@2022-12-6: not allow task to take 0 input for now.
@@ -66,7 +65,7 @@ class Task<MSG0, NullClass, NullClass, NullClass> : public TaskBase {
 public:
   Task() = delete;
   Task(const std::string task_name) : TaskBase(task_name){};
-  virtual bool Deal(const std::shared_ptr<MSG0> &) = 0;
+  virtual bool Deal(const std::shared_ptr<MSG0>) = 0;
 };
 
 // Task that takes 2 messages
@@ -75,8 +74,8 @@ class Task<MSG0, MSG1, NullClass, NullClass> : public TaskBase {
 public:
   Task() = delete;
   Task(const std::string task_name) : TaskBase(task_name){};
-  virtual bool Deal(const std::shared_ptr<MSG0> &,
-                    const std::shared_ptr<MSG1> &) = 0;
+  virtual bool Deal(const std::shared_ptr<MSG0>,
+                    const std::shared_ptr<MSG1>) = 0;
 };
 
 // Task that takes 3 messages
@@ -85,9 +84,8 @@ class Task<MSG0, MSG1, MSG2, NullClass> : public TaskBase {
 public:
   Task() = delete;
   Task(const std::string task_name) : TaskBase(task_name){};
-  virtual bool Deal(const std::shared_ptr<MSG0> &,
-                    const std::shared_ptr<MSG1> &,
-                    const std::shared_ptr<MSG2> &) = 0;
+  virtual bool Deal(const std::shared_ptr<MSG0>, const std::shared_ptr<MSG1>,
+                    const std::shared_ptr<MSG2>) = 0;
 };
 
 } // namespace gogort
