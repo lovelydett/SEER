@@ -31,7 +31,7 @@ private:
   }
 
 public:
-  Pipe(const std::string pipe_name) : pipe_name_(pipe_name) {
+  explicit Pipe(const std::string pipe_name) : pipe_name_(pipe_name) {
     LOG(INFO) << "Creating pipe: " << pipe_name_;
     init_config();
   }
@@ -45,13 +45,13 @@ public:
   bool Dequeue() { return true; }
   // This function can be multi-threaded.
   std::shared_ptr<Message> Top() { return inner_msg_; }
-  time_t get_timestamp() const {
+  [[nodiscard]] time_t get_timestamp() const {
     if (inner_msg_ == nullptr) {
       return 0;
     }
     return inner_msg_->get_timestamp();
   }
-  std::string get_pipe_name() const { return pipe_name_; }
+  [[nodiscard]] std::string get_pipe_name() const { return pipe_name_; }
 };
 
 } // namespace gogort

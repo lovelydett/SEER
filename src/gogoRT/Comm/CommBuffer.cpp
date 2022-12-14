@@ -30,4 +30,11 @@ std::shared_ptr<CommBuffer> CommBuffer::Instance() {
   return instance_;
 }
 
+std::shared_ptr<Pipe> CommBuffer::GetPipe(const std::string pipe_name) {
+  if (name_to_pipe_.find(pipe_name) == name_to_pipe_.end()) {
+    return nullptr;
+  }
+  return name_to_pipe_[pipe_name];
+}
+
 } // namespace gogort

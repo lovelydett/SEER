@@ -26,36 +26,32 @@ private:
 private:
   CommBuffer();
   bool init_config(const std::string config_path);
+  // Pipe name to pipe
+  std::unordered_map<std::string, std::shared_ptr<Pipe>> name_to_pipe_;
 
 public:
   static std::shared_ptr<CommBuffer> Instance();
-  // Pipe name to pipe
-  std::unordered_map<std::string, std::shared_ptr<Pipe>> name_to_pipe_;
+  std::shared_ptr<Pipe> GetPipe(const std::string pipe_name);
 };
 
 // Tell CommBuffer you need a reader
 template <class MSG>
 std::shared_ptr<PipeReader<MSG>> AcquireReader(const std::string pipe_name) {
-  auto &name_to_pipe = CommBuffer::Instance()->name_to_pipe_;
-  auto it = name_to_pipe.find(pipe_name);
-  if (name_to_pipe.end() == it) {
-    return nullptr;
+  auto pipe = CommBuffer::Instance()->GetPipe(pipe_name);
+  if (pipe) {
+    return std::make_shared<PipeReader<MSG>>(pipe);
   }
-  // This pipe exists, use it to initialize a reader.
-  LOG(INFO) << it->second->get_pipe_name() << " exists";
-  return std::make_shared<PipeReader<MSG>>(it->second);
+  return nullptr;
 }
 
 // Get the writer of a pipe.
 template <class MSG>
 std::shared_ptr<PipeReader<MSG>> AcquireWriter(const std::string pipe_name) {
-  auto &name_to_pipe = CommBuffer::Instance()->name_to_pipe_;
-  auto it = name_to_pipe.find(pipe_name);
-  if (name_to_pipe.end() != it) {
-    return nullptr;
+  auto pipe = CommBuffer::Instance()->GetPipe(pipe_name);
+  if (pipe) {
+    return std::make_shared<PipeWriter<MSG>>(pipe);
   }
-  // This pipe exists, use it to initialize a writer.
-  return std::make_shared<PipeWriter<MSG>>(it->second);
+  return nullptr;
 }
 
 } // namespace gogort
