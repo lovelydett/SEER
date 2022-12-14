@@ -23,4 +23,10 @@ gogo_id_t get_next_uuid();
 int random_int();
 double random_double();
 
+#define SAFE_FREE(ptr)                                                         \
+  if (ptr != nullptr) {                                                        \
+    free(ptr);                                                                 \
+    ptr = nullptr;                                                             \
+  }
+
 #endif // GOGO_UTILS_H

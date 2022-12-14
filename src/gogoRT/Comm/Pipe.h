@@ -10,6 +10,7 @@
 #include <queue>
 #include <string>
 #include <unordered_map>
+#include <utility>
 
 #include "../Message.h"
 #include "../utils/utils.h"
@@ -36,9 +37,8 @@ public:
     init_config();
   }
   // This function can be multi-threaded.
-  bool Enqueue(std::shared_ptr<Message> &message) {
-    // Todo(yuting): publish message to this pipe
-    inner_msg_ = message;
+  bool Enqueue(std::shared_ptr<Message> message) {
+    inner_msg_ = std::move(message);
     return true;
   }
   // This function can be multi-threaded.

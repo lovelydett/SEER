@@ -16,7 +16,7 @@ FILE(GLOB SRC_LIST "*.cpp")
 
 add_executable(${PROJECT_NAME} ${SRC_LIST})
 
-target_link_libraries(${PROJECT_NAME} gogort messages tasks glog)
+target_link_libraries(${PROJECT_NAME} gogort gogo_messages gogo_tasks glog)
 
 add_subdirectory(gogoRT)
 add_subdirectory(messages)

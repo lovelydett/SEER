@@ -5,9 +5,11 @@
 #ifndef GOGO_DUMMYTASK_H
 #define GOGO_DUMMYTASK_H
 
+#include "../gogoRT/Comm/PipeWriter.h"
 #include "../gogoRT/Invoker.h"
 #include "../messages/DummyMessage.h"
 #include "Task.h"
+
 #include <memory>
 
 using gogort::Task;
@@ -19,6 +21,7 @@ class DummyTask : public Task<DummyMessage> {
 private:
   double vec[M_SIZE];
   bool init_config(const std::string) override;
+  std::shared_ptr<gogort::PipeWriter<DummyMessage>> writer_;
 
 public:
   DummyTask() : Task<DummyMessage>("DummyTask"){};

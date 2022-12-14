@@ -22,9 +22,8 @@ public:
   explicit PipeWriter(const std::shared_ptr<Pipe> pipe) : pipe_(pipe) {}
   virtual ~PipeWriter() = default;
 
-  bool Publish(MSG &&message) {
-    auto valid_pipe = pipe_.lock();
-    return valid_pipe->Enqueue(message);
+  bool Publish(std::shared_ptr<MSG> message) {
+    return pipe_.lock()->Enqueue(std::dynamic_pointer_cast<Message>(message));
   }
 };
 

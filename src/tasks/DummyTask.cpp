@@ -21,7 +21,8 @@ bool DummyTask::Deal(const std::shared_ptr<DummyMessage> &msg) {
   for (int i = 0; i < 10; ++i) {
     matmul();
   }
-  // Todo(yuting): publish msg again
+  
+  writer_->Publish(std::make_shared<DummyMessage>());
   LOG(INFO) << "DummyTask::Deal() ends";
   return true;
 }

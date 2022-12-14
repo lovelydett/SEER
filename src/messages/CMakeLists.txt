@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(messages)
+project(gogo_messages)
 
 FILE(GLOB SRC_LIST "*.cpp")
 

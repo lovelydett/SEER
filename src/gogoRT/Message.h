@@ -20,7 +20,7 @@ public:
     timestamp_ = other_msg.timestamp_;
     return *this;
   }
-  virtual ~Message() = 0;
+  virtual ~Message(){};
   virtual std::string to_string() = 0;
   uint64 get_timestamp() { return timestamp_; }
 };
