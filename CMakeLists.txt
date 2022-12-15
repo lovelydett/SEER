@@ -14,4 +14,4 @@ FetchContent_MakeAvailable(googletest)
 
 # Yuting: add sub directories
 add_subdirectory(src)
-# add_subdirectory(experimental)
+add_subdirectory(experimental)

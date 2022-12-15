@@ -26,15 +26,10 @@ private:
 
 private:
   Pipe() = default;
-  bool init_config() {
-    // Todo(yuting): read config file and init readers_
-    return true;
-  }
 
 public:
   explicit Pipe(const std::string pipe_name) : pipe_name_(pipe_name) {
     LOG(INFO) << "Creating pipe: " << pipe_name_;
-    init_config();
   }
   // This function can be multi-threaded.
   bool Enqueue(std::shared_ptr<Message> message) {
