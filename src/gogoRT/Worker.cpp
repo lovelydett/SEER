@@ -32,7 +32,7 @@ bool Worker::StartStateMachine() {
       switch (worker_stage_) {
         // Yuting@2022/12/10: Lock the whole dispatcher before doing sched.
       case STAGE_PENDING_COMM: {
-        LOG(INFO) << "Thread " << inner_thread_->get_id() << " pending comm";
+        LOG(INFO) << "Pending comm";
         if (dispatcher_.AcquireSchedLock()) {
           dispatcher_.UpdateRoutine();
           dispatcher_.ReleaseSchedLock();
@@ -42,7 +42,7 @@ bool Worker::StartStateMachine() {
         break;
       }
       case STAGE_PENDING_SCHED: {
-        LOG(INFO) << "Thread " << inner_thread_->get_id() << " pending sched";
+        LOG(INFO) << "Pending sched";
         if (dispatcher_.AcquireSchedLock()) {
           dispatcher_.DoSchedule();
           dispatcher_.ReleaseSchedLock();
@@ -52,10 +52,9 @@ bool Worker::StartStateMachine() {
         break;
       }
       case STAGE_PENDING_EXEC: {
-        LOG(INFO) << "Thread " << inner_thread_->get_id() << " pending exec";
+        LOG(INFO) << "Pending exec";
         if (next_routine_ != nullptr) {
-          LOG(INFO) << "Thread " << inner_thread_->get_id()
-                    << " is executing routine " << next_routine_->get_id();
+          LOG(INFO) << "Executing routine " << next_routine_->get_id();
           next_routine_->Run();
           next_routine_ = nullptr;
         }
@@ -68,7 +67,7 @@ bool Worker::StartStateMachine() {
     }
   };
   inner_thread_ = std::make_unique<std::thread>(state_machine);
-  LOG(INFO) << "Thread " << inner_thread_->get_id() << " starts state-machine";
+  LOG(INFO) << "Starts state-machine";
   return true;
 }
 void Worker::Join() {

@@ -4,6 +4,7 @@
 #include "DummyTask.h"
 #include "../gogoRT/Comm/CommBuffer.h"
 #include <glog/logging.h>
+#include <random>
 
 namespace task {
 DummyTask::DummyTask(const std::string task_name)
@@ -27,8 +28,18 @@ bool DummyTask::Deal(const std::shared_ptr<DummyMessage> msg) {
     matmul();
   }
 
-  writer_->Publish(std::make_shared<DummyMessage>());
-  LOG(INFO) << "DummyTask::Deal() ends, total count: " << ++count;
+  // Randomly decide whether to send the result back and the number of times
+  // Use c++11 random number generator
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<> dis(0, 2);
+  auto times = dis(gen);
+
+  for (int i = 0; i < times; ++i) {
+    writer_->Publish(std::make_shared<DummyMessage>());
+  }
+  LOG(INFO) << "DummyTask::Deal() ends, total count: " << ++count << ", send "
+            << times << " times";
   return true;
 }
 bool DummyTask::init_config(const std::string) { return true; }
