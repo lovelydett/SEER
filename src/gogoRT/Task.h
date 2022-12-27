@@ -46,25 +46,35 @@ public:
 template <class MSG0 = NullClass, class MSG1 = NullClass,
           class MSG2 = NullClass, class MSG3 = NullClass>
 class Task : public TaskBase {
+private:
+  int16 frequency_ms_;
+
 public:
   Task() = delete;
-  Task(const std::string task_name) : TaskBase(task_name){};
+  Task(const std::string task_name, const int16 frequency_ms)
+      : TaskBase(task_name), frequency_ms_(frequency_ms) {}
   virtual bool Deal(const std::shared_ptr<MSG0>, const std::shared_ptr<MSG1>,
                     const std::shared_ptr<MSG2>,
                     const std::shared_ptr<MSG3>) = 0;
+  std::shared_ptr<InvokerBase> get_invoker() {}
 };
 
 // Yuting@2022-12-6: not allow task to take 0 input for now.
-// template <> class Task<NullClass, NullClass, NullClass, NullClass> {
-//  virtual bool Deal() = 0;
-//};
+// Yuting@2022-12-28: allow task to take 0 input now.
+template <>
+class Task<NullClass, NullClass, NullClass, NullClass> : public TaskBase {
+public:
+  Task() = delete;
+  explicit Task(const std::string task_name) : TaskBase(task_name){};
+  virtual bool Deal() = 0;
+};
 
 // Task that takes 1 message
 template <class MSG0>
 class Task<MSG0, NullClass, NullClass, NullClass> : public TaskBase {
 public:
   Task() = delete;
-  Task(const std::string task_name) : TaskBase(task_name){};
+  explicit Task(const std::string task_name) : TaskBase(task_name){};
   virtual bool Deal(const std::shared_ptr<MSG0>) = 0;
 };
 
@@ -73,7 +83,7 @@ template <class MSG0, class MSG1>
 class Task<MSG0, MSG1, NullClass, NullClass> : public TaskBase {
 public:
   Task() = delete;
-  Task(const std::string task_name) : TaskBase(task_name){};
+  explicit Task(const std::string task_name) : TaskBase(task_name){};
   virtual bool Deal(const std::shared_ptr<MSG0>,
                     const std::shared_ptr<MSG1>) = 0;
 };
@@ -83,7 +93,7 @@ template <class MSG0, class MSG1, class MSG2>
 class Task<MSG0, MSG1, MSG2, NullClass> : public TaskBase {
 public:
   Task() = delete;
-  Task(const std::string task_name) : TaskBase(task_name){};
+  explicit Task(const std::string task_name) : TaskBase(task_name){};
   virtual bool Deal(const std::shared_ptr<MSG0>, const std::shared_ptr<MSG1>,
                     const std::shared_ptr<MSG2>) = 0;
 };

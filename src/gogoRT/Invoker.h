@@ -23,10 +23,9 @@ public:
   std::shared_ptr<Routine> Invoke() { return this->InnerInvoke(); }
 };
 
-// An invoker handles tasks that take at least 1 input.
 // Yuting@2022-12-12: Each task should provide an invoker.
-template <class MSG0, class MSG1 = NullClass, class MSG2 = NullClass,
-          class MSG3 = NullClass>
+template <class MSG0 = NullClass, class MSG1 = NullClass,
+          class MSG2 = NullClass, class MSG3 = NullClass>
 class Invoker : public InvokerBase {
 private:
   std::shared_ptr<Task<MSG0, MSG1, MSG2, MSG3>> task_;
@@ -59,6 +58,31 @@ public:
   ~Invoker() override = default;
 };
 
+// Zero-input invoker, essentially timer task
+template <>
+class Invoker<NullClass, NullClass, NullClass, NullClass> : public InvokerBase {
+public:
+  Invoker() = delete;
+  explicit Invoker(std::shared_ptr<Task<>> task, const int16 frequency_ms)
+      : task_(task), frequency_ms_(frequency_ms), last_invoke_ms_(0) {}
+
+private:
+  std::shared_ptr<Task<>> task_;
+  const int16 frequency_ms_;
+  int16 last_invoke_ms_;
+
+private:
+  std::shared_ptr<Routine> InnerInvoke() override {
+    // Todo(yuting): make timing utils
+    int16 current_ms = 0;
+    if (current_ms - last_invoke_ms_ >= frequency_ms_) {
+      last_invoke_ms_ = current_ms;
+      return std::make_shared<Routine>(std::bind(&Task<>::Deal, task_));
+    }
+    return nullptr;
+  }
+};
+
 // One-input invoker template class
 template <class MSG0>
 class Invoker<MSG0, NullClass, NullClass, NullClass> : public InvokerBase {
@@ -87,7 +111,7 @@ public:
 template <class MSG0, class MSG1>
 class Invoker<MSG0, MSG1, NullClass, NullClass> : public InvokerBase {
 private:
-  std::shared_ptr<TaskBase> task_;
+  std::shared_ptr<Task<MSG0, MSG1>> task_;
   std::shared_ptr<PipeReader<MSG0>> pipe0_;
   std::shared_ptr<PipeReader<MSG1>> pipe1_;
 
@@ -103,7 +127,7 @@ private:
   }
 
 public:
-  Invoker(std::shared_ptr<TaskBase> task,
+  Invoker(std::shared_ptr<Task<MSG0, MSG1>> task,
           std::shared_ptr<PipeReader<MSG0>> pipe0,
           std::shared_ptr<PipeReader<MSG1>> pipe1)
       : task_(std::move(task)), pipe0_(std::move(pipe0)),

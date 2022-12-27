@@ -4,6 +4,7 @@
 
 #include "TaskFactory.h"
 #include "../tasks/DummyTask.h"
+#include "../tasks/DummyTask2.h"
 
 namespace gogort {
 
@@ -23,6 +24,9 @@ TaskFactory::CreateTask(const std::string task_name,
   if (task_name == "DummyTask") {
     return std::make_shared<task::DummyTask>(task_name +
                                              std::to_string(++count));
+  } else if (task_name == "DummyTask2") {
+    return std::make_shared<task::DummyTask2>(task_name +
+                                              std::to_string(++count));
   }
   return nullptr;
 }

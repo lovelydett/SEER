@@ -36,7 +36,7 @@ bool Dispatcher::init_config() { return true; }
 bool Dispatcher::init_tasks() {
   // Mock for now, should be read from config file
   auto d_task1 = TaskFactory::Instance()->CreateTask("DummyTask", "");
-  auto d_task2 = TaskFactory::Instance()->CreateTask("DummyTask", "");
+  auto d_task2 = TaskFactory::Instance()->CreateTask("DummyTask2", "");
   id_to_task_.insert({d_task1->get_task_id(), d_task1});
   task_name_to_id_.insert({d_task1->get_task_name(), d_task1->get_task_id()});
   id_to_task_.insert({d_task2->get_task_id(), d_task2});
@@ -50,10 +50,6 @@ bool Dispatcher::init_tasks() {
   for (auto &[name, task] : id_to_task_) {
     invokers_.emplace_back(task->get_invoker());
   }
-
-  // Mock the first message to trigger the system
-  auto writer = AcquireWriter<message::DummyMessage>("dummy_pipe");
-  writer->Publish(std::make_shared<message::DummyMessage>());
 
   return true;
 }

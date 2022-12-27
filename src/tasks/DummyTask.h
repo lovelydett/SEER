@@ -17,17 +17,16 @@ using message::DummyMessage;
 
 namespace task {
 
-class DummyTask : public Task<DummyMessage> {
+class DummyTask : public Task<> {
 private:
   int count;
-  double vec[M_SIZE];
   bool init_config(std::string) override;
   std::shared_ptr<gogort::PipeWriter<DummyMessage>> writer_;
 
 public:
   DummyTask() = delete;
   explicit DummyTask(std::string);
-  bool Deal(std::shared_ptr<DummyMessage>) override;
+  bool Deal() override;
   std::shared_ptr<gogort::InvokerBase> get_invoker() override;
 };
 
