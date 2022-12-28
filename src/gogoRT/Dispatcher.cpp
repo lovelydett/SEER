@@ -8,8 +8,6 @@
 #include "TaskFactory.h"
 #include "Worker.h"
 
-#include <cassert>
-
 namespace gogort {
 
 std::shared_ptr<Dispatcher> Dispatcher::instance_ = nullptr;
@@ -22,7 +20,7 @@ Dispatcher::Dispatcher() : scheduler_(nullptr) {
 }
 
 bool Dispatcher::init_workers() {
-  const int num_workers = 8; // set num of workers as 1 to debug
+  const int num_workers = 1; // set num of workers as 1 to debug
   workers_.reserve(num_workers);
   // Mock for now
   for (int i = 0; i < num_workers; i++) {

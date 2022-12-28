@@ -31,7 +31,7 @@ std::shared_ptr<gogort::InvokerBase> DummyTask2::get_invoker() {
   auto comm_buffer = gogort::CommBuffer::Instance();
   // Todo(yuting): read frequency_ms from config
   return std::make_shared<gogort::Invoker<>>(
-      static_cast<std::shared_ptr<Task<>>>(this), 50);
+      static_cast<std::shared_ptr<Task<>>>(this), 7);
 }
 
 } // namespace task

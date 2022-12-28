@@ -12,7 +12,7 @@ namespace gogort {
 
 template <class MSG> class PipeWriter {
 private:
-  std::weak_ptr<Pipe> pipe_;
+  std::shared_ptr<Pipe> pipe_;
 
 public:
   PipeWriter() = delete;
@@ -23,7 +23,7 @@ public:
   virtual ~PipeWriter() = default;
 
   bool Publish(std::shared_ptr<MSG> message) {
-    return pipe_.lock()->Enqueue(std::dynamic_pointer_cast<Message>(message));
+    return pipe_->Enqueue(std::dynamic_pointer_cast<Message>(message));
   }
 };
 

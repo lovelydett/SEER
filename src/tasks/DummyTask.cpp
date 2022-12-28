@@ -10,6 +10,7 @@ namespace task {
 DummyTask::DummyTask(const std::string task_name)
     : Task<>(task_name), count(0) {
   writer_ = gogort::AcquireWriter<DummyMessage>("dummy_pipe_1");
+  assert(writer_ != nullptr);
 }
 
 bool DummyTask::Deal() {
@@ -31,7 +32,7 @@ bool DummyTask::init_config(const std::string) { return true; }
 std::shared_ptr<gogort::InvokerBase> DummyTask::get_invoker() {
   auto comm_buffer = gogort::CommBuffer::Instance();
   return std::make_shared<gogort::Invoker<>>(
-      static_cast<std::shared_ptr<Task<>>>(this), 30);
+      static_cast<std::shared_ptr<Task<>>>(this), 10);
 }
 
 } // namespace task

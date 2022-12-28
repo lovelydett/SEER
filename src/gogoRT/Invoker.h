@@ -8,9 +8,15 @@
 #include "Comm/PipeReader.h"
 #include "Routine.h"
 #include "Task.h"
+
+#include <chrono>
 #include <functional>
 #include <memory>
 #include <utility>
+
+using std::chrono::duration_cast;
+using std::chrono::high_resolution_clock;
+using time_point = std::chrono::steady_clock::time_point;
 
 namespace gogort {
 
@@ -64,19 +70,24 @@ class Invoker<NullClass, NullClass, NullClass, NullClass> : public InvokerBase {
 public:
   Invoker() = delete;
   explicit Invoker(std::shared_ptr<Task<>> task, const int16 frequency_ms)
-      : task_(task), frequency_ms_(frequency_ms), last_invoke_ms_(0) {}
+      : task_(task), frequency_(frequency_ms) {
+    last_invoke_time_point_ = high_resolution_clock::now();
+  }
 
 private:
   std::shared_ptr<Task<>> task_;
-  const int16 frequency_ms_;
-  int16 last_invoke_ms_;
+  const std::chrono::milliseconds frequency_;
+  time_point last_invoke_time_point_;
 
 private:
   std::shared_ptr<Routine> InnerInvoke() override {
-    // Todo(yuting): make timing utils
-    int16 current_ms = 0;
-    if (current_ms - last_invoke_ms_ >= frequency_ms_) {
-      last_invoke_ms_ = current_ms;
+    auto now_time_point = high_resolution_clock::now();
+    auto time_elapsed = duration_cast<std::chrono::milliseconds>(
+        now_time_point - last_invoke_time_point_);
+    LOG(INFO) << task_->get_task_name()
+              << " checking invoker: " << time_elapsed.count();
+    if (duration_cast<std::chrono::milliseconds>(time_elapsed) >= frequency_) {
+      last_invoke_time_point_ = now_time_point;
       return std::make_shared<Routine>(std::bind(&Task<>::Deal, task_));
     }
     return nullptr;

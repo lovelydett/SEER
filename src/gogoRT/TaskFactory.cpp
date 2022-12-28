@@ -22,10 +22,10 @@ TaskFactory::CreateTask(const std::string task_name,
                         const std::string config_path) {
   static int count = 0;
   if (task_name == "DummyTask") {
-    return std::make_shared<task::DummyTask>(task_name +
+    return std::make_shared<task::DummyTask>(task_name + "_" +
                                              std::to_string(++count));
   } else if (task_name == "DummyTask2") {
-    return std::make_shared<task::DummyTask2>(task_name +
+    return std::make_shared<task::DummyTask2>(task_name + "_" +
                                               std::to_string(++count));
   }
   return nullptr;
