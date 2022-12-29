@@ -20,7 +20,7 @@ Dispatcher::Dispatcher() : scheduler_(nullptr) {
 }
 
 bool Dispatcher::init_workers() {
-  const int num_workers = 1; // set num of workers as 1 to debug
+  const int num_workers = 4; // set num of workers as 1 to debug
   workers_.reserve(num_workers);
   // Mock for now
   for (int i = 0; i < num_workers; i++) {
@@ -35,10 +35,13 @@ bool Dispatcher::init_tasks() {
   // Mock for now, should be read from config file
   auto d_task1 = TaskFactory::Instance()->CreateTask("DummyTask", "");
   auto d_task2 = TaskFactory::Instance()->CreateTask("DummyTask2", "");
+  auto d_task3 = TaskFactory::Instance()->CreateTask("DummyTask3", "");
   id_to_task_.insert({d_task1->get_task_id(), d_task1});
   task_name_to_id_.insert({d_task1->get_task_name(), d_task1->get_task_id()});
   id_to_task_.insert({d_task2->get_task_id(), d_task2});
   task_name_to_id_.insert({d_task2->get_task_name(), d_task2->get_task_id()});
+  id_to_task_.insert({d_task3->get_task_id(), d_task3});
+  task_name_to_id_.insert({d_task3->get_task_name(), d_task3->get_task_id()});
   LOG(INFO) << d_task1->get_task_name() << " " << d_task1->get_task_id();
   LOG(INFO) << d_task2->get_task_name() << " " << d_task2->get_task_id();
   scheduler_ = SchedulerFactory::Instance()->CreateScheduler("DummyScheduler",

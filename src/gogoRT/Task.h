@@ -53,9 +53,8 @@ public:
   Task() = delete;
   Task(const std::string task_name, const int16 frequency_ms)
       : TaskBase(task_name), frequency_ms_(frequency_ms) {}
-  virtual bool Deal(const std::shared_ptr<MSG0>, const std::shared_ptr<MSG1>,
-                    const std::shared_ptr<MSG2>,
-                    const std::shared_ptr<MSG3>) = 0;
+  virtual bool Deal(std::shared_ptr<MSG0>, std::shared_ptr<MSG1>,
+                    std::shared_ptr<MSG2>, std::shared_ptr<MSG3>) = 0;
   std::shared_ptr<InvokerBase> get_invoker() {}
 };
 
@@ -75,7 +74,7 @@ class Task<MSG0, NullClass, NullClass, NullClass> : public TaskBase {
 public:
   Task() = delete;
   explicit Task(const std::string task_name) : TaskBase(task_name){};
-  virtual bool Deal(const std::shared_ptr<MSG0>) = 0;
+  virtual bool Deal(std::shared_ptr<MSG0>) = 0;
 };
 
 // Task that takes 2 messages
@@ -84,8 +83,7 @@ class Task<MSG0, MSG1, NullClass, NullClass> : public TaskBase {
 public:
   Task() = delete;
   explicit Task(const std::string task_name) : TaskBase(task_name){};
-  virtual bool Deal(const std::shared_ptr<MSG0>,
-                    const std::shared_ptr<MSG1>) = 0;
+  virtual bool Deal(std::shared_ptr<MSG0>, std::shared_ptr<MSG1>) = 0;
 };
 
 // Task that takes 3 messages
@@ -94,8 +92,8 @@ class Task<MSG0, MSG1, MSG2, NullClass> : public TaskBase {
 public:
   Task() = delete;
   explicit Task(const std::string task_name) : TaskBase(task_name){};
-  virtual bool Deal(const std::shared_ptr<MSG0>, const std::shared_ptr<MSG1>,
-                    const std::shared_ptr<MSG2>) = 0;
+  virtual bool Deal(std::shared_ptr<MSG0>, std::shared_ptr<MSG1>,
+                    std::shared_ptr<MSG2>) = 0;
 };
 
 } // namespace gogort

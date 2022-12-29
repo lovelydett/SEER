@@ -39,8 +39,6 @@ private:
 
 private:
   Dispatcher();
-  Dispatcher(Dispatcher &&) = delete;
-  Dispatcher &operator=(Dispatcher &&) = delete;
   bool init_config();
   bool init_workers();
   bool init_tasks();
@@ -48,6 +46,8 @@ private:
 
 public:
   static std::shared_ptr<Dispatcher> Instance();
+  Dispatcher(Dispatcher &&) = delete;
+  Dispatcher &operator=(Dispatcher &&) = delete;
 
   // The whole program happens here
   bool Run();

@@ -7,6 +7,8 @@
 #include "utils/utils.h"
 #include <string>
 
+#define M_SIZE (2048)
+
 namespace gogort {
 
 class Message {

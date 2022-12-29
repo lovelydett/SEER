@@ -46,5 +46,6 @@ std::shared_ptr<gogort::InvokerBase> DummyTask3::get_invoker() {
       gogort::AcquireReader<DummyMessage>("dummy_pipe_1"),
       gogort::AcquireReader<DummyMessage2>("dummy_pipe_2"));
 }
+bool DummyTask3::init_config(const std::string config_file) { return false; }
 
 } // namespace task

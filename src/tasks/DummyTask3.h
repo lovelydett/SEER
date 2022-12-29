@@ -15,8 +15,6 @@ using message::DummyMessage2;
 
 namespace task {
 
-#define M_SIZE (1024)
-
 class DummyTask3 : public Task<DummyMessage, DummyMessage2> {
 private:
   float vec[M_SIZE];
@@ -28,8 +26,8 @@ private:
 public:
   DummyTask3() = delete;
   explicit DummyTask3(std::string);
-  bool Deal(const std::shared_ptr<DummyMessage>,
-            const std::shared_ptr<DummyMessage2>) override;
+  bool Deal(std::shared_ptr<DummyMessage>,
+            std::shared_ptr<DummyMessage2>) override;
   std::shared_ptr<gogort::InvokerBase> get_invoker() override;
 };
 

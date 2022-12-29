@@ -9,8 +9,6 @@
 
 namespace message {
 
-#define M_SIZE (1024)
-
 class DummyMessage2 : public gogort::Message {
 public:
   double *bias;

@@ -5,6 +5,9 @@
 #include "TaskFactory.h"
 #include "../tasks/DummyTask.h"
 #include "../tasks/DummyTask2.h"
+#include "../tasks/DummyTask3.h"
+
+#include <glog/logging.h>
 
 namespace gogort {
 
@@ -27,6 +30,12 @@ TaskFactory::CreateTask(const std::string task_name,
   } else if (task_name == "DummyTask2") {
     return std::make_shared<task::DummyTask2>(task_name + "_" +
                                               std::to_string(++count));
+  } else if (task_name == "DummyTask3") {
+    return std::make_shared<task::DummyTask3>(task_name + "_" +
+                                              std::to_string(++count));
+  } else {
+    LOG(ERROR) << "Task " << task_name << " not found!";
+    return nullptr;
   }
   return nullptr;
 }
