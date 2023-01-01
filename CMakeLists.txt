@@ -15,3 +15,6 @@ FetchContent_MakeAvailable(googletest)
 # Yuting: add sub directories
 add_subdirectory(src)
 add_subdirectory(experimental)
+
+# Add third party libraries
+add_subdirectory(third_party)

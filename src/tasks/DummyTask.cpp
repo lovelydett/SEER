@@ -27,7 +27,7 @@ bool DummyTask::Deal() {
   LOG(INFO) << "DummyTask::Deal() ends, total count: " << ++count << "\n";
   return true;
 }
-bool DummyTask::init_config(const std::string) { return true; }
+bool DummyTask::init_config(const std::string config_file) { return true; }
 
 std::shared_ptr<gogort::InvokerBase> DummyTask::get_invoker() {
   auto comm_buffer = gogort::CommBuffer::Instance();

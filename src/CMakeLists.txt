@@ -14,9 +14,13 @@ FetchContent_MakeAvailable(glog)
 
 FILE(GLOB SRC_LIST "*.cpp")
 
+# Yuting: use yaml-cpp
+find_package(yaml-cpp REQUIRED)
+include_directories(${YAML_CPP_INCLUDE_DIR})
+
 add_executable(${PROJECT_NAME} ${SRC_LIST})
 
-target_link_libraries(${PROJECT_NAME} gogort gogo_messages gogo_tasks glog)
+target_link_libraries(${PROJECT_NAME} gogort gogo_messages gogo_tasks glog yaml-cpp)
 
 add_subdirectory(gogoRT)
 add_subdirectory(messages)

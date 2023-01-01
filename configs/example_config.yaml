@@ -1,4 +1,0 @@
-task:
-    name: dummy_task
-    inputs: [channel1, channel2, channel3]
-    outputs: [channel4]
