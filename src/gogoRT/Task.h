@@ -46,13 +46,9 @@ public:
 template <class MSG0 = NullClass, class MSG1 = NullClass,
           class MSG2 = NullClass, class MSG3 = NullClass>
 class Task : public TaskBase {
-private:
-  int16 frequency_ms_;
-
 public:
   Task() = delete;
-  Task(const std::string task_name, const int16 frequency_ms)
-      : TaskBase(task_name), frequency_ms_(frequency_ms) {}
+  Task(const std::string task_name) : TaskBase(task_name) {}
   virtual bool Deal(std::shared_ptr<MSG0>, std::shared_ptr<MSG1>,
                     std::shared_ptr<MSG2>, std::shared_ptr<MSG3>) = 0;
   std::shared_ptr<InvokerBase> get_invoker() {}
@@ -62,9 +58,14 @@ public:
 // Yuting@2022-12-28: allow task to take 0 input now.
 template <>
 class Task<NullClass, NullClass, NullClass, NullClass> : public TaskBase {
+protected:
+  int16 frequency_ms_;
+
 public:
   Task() = delete;
-  explicit Task(const std::string task_name) : TaskBase(task_name){};
+  // Set frequency to -1 before load it from config file
+  explicit Task(const std::string task_name)
+      : TaskBase(task_name), frequency_ms_(-1){};
   virtual bool Deal() = 0;
 };
 

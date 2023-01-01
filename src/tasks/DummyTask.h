@@ -25,7 +25,7 @@ private:
 
 public:
   DummyTask() = delete;
-  explicit DummyTask(std::string);
+  DummyTask(std::string, std::string);
   bool Deal() override;
   std::shared_ptr<gogort::InvokerBase> get_invoker() override;
 };

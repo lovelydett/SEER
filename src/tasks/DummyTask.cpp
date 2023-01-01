@@ -3,14 +3,17 @@
 
 #include "DummyTask.h"
 #include "../gogoRT/Comm/CommBuffer.h"
+
 #include <glog/logging.h>
+#include <yaml-cpp/yaml.h>
 
 namespace task {
 
-DummyTask::DummyTask(const std::string task_name)
+DummyTask::DummyTask(const std::string task_name, const std::string config_file)
     : Task<>(task_name), count(0) {
   writer_ = gogort::AcquireWriter<DummyMessage>("dummy_pipe_1");
   assert(writer_ != nullptr);
+  init_config(config_file);
 }
 
 bool DummyTask::Deal() {
@@ -27,12 +30,17 @@ bool DummyTask::Deal() {
   LOG(INFO) << "DummyTask::Deal() ends, total count: " << ++count << "\n";
   return true;
 }
-bool DummyTask::init_config(const std::string config_file) { return true; }
+bool DummyTask::init_config(const std::string config_file) {
+  YAML::Node config = YAML::LoadFile("../../configs/tasks/" + config_file);
+  frequency_ms_ = config["frequency_ms"].as<int16>();
+  return true;
+}
 
 std::shared_ptr<gogort::InvokerBase> DummyTask::get_invoker() {
   auto comm_buffer = gogort::CommBuffer::Instance();
+  assert(frequency_ms_ > 0);
   return std::make_shared<gogort::Invoker<>>(
-      static_cast<std::shared_ptr<Task<>>>(this), 10);
+      static_cast<std::shared_ptr<Task<>>>(this), frequency_ms_);
 }
 
 } // namespace task
