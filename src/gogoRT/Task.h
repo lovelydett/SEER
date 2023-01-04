@@ -51,7 +51,6 @@ public:
   Task(const std::string task_name) : TaskBase(task_name) {}
   virtual bool Deal(std::shared_ptr<MSG0>, std::shared_ptr<MSG1>,
                     std::shared_ptr<MSG2>, std::shared_ptr<MSG3>) = 0;
-  std::shared_ptr<InvokerBase> get_invoker() {}
 };
 
 // Yuting@2022-12-6: not allow task to take 0 input for now.

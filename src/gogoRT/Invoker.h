@@ -16,7 +16,10 @@
 
 using std::chrono::duration_cast;
 using std::chrono::high_resolution_clock;
-using time_point = std::chrono::steady_clock::time_point;
+
+// Todo(yuting): figure out use steady clock or system clock
+// using time_point = std::chrono::steady_clock::time_point;
+using time_point = std::chrono::system_clock::time_point;
 
 namespace gogort {
 
