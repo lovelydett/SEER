@@ -1,1 +1,7 @@
 frequency_ms: 7
+
+# The smaller, the prior
+priority: 2
+
+# The cores this task can be offloaded to
+affinities: [ 2, 3 ]

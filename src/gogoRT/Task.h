@@ -6,8 +6,10 @@
 #define GOGO_TASK_H
 
 #include "utils/utils.h"
+
 #include <memory>
 #include <string>
+#include <unordered_set>
 #include <utility>
 
 namespace gogort {
@@ -19,11 +21,13 @@ class NullClass {};
 
 // TaskBase
 class TaskBase {
-private:
+protected:
   gogo_id_t id_;
   const std::string task_name_;
+  uint16 priority_ = -1;
+  std::unordered_set<uint16> affinities_;
 
-private:
+protected:
   virtual bool init_config(std::string) = 0;
 
 public:

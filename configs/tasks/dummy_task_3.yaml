@@ -1,0 +1,5 @@
+# The smaller, the prior
+priority: 3
+
+# The cores this task can be offloaded to
+affinities: [ 0, 1 ]

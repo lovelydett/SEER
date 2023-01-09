@@ -5,7 +5,9 @@
 #include "DummyTask3.h"
 #include "../gogoRT/Comm/CommBuffer.h"
 #include "../gogoRT/Invoker.h"
-#include "glog/logging.h"
+
+#include <glog/logging.h>
+#include <yaml-cpp/yaml.h>
 
 namespace task {
 
@@ -46,6 +48,16 @@ std::shared_ptr<gogort::InvokerBase> DummyTask3::get_invoker() {
       gogort::AcquireReader<DummyMessage>("dummy_pipe_1"),
       gogort::AcquireReader<DummyMessage2>("dummy_pipe_2"));
 }
-bool DummyTask3::init_config(const std::string config_file) { return false; }
+bool DummyTask3::init_config(const std::string config_file) {
+  YAML::Node config = YAML::LoadFile("../../configs/tasks/" + config_file);
+  priority_ = config["priority"].as<uint16>();
+  affinities_.clear();
+  const auto &&affinities = std::move(config["affinities"]);
+  affinities_.reserve(affinities.size());
+  for (auto core : affinities) {
+    affinities_.insert(core.as<uint16>());
+  }
+  return false;
+}
 
 } // namespace task

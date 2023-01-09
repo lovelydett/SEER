@@ -33,6 +33,14 @@ bool DummyTask::Deal() {
 bool DummyTask::init_config(const std::string config_file) {
   YAML::Node config = YAML::LoadFile("../../configs/tasks/" + config_file);
   frequency_ms_ = config["frequency_ms"].as<int16>();
+  priority_ = config["priority"].as<uint16>();
+  affinities_.clear();
+  const auto &&affinities = std::move(config["affinities"]);
+  affinities_.reserve(affinities.size());
+  for (auto core : affinities) {
+    affinities_.insert(core.as<uint16>());
+  }
+  
   return true;
 }
 
