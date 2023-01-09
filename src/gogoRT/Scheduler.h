@@ -21,17 +21,18 @@ class Worker;
 class Scheduler {
 protected:
   bool is_init_ = false;
-  std::vector<std::shared_ptr<Worker>> &workers_;
-  std::list<std::shared_ptr<Routine>> routines_;
+  // Yuting@2023.1.9: let actual schedulers decide what containers to use.
+  // std::vector<std::shared_ptr<Worker>> &workers_;
+  // std::list<std::shared_ptr<Routine>> routines_;
 
-private:
+protected:
+  Scheduler() = default;
   virtual bool DoOnce() = 0;
 
 public:
   // This function should rearrange all worker's wait-list and sets their next.
-  explicit Scheduler(std::vector<std::shared_ptr<Worker>> &);
   bool DoSchedule();
-  virtual bool AddRoutine(std::shared_ptr<Routine> routine);
+  virtual bool AddRoutine(std::shared_ptr<Routine> routine) = 0;
 };
 
 } // namespace gogort

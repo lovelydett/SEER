@@ -10,10 +10,15 @@ namespace gogort {
 
 class DummyScheduler : public Scheduler {
 private:
+  std::vector<std::shared_ptr<Worker>> &workers_;
+  std::list<std::shared_ptr<Routine>> routines_;
+
+private:
   bool DoOnce() override;
 
 public:
   explicit DummyScheduler(std::vector<std::shared_ptr<Worker>> &);
+  bool AddRoutine(std::shared_ptr<Routine> routine) override;
 };
 
 } // namespace gogort

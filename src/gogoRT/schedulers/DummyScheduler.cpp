@@ -9,7 +9,7 @@
 namespace gogort {
 
 DummyScheduler::DummyScheduler(std::vector<std::shared_ptr<Worker>> &workers)
-    : Scheduler(workers) {}
+    : workers_(workers) {}
 
 bool DummyScheduler::DoOnce() {
   // Simply pick the first routine for next worker.
@@ -31,6 +31,12 @@ bool DummyScheduler::DoOnce() {
               << " to worker ";
     routines_.pop_front();
   }
+  return true;
+}
+
+bool DummyScheduler::AddRoutine(std::shared_ptr<Routine> routine) {
+  assert(routine != nullptr);
+  routines_.emplace_back(routine);
   return true;
 }
 
