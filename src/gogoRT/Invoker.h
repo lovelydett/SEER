@@ -18,8 +18,12 @@ using std::chrono::duration_cast;
 using std::chrono::high_resolution_clock;
 
 // Todo(yuting): figure out use steady clock or system clock
-// using time_point = std::chrono::steady_clock::time_point;
+// If on MAC
+#ifdef __APPLE__
+using time_point = std::chrono::steady_clock::time_point;
+#else
 using time_point = std::chrono::system_clock::time_point;
+#endif
 
 namespace gogort {
 
