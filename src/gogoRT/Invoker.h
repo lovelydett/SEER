@@ -54,8 +54,9 @@ private:
     auto msg2 = pipe2_->Read();
     auto msg3 = pipe3_->Read();
     if (msg0 && msg1 && msg2 && msg3) {
-      return std::make_shared<Routine>(std::bind(
-          &Task<MSG0, MSG1, MSG2, MSG3>::Deal, &task_, msg0, msg1, msg2, msg3));
+      auto &&routine_func = std::bind(&Task<MSG0, MSG1, MSG2, MSG3>::Deal,
+                                      &task_, msg0, msg1, msg2, msg3);
+      return std::make_shared<Routine>(routine_func, task_->get_task_name());
     }
     return nullptr;
   }
@@ -95,7 +96,8 @@ private:
               << " checking invoker: " << time_elapsed.count();
     if (duration_cast<std::chrono::milliseconds>(time_elapsed) >= frequency_) {
       last_invoke_time_point_ = now_time_point;
-      return std::make_shared<Routine>(std::bind(&Task<>::Deal, task_));
+      auto &&routine_func = std::bind(&Task<>::Deal, task_);
+      return std::make_shared<Routine>(routine_func, task_->get_task_name());
     }
     return nullptr;
   }
@@ -112,8 +114,8 @@ private:
   std::shared_ptr<Routine> InnerInvoke() override {
     auto msg0 = pipe0_->Read();
     if (msg0) {
-      return std::make_shared<Routine>(
-          std::bind(&Task<MSG0>::Deal, task_, msg0));
+      auto &&routine_func = std::bind(&Task<MSG0>::Deal, task_, msg0);
+      return std::make_shared<Routine>(routine_func, task_->get_task_name());
     }
     return nullptr;
   }
@@ -138,8 +140,9 @@ private:
     auto msg0 = pipe0_->Read();
     auto msg1 = pipe1_->Read();
     if (msg0 && msg1) {
-      return std::make_shared<Routine>(
-          std::bind(&Task<MSG0, MSG1>::Deal, task_, msg0, msg1));
+      auto &&routine_func =
+          std::bind(&Task<MSG0, MSG1>::Deal, task_, msg0, msg1);
+      return std::make_shared<Routine>(routine_func, task_->get_task_name());
     }
     return nullptr;
   }
@@ -168,8 +171,9 @@ private:
     auto msg1 = pipe1_->Read();
     auto msg2 = pipe2_->Read();
     if (msg0 && msg1 && msg2) {
-      return std::make_shared<Routine>(
-          std::bind(&Task<MSG0, MSG1, MSG2>::Deal, task_, msg0, msg1, msg2));
+      auto &&routine_func =
+          std::bind(&Task<MSG0, MSG1, MSG2>::Deal, task_, msg0, msg1, msg2);
+      return std::make_shared<Routine>(routine_func, task_->get_task_name());
     }
     return nullptr;
   }
@@ -183,46 +187,6 @@ public:
         pipe1_(std::move(pipe1)), pipe2_(std::move(pipe2)) {}
   ~Invoker() override = default;
 };
-
-// Yuting@2022.12.12: Functions that compose invokers for tasks.
-// Get ont-input invoker
-template <class MSG0>
-std::shared_ptr<InvokerBase>
-GetInvoker(std::shared_ptr<Task<MSG0>> task,
-           std::shared_ptr<PipeReader<MSG0>> pipe0) {
-  return std::make_shared<Invoker<MSG0>>(task, pipe0);
-}
-
-// Get two-input invoker.
-template <class MSG0, class MSG1>
-std::shared_ptr<InvokerBase>
-GetInvoker(std::shared_ptr<Task<MSG0, MSG1>> task,
-           std::shared_ptr<PipeReader<MSG0>> pipe0,
-           std::shared_ptr<PipeReader<MSG1>> pipe1) {
-  return std::make_shared<Invoker<MSG0, MSG1>>(task, pipe0, pipe1);
-}
-
-// Get three-input invoker.
-template <class MSG0, class MSG1, class MSG2>
-std::shared_ptr<InvokerBase>
-GetInvoker(std::shared_ptr<Task<MSG0, MSG1, MSG2>> task,
-           std::shared_ptr<PipeReader<MSG0>> pipe0,
-           std::shared_ptr<PipeReader<MSG1>> pipe1,
-           std::shared_ptr<PipeReader<MSG2>> pipe2) {
-  return std::make_shared<Invoker<MSG0, MSG1, MSG2>>(task, pipe0, pipe1, pipe2);
-}
-
-// Get four-input invoker.
-template <class MSG0, class MSG1, class MSG2, class MSG3>
-std::shared_ptr<InvokerBase>
-GetInvoker(std::shared_ptr<Task<MSG0, MSG1, MSG2, MSG3>> task,
-           std::shared_ptr<PipeReader<MSG0>> pipe0,
-           std::shared_ptr<PipeReader<MSG1>> pipe1,
-           std::shared_ptr<PipeReader<MSG2>> pipe2,
-           std::shared_ptr<PipeReader<MSG3>> pipe3) {
-  return std::make_shared<Invoker<MSG0, MSG1, MSG2, MSG3>>(task, pipe0, pipe1,
-                                                           pipe2, pipe3);
-}
 
 } // namespace gogort
 

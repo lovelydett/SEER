@@ -17,11 +17,12 @@ namespace gogort {
 template <class MSG> class PipeReader {
 private:
   std::shared_ptr<Pipe> pipe_;
+  uint64 ts_updated_;
 
+private:
   // Yuting@2022.12.6: the status of readability should be maintained by a
   // reader rather a pipe, since readers are task-owned, a piece of message may
   // expire for some tasks while still alive for the others not yet consume it.
-  time_t ts_updated_{};
   bool isUpdated() const {
     assert(pipe_ != nullptr);
     return ts_updated_ < pipe_->get_timestamp();
@@ -38,9 +39,11 @@ public:
   virtual ~PipeReader() = default;
 
   std::shared_ptr<MSG> Read() {
+    assert(pipe_ != nullptr);
     if (isUpdated()) {
       std::shared_ptr<MSG> msg = std::dynamic_pointer_cast<MSG>(pipe_->Top());
       // Todo(yuting): Messages should implement copy constructor.
+      ts_updated_ = pipe_->get_timestamp();
       return msg;
     }
     return nullptr;

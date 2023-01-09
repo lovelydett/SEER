@@ -27,8 +27,9 @@ bool DummyScheduler::DoOnce() {
     }
     // First assign, then pop!
     worker->Assign(routines_.front());
-    LOG(INFO) << "Assigning routine " << routines_.front()->get_id()
-              << " to worker ";
+    LOG(INFO) << "Assigning routine (" << routines_.front()->get_id() << ", "
+              << routines_.front()->get_task_name()
+              << ") to worker: " << worker->get_id();
     routines_.pop_front();
   }
   return true;

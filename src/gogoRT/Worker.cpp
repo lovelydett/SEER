@@ -20,8 +20,8 @@ bool Worker::Assign(std::shared_ptr<Routine> routine) {
 bool Worker::isBusy() const { return next_routine_ != nullptr; }
 
 Worker::Worker(Dispatcher &dispatcher)
-    : inner_thread_(nullptr), is_running_(false), uuid_(get_next_uuid()),
-      dispatcher_(dispatcher), worker_stage_(STAGE_NONE) {}
+    : inner_thread_(nullptr), is_running_(false), dispatcher_(dispatcher),
+      worker_stage_(STAGE_NONE) {}
 
 bool Worker::StartStateMachine() {
   assert(inner_thread_ == nullptr);
@@ -74,6 +74,11 @@ void Worker::Join() {
   if (inner_thread_ != nullptr) {
     inner_thread_->join();
   }
+}
+
+uint32 Worker::get_id() const {
+  auto id = inner_thread_->get_id();
+  return *(uint32 *)&id;
 }
 
 } // namespace gogort
