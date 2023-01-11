@@ -7,7 +7,7 @@
 #include "utils/utils.h"
 #include <string>
 
-#define M_SIZE (2048)
+#define M_SIZE (1024)
 
 namespace gogort {
 

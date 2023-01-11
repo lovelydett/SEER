@@ -10,4 +10,7 @@ tasks:
 
 num_workers: 4
 
-scheduler: DummyScheduler
+# The smaller, the prior, range is 1 -> x
+priority_range: 4
+
+scheduler: PriorityScheduler

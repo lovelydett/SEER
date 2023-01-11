@@ -56,7 +56,8 @@ private:
     if (msg0 && msg1 && msg2 && msg3) {
       auto &&routine_func = std::bind(&Task<MSG0, MSG1, MSG2, MSG3>::Deal,
                                       &task_, msg0, msg1, msg2, msg3);
-      return std::make_shared<Routine>(routine_func, task_->get_task_name());
+      return std::make_shared<Routine>(routine_func, task_->get_task_name(),
+                                       task_->get_priority());
     }
     return nullptr;
   }
@@ -78,7 +79,7 @@ class Invoker<NullClass, NullClass, NullClass, NullClass> : public InvokerBase {
 public:
   Invoker() = delete;
   explicit Invoker(std::shared_ptr<Task<>> task, const int16 frequency_ms)
-      : task_(task), frequency_(frequency_ms) {
+      : task_(std::move(task)), frequency_(frequency_ms) {
     last_invoke_time_point_ = high_resolution_clock::now();
   }
 
@@ -97,7 +98,8 @@ private:
     if (duration_cast<std::chrono::milliseconds>(time_elapsed) >= frequency_) {
       last_invoke_time_point_ = now_time_point;
       auto &&routine_func = std::bind(&Task<>::Deal, task_);
-      return std::make_shared<Routine>(routine_func, task_->get_task_name());
+      return std::make_shared<Routine>(routine_func, task_->get_task_name(),
+                                       task_->get_priority());
     }
     return nullptr;
   }
@@ -115,7 +117,8 @@ private:
     auto msg0 = pipe0_->Read();
     if (msg0) {
       auto &&routine_func = std::bind(&Task<MSG0>::Deal, task_, msg0);
-      return std::make_shared<Routine>(routine_func, task_->get_task_name());
+      return std::make_shared<Routine>(routine_func, task_->get_task_name(),
+                                       task_->get_priority());
     }
     return nullptr;
   }
@@ -142,7 +145,8 @@ private:
     if (msg0 && msg1) {
       auto &&routine_func =
           std::bind(&Task<MSG0, MSG1>::Deal, task_, msg0, msg1);
-      return std::make_shared<Routine>(routine_func, task_->get_task_name());
+      return std::make_shared<Routine>(routine_func, task_->get_task_name(),
+                                       task_->get_priority());
     }
     return nullptr;
   }
@@ -173,7 +177,8 @@ private:
     if (msg0 && msg1 && msg2) {
       auto &&routine_func =
           std::bind(&Task<MSG0, MSG1, MSG2>::Deal, task_, msg0, msg1, msg2);
-      return std::make_shared<Routine>(routine_func, task_->get_task_name());
+      return std::make_shared<Routine>(routine_func, task_->get_task_name(),
+                                       task_->get_priority());
     }
     return nullptr;
   }

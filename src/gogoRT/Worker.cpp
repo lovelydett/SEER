@@ -81,4 +81,8 @@ uint32 Worker::get_id() const {
   return *(uint32 *)&id;
 }
 
+uint16 Worker::get_priority() const { return priority_; }
+
+void Worker::set_priority(const uint16 priority) { priority_ = priority; }
+
 } // namespace gogort

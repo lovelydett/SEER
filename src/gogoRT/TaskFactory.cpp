@@ -31,8 +31,8 @@ TaskFactory::CreateTask(const std::string task_name,
     return std::make_shared<task::DummyTask2>(
         task_name + "_" + std::to_string(++count), config_path);
   } else if (task_name == "DummyTask3") {
-    return std::make_shared<task::DummyTask3>(task_name + "_" +
-                                              std::to_string(++count));
+    return std::make_shared<task::DummyTask3>(
+        task_name + "_" + std::to_string(++count), config_path);
   } else {
     LOG(ERROR) << "Task " << task_name << " not found!";
     return nullptr;

@@ -52,6 +52,8 @@ public:
   void Join();
 
   [[nodiscard]] uint32 get_id() const;
+  [[nodiscard]] uint16 get_priority() const;
+  void set_priority(const uint16 priority);
 };
 
 } // namespace gogort

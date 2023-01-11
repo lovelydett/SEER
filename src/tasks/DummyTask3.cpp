@@ -11,11 +11,13 @@
 
 namespace task {
 
-DummyTask3::DummyTask3(const std::string task_name)
+DummyTask3::DummyTask3(const std::string task_name,
+                       const std::string config_path)
     : Task<DummyMessage, DummyMessage2>(task_name), count(0) {
   for (int i = 0; i < M_SIZE; ++i) {
     vec[i] = i;
   }
+  DummyTask3::init_config(config_path);
 }
 
 bool DummyTask3::Deal(const std::shared_ptr<DummyMessage> in_msg1,

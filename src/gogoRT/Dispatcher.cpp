@@ -34,19 +34,27 @@ bool Dispatcher::init_config() {
     invokers_.emplace_back(p_task->get_invoker());
   }
 
+  // Init workers based on config file
+  const int num_workers = config["num_workers"].as<int>();
+  const int priority_range = config["priority_range"].as<int>();
+  LOG(INFO) << num_workers << ", " << priority_range;
+  int a[num_workers];
+  a[0] = 0;
+  // num_workers = 1; // Set num of workers to 1 to debug
+  workers_.reserve(num_workers * priority_range);
+  // Mock for now
+  for (int i = 0; i < num_workers; ++i) {
+    for (int j = 1; j <= priority_range; ++j) {
+      auto &&worker = std::make_shared<Worker>(*this);
+      worker->set_priority(j);
+      workers_.emplace_back(worker);
+    }
+  }
+
   // Init scheduler based on config file
   auto &&scheduler_name = config["scheduler"].as<std::string>();
   scheduler_ = SchedulerFactory::Instance()->CreateScheduler(scheduler_name, "",
                                                              workers_);
-
-  // Init workers based on config file
-  int num_workers = config["num_workers"].as<int>();
-  // num_workers = 1; // Set num of workers to 1 to debug
-  workers_.reserve(num_workers);
-  // Mock for now
-  for (int i = 0; i < num_workers; i++) {
-    workers_.emplace_back(std::make_shared<Worker>(*this));
-  }
 
   return true;
 }

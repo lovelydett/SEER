@@ -24,7 +24,7 @@ class TaskBase {
 protected:
   gogo_id_t id_;
   const std::string task_name_;
-  uint16 priority_ = -1;
+  uint16 priority_ = 0;
   std::unordered_set<uint16> affinities_;
 
 protected:
@@ -43,6 +43,7 @@ public:
   }
   [[nodiscard]] std::string get_task_name() const { return task_name_; }
   [[nodiscard]] gogo_id_t get_task_id() const { return id_; }
+  [[nodiscard]] uint16 get_priority() const { return priority_; }
   [[nodiscard]] virtual std::shared_ptr<InvokerBase> get_invoker() = 0;
 };
 

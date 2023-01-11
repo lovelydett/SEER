@@ -13,7 +13,7 @@ DummyTask::DummyTask(const std::string task_name, const std::string config_file)
     : Task<>(task_name), count(0) {
   writer_ = gogort::AcquireWriter<DummyMessage>("dummy_pipe_1");
   assert(writer_ != nullptr);
-  init_config(config_file);
+  assert(DummyTask::init_config(config_file) == true);
 }
 
 bool DummyTask::Deal() {
@@ -40,7 +40,7 @@ bool DummyTask::init_config(const std::string config_file) {
   for (auto core : affinities) {
     affinities_.insert(core.as<uint16>());
   }
-  
+
   return true;
 }
 

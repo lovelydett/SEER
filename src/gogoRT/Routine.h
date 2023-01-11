@@ -17,13 +17,15 @@ private:
   std::string task_name_;
   gogo_id_t id_;
   std::function<void()> func_;
+  uint16 priority_;
 
 public:
-  Routine(std::function<void()>, std::string);
+  Routine(std::function<void()>, std::string, uint16 priority = 1);
   ~Routine();
   bool Run();
   [[nodiscard]] gogo_id_t get_id() const;
   [[nodiscard]] std::string get_task_name() const;
+  [[nodiscard]] uint16 get_priority() const;
   [[nodiscard]] bool is_finished() const;
 };
 
