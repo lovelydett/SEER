@@ -93,8 +93,6 @@ private:
     auto now_time_point = high_resolution_clock::now();
     auto time_elapsed = duration_cast<std::chrono::milliseconds>(
         now_time_point - last_invoke_time_point_);
-    LOG(INFO) << task_->get_task_name()
-              << " checking invoker: " << time_elapsed.count();
     if (duration_cast<std::chrono::milliseconds>(time_elapsed) >= frequency_) {
       last_invoke_time_point_ = now_time_point;
       auto &&routine_func = std::bind(&Task<>::Deal, task_);

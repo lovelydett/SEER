@@ -32,29 +32,26 @@ bool Worker::StartStateMachine() {
       switch (worker_stage_) {
         // Yuting@2022/12/10: Lock the whole dispatcher before doing sched.
       case STAGE_PENDING_COMM: {
-        LOG(INFO) << "Pending comm";
         if (dispatcher_.AcquireSchedLock()) {
+          // LOG(INFO) << "Get lock and do updating";
           dispatcher_.UpdateRoutine();
           dispatcher_.ReleaseSchedLock();
-          LOG(INFO) << "Comm done";
         }
         worker_stage_ = STAGE_PENDING_SCHED;
         break;
       }
       case STAGE_PENDING_SCHED: {
-        LOG(INFO) << "Pending sched";
         if (dispatcher_.AcquireSchedLock()) {
+          // LOG(INFO) << "Get lock and do scheduling";
           dispatcher_.DoSchedule();
           dispatcher_.ReleaseSchedLock();
-          LOG(INFO) << "Sched done";
         }
         worker_stage_ = STAGE_PENDING_EXEC;
         break;
       }
       case STAGE_PENDING_EXEC: {
-        LOG(INFO) << "Pending exec";
         if (next_routine_ != nullptr) {
-          LOG(INFO) << "Executing routine " << next_routine_->get_id();
+          // LOG(INFO) << "Executing routine " << next_routine_->get_id();
           next_routine_->Run();
           next_routine_ = nullptr;
         }

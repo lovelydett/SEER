@@ -93,8 +93,6 @@ bool Dispatcher::UpdateRoutine() {
       count++;
     }
   }
-  LOG(INFO) << "In total, " << count << "/" << invokers_.size()
-            << " routines are updated";
 
   return true;
 }
