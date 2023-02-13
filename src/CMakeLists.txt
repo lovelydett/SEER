@@ -2,21 +2,21 @@ cmake_minimum_required(VERSION 3.5)
 set(CMAKE_CXX_STANDARD 20)
 project(Gogo)
 
-# Yuting: add dependency for glog
-include(FetchContent)
-FetchContent_Declare(
-        glog
-        URL https://github.com/google/glog/archive/refs/tags/v0.6.0.zip
-)
-# For Windows: Prevent overriding the parent project's compiler/linker settings
-set(glog_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(glog)
-
 FILE(GLOB SRC_LIST "*.cpp")
 
 # Yuting: use yaml-cpp
-find_package(yaml-cpp REQUIRED)
-include_directories(${YAML_CPP_INCLUDE_DIR})
+include_directories(${YAML_CPP_INCLUDE_DIR}/include ${YAML_CPP_INCLUDE_DIR})
+#find_package(yaml-cpp REQUIRED)
+#include_directories(${YAML_CPP_INCLUDE_DIR})
+
+# Yuting: use glog
+#find_package(PkgConfig REQUIRED)
+#pkg_check_modules(glog REQUIRED libglog)
+#find_package(glog REQUIRED)
+include_directories(${GLOG_INCLUDE_DIR}/include ${GLOG_INCLUDE_DIR})
+
+# Use thread
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 add_executable(${PROJECT_NAME} ${SRC_LIST})
 
