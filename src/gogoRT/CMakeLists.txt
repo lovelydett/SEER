@@ -5,7 +5,7 @@ project(gogort)
 FILE(GLOB SRC_LIST "*.cpp" "*.h")
 
 add_library(${PROJECT_NAME} STATIC ${SRC_LIST})
-target_link_libraries(${PROJECT_NAME} gogort_utils gogort_schedulers gogort_comm glog)
+target_link_libraries(${PROJECT_NAME} gogort_utils gogort_schedulers gogort_comm glog yaml-cpp)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ./)
 
