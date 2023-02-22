@@ -13,6 +13,7 @@ DynamicScheduler::DynamicScheduler(
 
 bool DynamicScheduler::DoOnce() {
   // 1. Check updates in all sensory pipes.
+  return true;
 }
 
 } // namespace gogort
