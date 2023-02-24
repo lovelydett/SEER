@@ -7,8 +7,11 @@
 
 #include "../Comm/CommBuffer.h"
 #include "../Scheduler.h"
+#include "../Worker.h"
 #include "../risk/Risk.h"
+#include "../risk/RiskManager.h"
 
+#include <list>
 #include <unordered_map>
 #include <vector>
 
@@ -16,7 +19,10 @@ namespace gogort {
 
 class DynamicScheduler : public Scheduler {
 private:
-  std::vector<std::shared_ptr<Risk>> risks_;
+  RiskManager *risk_manager_;
+  std::vector<std::shared_ptr<Worker>> &workers_;
+  std::list<std::shared_ptr<Routine>> normal_routines_;
+  std::list<std::shared_ptr<Routine>> quick_reactive_routines_;
 
 private:
   bool DoOnce() override;

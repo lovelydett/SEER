@@ -18,6 +18,7 @@ typedef unsigned short uint16;
 typedef uint16 gogo_id_t;
 
 gogo_id_t get_next_uuid();
+uint64 get_current_timestamp_ms();
 
 // Random functions
 int random_int();
