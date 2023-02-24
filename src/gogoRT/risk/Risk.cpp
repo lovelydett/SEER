@@ -7,6 +7,7 @@
 namespace gogort {
 Risk::Risk(const float zeta, const float kappa) : zeta_(zeta), kappa_(kappa) {
   id_ = get_next_uuid();
+  timestamp_ = get_current_timestamp_ms();
 }
 
 void Risk::set_zeta(const float zeta) { this->zeta_ = zeta; }

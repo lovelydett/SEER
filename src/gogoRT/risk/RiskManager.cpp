@@ -18,4 +18,9 @@ RiskManager *RiskManager::Instance() {
   return instance_;
 }
 
+bool RiskManager::init_config() {
+  // The default config file is located at ../../../configs/risk_config.yaml
+  return true;
+}
+
 } // namespace gogort

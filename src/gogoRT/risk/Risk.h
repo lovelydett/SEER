@@ -14,6 +14,7 @@ protected:
   float zeta_;  // probability
   float kappa_; // potential damage
   gogo_id_t id_;
+  uint64 timestamp_;
 
 public:
   Risk() = delete;

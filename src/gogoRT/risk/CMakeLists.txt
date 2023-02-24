@@ -3,7 +3,7 @@ project(gogort_risk)
 
 FILE(GLOB SRC_LIST "*.cpp" "*.h")
 
-# add_library(${PROJECT_NAME} STATIC ${SRC_LIST})
+add_library(${PROJECT_NAME} STATIC ${SRC_LIST})
 # target_link_libraries(${PROJECT_NAME} PUBLIC glog)
 
 # target_include_directories(${PROJECT_NAME} PUBLIC ./)
