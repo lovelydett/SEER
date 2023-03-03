@@ -7,3 +7,9 @@
 [submodule "third_party/glog"]
 	path = third_party/glog
 	url = https://github.com/google/glog.git
+[submodule "serial"]
+	path = serial
+	url = https://github.com/wjwwood/serial.git
+[submodule "third_party/serial"]
+	path = third_party/serial
+	url = https://github.com/wjwwood/serial.git
