@@ -11,6 +11,9 @@ add_subdirectory(third_party/yaml-cpp)
 # Use glogging in CMake
 add_subdirectory(third_party/glog)
 
+# add_subdirectory(third_party/serial)
+
 # Yuting: add sub directories
-add_subdirectory(src)
-# add_subdirectory(experimental)
+# add_subdirectory(src)
+
+add_subdirectory(experimental)

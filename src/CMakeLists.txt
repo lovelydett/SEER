@@ -18,7 +18,7 @@ include_directories(${GLOG_INCLUDE_DIR}/include ${GLOG_INCLUDE_DIR})
 # Use thread
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
-add_executable(${PROJECT_NAME} ${SRC_LIST})
+add_executable(${PROJECT_NAME} ${SRC_LIST} ../experimental/zifeng/try_serial_comm/main.cc)
 
 target_link_libraries(${PROJECT_NAME} gogort gogo_messages gogo_tasks glog yaml-cpp)
 
