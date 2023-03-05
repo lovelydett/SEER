@@ -8,15 +8,13 @@ namespace gogort {
 
 DynamicScheduler::DynamicScheduler(
     std::vector<std::shared_ptr<Worker>> &workers)
-    : workers_(workers) {
-  risk_manager_ = RiskManager::Instance();
-}
+    : workers_(workers) {}
 
 bool DynamicScheduler::DoOnce() {
-  // 0. Do normal scheduling, only react risks when there are idle workers.
+  // NORMAL scheduling.
   // Todo(yuting): use other scheduling plugins here.
 
-  // 1. Check if there are idle workers.
+  // IF idle workers, handle risks.
   bool any_idle = false;
   for (auto &worker : workers_) {
     if (!worker->isBusy()) {
@@ -28,32 +26,30 @@ bool DynamicScheduler::DoOnce() {
     return true;
   }
 
-  // There are idle workers, handle risks.
-  // 1. Check if interested sensory inputs are updated, if not, do nothing.
-  if (!risk_manager_->check_sensory_updates()) {
-    return true;
+  // EXPIRE old risks.
+  for (auto it = handled_instances_.begin(); it != handled_instances_.end();) {
+    if ((*it)->IsExpired()) {
+      it = handled_instances_.erase(it);
+    } else {
+      ++it;
+    }
   }
 
-  // 2. Check if handled risks are matched, if any, apply quick reactive control
-  auto &&matched_risks = risk_manager_->match_sensory_updates();
-  if (!matched_risks.empty()) {
-    // Risks matched, applied the quick reactive control command.
-    // Todo(yuting): pick a matched risk by some policy.
-    gogo_id_t picked_risk_id = matched_risks[0]->get_id();
-    auto control_command = risk_manager_->get_control_command(picked_risk_id);
-    // Todo(yuting): apply the control command.
+  // MATCH existing risks.
+  for (auto &instance : handled_instances_) {
+    if (instance->Match()) {
+      // Todo(yuting): apply the control command immediately.
+      return true;
+    }
   }
 
-  // 3. Detect new risks from new sensory inputs.
-  auto &&QRRs = risk_manager_->new_quick_reactive_routines();
-  // Todo(yuting): rearrange the newly detected QRRs by some policy.
-  if (!QRRs.empty()) {
-    // New risks detected, add them to the quick reactive routine list.
-    quick_reactive_routines_.insert(quick_reactive_routines_.end(),
-                                    QRRs.begin(), QRRs.end());
+  // DETECT new risks.
+  for (auto &risk : registered_risks_) {
+    auto &&detected_instances = risk->Detect();
+    for (auto &instance : detected_instances) {
+      pending_instances_.push_back(instance);
+    }
   }
-
-  // 4. Schedule the quick reactive routines on idle workers.
 
   return true;
 }

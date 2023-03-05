@@ -5,27 +5,49 @@
 #ifndef GOGO_PROJ_DUMMYRISK1_H
 #define GOGO_PROJ_DUMMYRISK1_H
 
-#include "../../Message.h"
+#include "../../Comm/CommBuffer.h"
+#include "../../Routine.h"
+#include "../../messages/ControlCommand.h"
+#include "../../messages/DummyMessage.h"
 #include "../Risk.h"
+#include "../RiskInstance.h"
 
-namespace message {
+#include <memory>
+
+namespace gogort {
 
 typedef struct Point2D {
   float x = 0.;
   float y = 0.;
 } Point2D;
 
-class DummyRisk1 : public gogort::Message, public gogort::Risk {
+class DummyRisk1Instance : public RiskInstance {
 private:
   Point2D location_;
   float range_;
+  std::shared_ptr<PipeReader<message::DummyMessage>> pipe_to_match_;
+  std::shared_ptr<message::ControlCommand> reactive_control_;
+
+private:
+  void inner_handler();
 
 public:
-  DummyRisk1(float zeta, float kappa);
-  std::string to_string() override;
-  std::string get_risk_name() override;
+  DummyRisk1Instance(float zeta, float kappa);
+  bool Match() override;
+  std::shared_ptr<Routine> GetHandler() override;
+  std::shared_ptr<message::ControlCommand> GetReactiveControl() override;
+  bool IsExpired() override;
 };
 
-} // namespace message
+class DummyRisk1 : public gogort::Risk {
+private:
+  std::shared_ptr<PipeReader<message::DummyMessage>> pipe_to_detect_;
+
+public:
+  DummyRisk1() = default;
+  std::list<std::shared_ptr<gogort::RiskInstance>> Detect() override;
+};
+
+} // namespace gogort
 
 #endif // GOGO_PROJ_DUMMYRISK1_H

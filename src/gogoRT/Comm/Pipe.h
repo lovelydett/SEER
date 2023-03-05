@@ -5,7 +5,6 @@
 #ifndef GOGO_PIPE_H
 #define GOGO_PIPE_H
 
-#include <glog/logging.h>
 #include <memory>
 #include <queue>
 #include <string>
@@ -28,9 +27,7 @@ private:
   Pipe() = default;
 
 public:
-  explicit Pipe(const std::string pipe_name) : pipe_name_(pipe_name) {
-    LOG(INFO) << "Creating pipe: " << pipe_name_;
-  }
+  explicit Pipe(const std::string pipe_name) : pipe_name_(pipe_name) {}
   // This function can be multi-threaded.
   bool Enqueue(std::shared_ptr<Message> message) {
     inner_msg_ = std::move(message);

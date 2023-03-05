@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.5)
-set(CMAKE_CXX_STANDARD 20)
-project(gogort_comm)
+
+SET(MODULE_NAME gogort_comm)
 
 FILE(GLOB SRC_LIST "*.cpp" "*.h")
 
-add_library(${PROJECT_NAME} STATIC ${SRC_LIST})
-target_link_libraries(${PROJECT_NAME} gogort_utils glog)
+add_library(${MODULE_NAME} STATIC ${SRC_LIST})
+target_link_libraries(${MODULE_NAME} gogort_utils glog)
 
-target_include_directories(${PROJECT_NAME} PUBLIC ./)
+target_include_directories(${MODULE_NAME} PUBLIC ./)
