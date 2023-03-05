@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.5)
-project(gogort_schedulers)
+set(MODULE_NAME gogort_schedulers)
 
 FILE(GLOB SRC_LIST "*.cpp" "*.h")
 
-add_library(${PROJECT_NAME} STATIC ${SRC_LIST})
-target_link_libraries(${PROJECT_NAME} PUBLIC glog gogort_risk)
+add_library(${MODULE_NAME} STATIC ${SRC_LIST})
+target_link_libraries(${MODULE_NAME} PUBLIC glog gogort_risk)
 
-target_include_directories(${PROJECT_NAME} PUBLIC ./)
+target_include_directories(${MODULE_NAME} PUBLIC ./)
