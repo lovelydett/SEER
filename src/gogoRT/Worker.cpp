@@ -17,6 +17,7 @@ bool Worker::Assign(std::shared_ptr<Routine> routine) {
   // next_routine_ = routine;
   return true;
 }
+
 bool Worker::isBusy() const { return next_routine_ != nullptr; }
 
 Worker::Worker(Dispatcher &dispatcher)
