@@ -23,12 +23,15 @@ public:
   RiskInstance() = delete;
   RiskInstance(float zeta, float kappa)
       : zeta_(zeta), kappa_(kappa), id_(get_next_uuid()),
-        timestamp_(get_timestamp()) {}
+        timestamp_(get_current_timestamp_ms()) {}
   virtual ~RiskInstance() = default;
   virtual bool Match() = 0;
   virtual std::shared_ptr<Routine> GetHandler() = 0;
   virtual std::shared_ptr<message::ControlCommand> GetReactiveControl() = 0;
   virtual bool IsExpired() = 0;
+  virtual bool IsMoreCriticalThan(const std::shared_ptr<RiskInstance> other) {
+    return zeta_ * kappa_ > other->get_zeta() * other->get_kappa();
+  }
 
   void set_zeta(float zeta) { zeta_ = zeta; }
   void set_kappa(const float kappa) { kappa_ = kappa; }

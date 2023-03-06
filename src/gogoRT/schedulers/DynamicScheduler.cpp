@@ -13,20 +13,25 @@ DynamicScheduler::DynamicScheduler(
 bool DynamicScheduler::DoOnce() {
   // NORMAL scheduling.
   // Todo(yuting): use other scheduling plugins here.
+  base_scheduler_->DoSchedule();
 
   // IF idle workers, handle risks.
-  bool any_idle = false;
+  int num_idle = 0;
   for (auto &worker : workers_) {
     if (!worker->isBusy()) {
-      any_idle = true;
-      break;
+      num_idle++;
     }
   }
-  if (!any_idle) {
+  if (num_idle == 0) {
     return true;
   }
 
-  // EXPIRE old risks.
+  // Otherwise, do inner
+  return InnerDoOnce(num_idle);
+}
+
+bool DynamicScheduler::InnerDoOnce(const int num_idle_worker) {
+  // EXPIRE old handled risks.
   for (auto it = handled_instances_.begin(); it != handled_instances_.end();) {
     if ((*it)->IsExpired()) {
       it = handled_instances_.erase(it);
@@ -47,11 +52,26 @@ bool DynamicScheduler::DoOnce() {
   for (auto &risk : registered_risks_) {
     auto &&detected_instances = risk->Detect();
     for (auto &instance : detected_instances) {
-      pending_instances_.push_back(instance);
+      // Insert the new instance at right place to keep order
+      auto it = pending_instances_.begin();
+      while (it != pending_instances_.end() &&
+             (*it)->IsMoreCriticalThan(instance)) {
+        it++;
+      }
+      pending_instances_.insert(it, instance);
     }
   }
 
-  return true;
+  // ASSIGN pending risks to workers
+  for (auto &worker : workers_) {
+    if (!worker->isBusy()) {
+      auto &instance = pending_instances_.front();
+      worker->Assign(instance->GetHandler());
+      pending_instances_.pop_front();
+    }
+  }
+
+  return false;
 }
 
 } // namespace gogort
