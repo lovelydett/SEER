@@ -19,6 +19,9 @@ protected:
   gogo_id_t id_;
   uint64 timestamp_;
 
+protected:
+  virtual float compute_critical_value() { return kappa_ * zeta_; };
+
 public:
   RiskInstance() = delete;
   RiskInstance(float zeta, float kappa)
@@ -29,8 +32,8 @@ public:
   virtual std::shared_ptr<Routine> GetHandler() = 0;
   virtual std::shared_ptr<message::ControlCommand> GetReactiveControl() = 0;
   virtual bool IsExpired() = 0;
-  virtual bool IsMoreCriticalThan(const std::shared_ptr<RiskInstance> other) {
-    return zeta_ * kappa_ > other->get_zeta() * other->get_kappa();
+  bool IsMoreCriticalThan(const std::shared_ptr<RiskInstance> other) {
+    return this->compute_critical_value() > other->compute_critical_value();
   }
 
   void set_zeta(float zeta) { zeta_ = zeta; }
