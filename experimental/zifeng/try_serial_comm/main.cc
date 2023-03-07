@@ -31,17 +31,19 @@ int main() {
     }
 
     std::string message = "Hello, this is a message.";
-    auto control = static_cast<uint8_t *>(malloc(1024));
-    int data_len = 12;
-    *(uint8_t*)(control) = 0x5A;
-    *(uint8_t*)(control + 1) = data_len;
-    *(uint8_t*)(control + 2) = 1;
-    *(uint8_t*)(control + 3) = 1;
-    *(short*)(control + 4) = 0x0064;
-    *(short*)(control + 6) = 0x0000;
-    *(short*)(control + 8) = 0x0000;
-    *(uint8_t*)(control + 10) = 0x00;
-    *(uint8_t*)(control + 11) = 0xFF;
+
+    //The upper computer(computer) sends speed control instructions to the lower computer(model car)
+    auto control = static_cast<uint8_t *>(malloc(1024)); //create a control data arr
+    int data_len = 12; //The length of frame 0x0C
+    *(uint8_t*)(control) = 0x5A; // The Frame head--const 0x5A
+    *(uint8_t*)(control + 1) = data_len; // The length of frame
+    *(uint8_t*)(control + 2) = 1; // The ID number
+    *(uint8_t*)(control + 3) = 0x01; // The function code
+    *(short*)(control + 4) = 0x0064; // The X direction speed for 0.1 m/s
+    *(short*)(control + 6) = 0x0000; // The Y direction speed for 0
+    *(short*)(control + 8) = 0x0000; // The Z direction speed for 0
+    *(uint8_t*)(control + 10) = 0x00; // Pre-space, 0
+    *(uint8_t*)(control + 11) = 0xFF; // CRC checking, FF for no check
 
     // 345(7) = 3 * 7 * 7 + 4 * 7 + 5 * 1
     // 1F4(16) = 1 * 16 * 16 + 15 * 16 + 4 * 1
