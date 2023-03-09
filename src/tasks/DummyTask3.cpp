@@ -51,7 +51,7 @@ std::shared_ptr<gogort::InvokerBase> DummyTask3::get_invoker() {
       gogort::AcquireReader<DummyMessage2>("dummy_pipe_2"));
 }
 bool DummyTask3::init_config(const std::string config_file) {
-  YAML::Node config = YAML::LoadFile("../../configs/tasks/" + config_file);
+  YAML::Node config = YAML::LoadFile("../../config/tasks/" + config_file);
   priority_ = config["priority"].as<uint16>();
   affinities_.clear();
   const auto &&affinities = std::move(config["affinities"]);

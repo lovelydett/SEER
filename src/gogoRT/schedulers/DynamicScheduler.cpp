@@ -3,12 +3,18 @@
 //
 
 #include "DynamicScheduler.h"
+#include "../SchedulerFactory.h"
+
+#include <cassert>
+#include <yaml-cpp/yaml.h>
 
 namespace gogort {
 
 DynamicScheduler::DynamicScheduler(
     std::vector<std::shared_ptr<Worker>> &workers)
-    : workers_(workers) {}
+    : workers_(workers) {
+  init_config("../../../config/scheduler/dynamic_scheduler.yaml");
+}
 
 bool DynamicScheduler::DoOnce() {
   // NORMAL scheduling.
@@ -27,10 +33,10 @@ bool DynamicScheduler::DoOnce() {
   }
 
   // Otherwise, do inner
-  return InnerDoOnce(num_idle);
+  return inner_do_once(num_idle);
 }
 
-bool DynamicScheduler::InnerDoOnce(const int num_idle_worker) {
+bool DynamicScheduler::inner_do_once(const int num_idle_worker) {
   // EXPIRE old handled risks.
   for (auto it = handled_instances_.begin(); it != handled_instances_.end();) {
     if ((*it)->IsExpired()) {
@@ -72,6 +78,19 @@ bool DynamicScheduler::InnerDoOnce(const int num_idle_worker) {
   }
 
   return false;
+}
+
+bool DynamicScheduler::init_config(const std::string config_file) {
+  auto config = YAML::LoadFile(config_file);
+  std::string base_scheduler_name = config["base_scheduler"].as<std::string>();
+  std::string base_scheduler_config =
+      config["base_scheduler_config"].as<std::string>();
+  base_scheduler_ = SchedulerFactory::Instance()->CreateScheduler(
+      base_scheduler_name, base_scheduler_config, workers_);
+
+  assert(base_scheduler_ != nullptr);
+
+  return true;
 }
 
 } // namespace gogort

@@ -8,6 +8,7 @@
 #include <functional>
 
 namespace gogort {
+
 DummyRisk1Instance::DummyRisk1Instance(float zeta, float kappa)
     : RiskInstance(zeta, kappa) {
   // TODO(yuting): Acquire the pipe name from the config file
@@ -39,14 +40,34 @@ DummyRisk1Instance::GetReactiveControl() {
 }
 
 bool DummyRisk1Instance::IsExpired() { return false; }
+std::string DummyRisk1Instance::get_risk_name() {
+  return std::string("risk1_instance");
+}
 
-std::list<std::shared_ptr<gogort::RiskInstance>> DummyRisk1::Detect() {
-  std::list<std::shared_ptr<gogort::RiskInstance>> detected_risks;
+DummyRisk1::DummyRisk1() : interval_ms_(-1.) {
+  time_point_ = std::chrono::system_clock::now();
+}
+
+std::list<std::shared_ptr<RiskInstance>> DummyRisk1::Detect() {
+  std::list<std::shared_ptr<RiskInstance>> detected_risks;
   auto &&msg = pipe_to_detect_->Read();
   if (msg == nullptr) {
     return detected_risks;
   }
-  // Todo(yuting): Implement the detection logic
+
+  auto cur_time_point = std::chrono::system_clock::now();
+  auto time_elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+                             cur_time_point - time_point_)
+                             .count();
+  if (time_elapsed_ms >= interval_ms_) {
+    auto instance =
+        std::make_shared<DummyRisk1Instance>(random_double(), random_double());
+    detected_risks.push_back(instance);
+    interval_ms_ = random_exponential(200);
+    time_point_ = cur_time_point;
+  }
+
   return detected_risks;
 }
+
 } // namespace gogort

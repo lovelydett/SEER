@@ -1,0 +1,2 @@
+base_scheduler: DummyScheduler
+base_scheduler_config: null
