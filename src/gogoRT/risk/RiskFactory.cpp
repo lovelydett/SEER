@@ -3,7 +3,7 @@
 //
 
 #include "RiskFactory.h"
-#include "risk_message/DummyRisk1.h"
+#include "risk_type/DummyRisk1.h"
 
 namespace gogort {
 RiskFactory *RiskFactory::Instance() { return &instance_; }

@@ -16,7 +16,7 @@ std::shared_ptr<Dispatcher> Dispatcher::instance_ = nullptr;
 Dispatcher::Dispatcher() : scheduler_(nullptr) { init_config(); }
 
 bool Dispatcher::init_config() {
-  YAML::Node config = YAML::LoadFile("../../configs/task_graph_example.yaml");
+  YAML::Node config = YAML::LoadFile("../../config/task_graph_example.yaml");
   LOG(INFO) << config["tasks"];
 
   // Init tasks based on config file

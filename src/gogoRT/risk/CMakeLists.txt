@@ -8,4 +8,4 @@ target_link_libraries(${MODULE_NAME} PUBLIC glog)
 target_include_directories(${MODULE_NAME} PUBLIC ./)
 
 add_subdirectory(handler)
-add_subdirectory(risk_message)
+add_subdirectory(risk_type)

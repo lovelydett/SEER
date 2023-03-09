@@ -32,7 +32,8 @@ private:
 
 private:
   bool DoOnce() override;
-  bool InnerDoOnce(int num_idle_worker);
+  bool inner_do_once(int num_idle_worker);
+  bool init_config(std::string config_file);
 
 public:
   explicit DynamicScheduler(std::vector<std::shared_ptr<Worker>> &);

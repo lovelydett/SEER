@@ -12,6 +12,7 @@
 #include "../Risk.h"
 #include "../RiskInstance.h"
 
+#include <chrono>
 #include <memory>
 
 namespace gogort {
@@ -37,14 +38,17 @@ public:
   std::shared_ptr<Routine> GetHandler() override;
   std::shared_ptr<message::ControlCommand> GetReactiveControl() override;
   bool IsExpired() override;
+  std::string get_risk_name() override;
 };
 
 class DummyRisk1 : public gogort::Risk {
 private:
   std::shared_ptr<PipeReader<message::DummyMessage>> pipe_to_detect_;
+  double interval_ms_;
+  std::chrono::system_clock::time_point time_point_;
 
 public:
-  DummyRisk1() = default;
+  DummyRisk1();
   std::list<std::shared_ptr<gogort::RiskInstance>> Detect() override;
 };
 
