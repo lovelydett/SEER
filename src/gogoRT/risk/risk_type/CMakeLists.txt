@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-set(MODULE_NAME gogort_risk_impl)
+set(MODULE_NAME gogort_risk_type)
 
 FILE(GLOB SRC_LIST "*.cpp")
 

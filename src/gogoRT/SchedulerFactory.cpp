@@ -4,6 +4,7 @@
 
 #include "SchedulerFactory.h"
 #include "schedulers/DummyScheduler.h"
+#include "schedulers/DynamicScheduler.h"
 #include "schedulers/PriorityScheduler.h"
 
 #include <string>
@@ -25,6 +26,8 @@ std::shared_ptr<Scheduler> SchedulerFactory::CreateScheduler(
     return std::make_shared<DummyScheduler>(workers);
   } else if (scheduler_name == "PriorityScheduler") {
     return std::make_shared<PriorityScheduler>(workers);
+  } else if (scheduler_name == "DynamicScheduler") {
+    return std::make_shared<DynamicScheduler>(workers);
   }
   return nullptr;
 }

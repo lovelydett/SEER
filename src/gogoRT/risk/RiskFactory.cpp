@@ -6,6 +6,9 @@
 #include "risk_type/DummyRisk1.h"
 
 namespace gogort {
+
+RiskFactory RiskFactory::instance_;
+
 RiskFactory *RiskFactory::Instance() { return &instance_; }
 std::shared_ptr<Risk> RiskFactory::CreateRisk(const std::string risk_name) {
   if (risk_name == "DummyRisk1") {

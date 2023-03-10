@@ -14,9 +14,6 @@
 namespace gogort {
 
 class Risk {
-protected:
-  Risk() = default;
-
 public:
   virtual std::list<std::shared_ptr<RiskInstance>> Detect() = 0;
 };
