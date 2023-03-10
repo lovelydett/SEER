@@ -4,6 +4,7 @@
 
 #include "DynamicScheduler.h"
 #include "../SchedulerFactory.h"
+#include "../risk/RiskFactory.h"
 
 #include <cassert>
 #include <yaml-cpp/yaml.h>
@@ -13,12 +14,11 @@ namespace gogort {
 DynamicScheduler::DynamicScheduler(
     std::vector<std::shared_ptr<Worker>> &workers)
     : workers_(workers) {
-  init_config("../../../config/scheduler/dynamic_scheduler.yaml");
+  init_config("../../config/scheduler/dynamic_scheduler.yaml");
 }
 
 bool DynamicScheduler::DoOnce() {
   // NORMAL scheduling.
-  // Todo(yuting): use other scheduling plugins here.
   base_scheduler_->DoSchedule();
 
   // IF idle workers, handle risks.
@@ -37,6 +37,16 @@ bool DynamicScheduler::DoOnce() {
 }
 
 bool DynamicScheduler::inner_do_once(const int num_idle_worker) {
+  // UPDATE all pending instances, check whether handled.
+  for (auto it = pending_instances_.begin(); it != pending_instances_.end();) {
+    if ((*it)->IsHandled()) {
+      handled_instances_.push_back((*it));
+      it = pending_instances_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+
   // EXPIRE old handled risks.
   for (auto it = handled_instances_.begin(); it != handled_instances_.end();) {
     if ((*it)->IsExpired()) {
@@ -49,6 +59,8 @@ bool DynamicScheduler::inner_do_once(const int num_idle_worker) {
   // MATCH existing risks.
   for (auto &instance : handled_instances_) {
     if (instance->Match()) {
+      auto &&control_msg = instance->GetReactiveControl();
+      assert(control_msg != nullptr);
       // Todo(yuting): apply the control command immediately.
       return true;
     }
@@ -87,10 +99,21 @@ bool DynamicScheduler::init_config(const std::string config_file) {
       config["base_scheduler_config"].as<std::string>();
   base_scheduler_ = SchedulerFactory::Instance()->CreateScheduler(
       base_scheduler_name, base_scheduler_config, workers_);
-
   assert(base_scheduler_ != nullptr);
 
+  auto risks_of_interest =
+      config["registered_risks"].as<std::vector<std::string>>();
+  auto risk_factory = RiskFactory::Instance();
+  for (auto &risk_name : risks_of_interest) {
+    auto risk = risk_factory->CreateRisk(risk_name);
+    assert(risk != nullptr);
+    registered_risks_.emplace_back(risk);
+  }
+
   return true;
+}
+bool DynamicScheduler::AddRoutine(std::shared_ptr<Routine> routine) {
+  return base_scheduler_->AddRoutine(routine);
 }
 
 } // namespace gogort

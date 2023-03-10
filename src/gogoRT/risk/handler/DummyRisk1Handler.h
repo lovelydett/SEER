@@ -6,13 +6,11 @@
 #define GOGO_PROJ_DUMMYRISK1HANDLER_H
 
 #include "../../Task.h"
-#include "../risk_message/DummyRisk1.h"
+#include "../risk_type/DummyRisk1.h"
 
 #include <memory>
 
 namespace gogort {
-
-using message::DummyRisk1;
 
 class DummyRisk1Handler : public Task<DummyRisk1> {
 public:

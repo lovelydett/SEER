@@ -22,12 +22,10 @@ typedef struct Point2D {
   float y = 0.;
 } Point2D;
 
-class DummyRisk1Instance : public RiskInstance {
+class DummyRisk1Instance : public RiskInstanceReader<message::DummyMessage> {
 private:
   Point2D location_;
   float range_;
-  std::shared_ptr<PipeReader<message::DummyMessage>> pipe_to_match_;
-  std::shared_ptr<message::ControlCommand> reactive_control_;
 
 private:
   void inner_handler();
@@ -38,10 +36,11 @@ public:
   std::shared_ptr<Routine> GetHandler() override;
   std::shared_ptr<message::ControlCommand> GetReactiveControl() override;
   bool IsExpired() override;
+  bool IsHandled() override;
   std::string get_risk_name() override;
 };
 
-class DummyRisk1 : public gogort::Risk {
+class DummyRisk1 : public Risk {
 private:
   std::shared_ptr<PipeReader<message::DummyMessage>> pipe_to_detect_;
   double interval_ms_;
@@ -49,7 +48,7 @@ private:
 
 public:
   DummyRisk1();
-  std::list<std::shared_ptr<gogort::RiskInstance>> Detect() override;
+  std::list<std::shared_ptr<RiskInstance>> Detect() override;
 };
 
 } // namespace gogort

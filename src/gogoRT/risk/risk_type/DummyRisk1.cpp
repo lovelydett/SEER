@@ -3,16 +3,16 @@
 //
 
 #include "DummyRisk1.h"
-#include "../utils/utils.h"
 
 #include <functional>
 
 namespace gogort {
 
 DummyRisk1Instance::DummyRisk1Instance(float zeta, float kappa)
-    : RiskInstance(zeta, kappa) {
+    : RiskInstanceReader<message::DummyMessage>(zeta, kappa) {
   // TODO(yuting): Acquire the pipe name from the config file
   pipe_to_match_ = AcquireReader<message::DummyMessage>("pipe_risk1");
+  reactive_control_ = nullptr;
 }
 
 bool DummyRisk1Instance::Match() {
@@ -25,6 +25,7 @@ bool DummyRisk1Instance::Match() {
 
   return false;
 }
+
 std::shared_ptr<Routine> DummyRisk1Instance::GetHandler() {
   if (reactive_control_ != nullptr) { // Already handled
     return nullptr;
@@ -40,9 +41,13 @@ DummyRisk1Instance::GetReactiveControl() {
 }
 
 bool DummyRisk1Instance::IsExpired() { return false; }
-std::string DummyRisk1Instance::get_risk_name() {
-  return std::string("risk1_instance");
+std::string DummyRisk1Instance::get_risk_name() { return {"risk1_instance"}; }
+bool DummyRisk1Instance::IsHandled() {
+  // If the instance is handled, the control will not be NULL.
+  return reactive_control_ != nullptr;
 }
+
+void DummyRisk1Instance::inner_handler() {}
 
 DummyRisk1::DummyRisk1() : interval_ms_(-1.) {
   time_point_ = std::chrono::system_clock::now();

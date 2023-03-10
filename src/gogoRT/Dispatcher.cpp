@@ -37,7 +37,6 @@ bool Dispatcher::init_config() {
   // Init workers based on config file
   const int num_workers = config["num_workers"].as<int>();
   const int priority_range = config["priority_range"].as<int>();
-  LOG(INFO) << num_workers << ", " << priority_range;
   int a[num_workers];
   a[0] = 0;
   // num_workers = 1; // Set num of workers to 1 to debug

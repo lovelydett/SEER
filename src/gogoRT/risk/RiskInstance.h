@@ -6,6 +6,7 @@
 #define GOGO_PROJ_RISKINSTANCE_H
 
 #include "../../messages/ControlCommand.h"
+#include "../Comm/PipeReader.h"
 #include "../Routine.h"
 
 #include <memory>
@@ -18,6 +19,7 @@ protected:
   float kappa_; // potential damage
   gogo_id_t id_;
   uint64 timestamp_;
+  std::shared_ptr<message::ControlCommand> reactive_control_;
 
 protected:
   virtual float compute_critical_value() { return kappa_ * zeta_; };
@@ -26,11 +28,12 @@ public:
   RiskInstance() = delete;
   RiskInstance(float zeta, float kappa)
       : zeta_(zeta), kappa_(kappa), id_(get_next_uuid()),
-        timestamp_(get_current_timestamp_ms()) {}
+        timestamp_(get_current_timestamp_ms()), reactive_control_(nullptr) {}
   virtual ~RiskInstance() = default;
   virtual bool Match() = 0;
   virtual std::shared_ptr<Routine> GetHandler() = 0;
   virtual std::shared_ptr<message::ControlCommand> GetReactiveControl() = 0;
+  virtual bool IsHandled() = 0;
   virtual bool IsExpired() = 0;
   bool IsMoreCriticalThan(const std::shared_ptr<RiskInstance> other) {
     return this->compute_critical_value() > other->compute_critical_value();
@@ -43,6 +46,13 @@ public:
   [[nodiscard]] gogo_id_t get_id() const { return id_; }
   [[nodiscard]] uint64 get_timestamp() const { return timestamp_; }
   virtual std::string get_risk_name() = 0;
+};
+
+template <class PIPE> class RiskInstanceReader : public RiskInstance {
+protected:
+  RiskInstanceReader(float zeta, float kappa)
+      : pipe_to_match_(nullptr), RiskInstance(zeta, kappa) {}
+  std::shared_ptr<PipeReader<PIPE>> pipe_to_match_;
 };
 
 } // namespace gogort
