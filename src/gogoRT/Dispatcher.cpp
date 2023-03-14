@@ -23,7 +23,12 @@ bool Dispatcher::init_config() {
   for (auto &&task : config["tasks"]) {
     auto &&task_name = task["task_name"].as<std::string>();
     auto &&config_file = task["config_file"].as<std::string>();
-    auto p_task = TaskFactory::Instance()->CreateTask(task_name, config_file);
+    auto &&in_pipe_names = task["in_pipe_names"].as<std::vector<std::string>>();
+    auto &&out_pipe_names =
+        task["out_pipe_names"].as<std::vector<std::string>>();
+    auto p_task = TaskFactory::Instance()->CreateTask(
+        task_name, config_file, std::move(in_pipe_names),
+        std::move(out_pipe_names));
     if (p_task == nullptr) {
       LOG(ERROR) << "Failed to create task: " << task_name;
       exit(0);

@@ -1,11 +1,20 @@
 # Elements in tasks are objects
 # Yuting@2022.12.30: no need to name tasks, just specify the type
 tasks:
+
   - task_name: DummyTask
+    in_pipe_names: [ ]
+    out_pipe_names: [ "dummy_pipe_1" ]
     config_file: dummy_task.yaml
+
   - task_name: DummyTask2
+    in_pipe_names: [ ]
+    out_pipe_names: [ "dummy_pipe_2" ]
     config_file: dummy_task_2.yaml
+    
   - task_name: DummyTask3
+    in_pipe_names: [ "dummy_pipe_1", "dummy_pipe_2" ]
+    out_pipe_names: [ ]
     config_file: dummy_task_3.yaml
 
 num_workers: 4

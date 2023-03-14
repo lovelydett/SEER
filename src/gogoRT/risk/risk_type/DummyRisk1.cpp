@@ -52,7 +52,7 @@ bool DummyRisk1Instance::IsHandled() {
 
 void DummyRisk1Instance::inner_handler() {}
 
-DummyRisk1::DummyRisk1() : interval_ms_(-1.) {
+DummyRisk1::DummyRisk1() : interval_ms_(-1.), expected_interval_ms_(-1) {
   time_point_ = std::chrono::system_clock::now();
   assert(init_config() == true);
 }
@@ -72,7 +72,7 @@ std::list<std::shared_ptr<RiskInstance>> DummyRisk1::Detect() {
     auto instance =
         std::make_shared<DummyRisk1Instance>(random_double(), random_double());
     detected_risks.push_back(instance);
-    interval_ms_ = random_exponential(200);
+    interval_ms_ = random_exponential(expected_interval_ms_);
     time_point_ = cur_time_point;
   }
 
@@ -84,6 +84,8 @@ bool DummyRisk1::init_config() {
   auto &&node = YAML::LoadFile(config_file);
   auto pipe_name = node["sensor_pipe_name"].as<std::string>();
   detect_reader_ = AcquireReader<message::DummyMessage>(pipe_name);
+
+  interval_ms_ = node["expected_interval_ms"].as<double>();
 
   return true;
 }
