@@ -82,6 +82,9 @@ bool DynamicScheduler::inner_do_once(const int num_idle_worker) {
 
   // ASSIGN pending risks to workers
   for (auto &worker : workers_) {
+    if (pending_instances_.empty()) {
+      break;
+    }
     if (!worker->isBusy()) {
       auto &instance = pending_instances_.front();
       worker->Assign(instance->GetHandler());
@@ -89,13 +92,13 @@ bool DynamicScheduler::inner_do_once(const int num_idle_worker) {
     }
   }
 
-  return false;
+  return true;
 }
 
 bool DynamicScheduler::init_config(const std::string config_file) {
-  auto config = YAML::LoadFile(config_file);
-  std::string base_scheduler_name = config["base_scheduler"].as<std::string>();
-  std::string base_scheduler_config =
+  auto &&config = YAML::LoadFile(config_file);
+  auto &&base_scheduler_name = config["base_scheduler"].as<std::string>();
+  auto &&base_scheduler_config =
       config["base_scheduler_config"].as<std::string>();
   base_scheduler_ = SchedulerFactory::Instance()->CreateScheduler(
       base_scheduler_name, base_scheduler_config, workers_);

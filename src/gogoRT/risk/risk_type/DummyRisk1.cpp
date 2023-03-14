@@ -3,8 +3,11 @@
 //
 
 #include "DummyRisk1.h"
+#include "../../Comm/PipeReader.h"
+#include "../../messages/DummyMessage.h"
 
 #include <functional>
+#include <yaml-cpp/yaml.h>
 
 namespace gogort {
 
@@ -51,11 +54,12 @@ void DummyRisk1Instance::inner_handler() {}
 
 DummyRisk1::DummyRisk1() : interval_ms_(-1.) {
   time_point_ = std::chrono::system_clock::now();
+  assert(init_config() == true);
 }
 
 std::list<std::shared_ptr<RiskInstance>> DummyRisk1::Detect() {
   std::list<std::shared_ptr<RiskInstance>> detected_risks;
-  auto &&msg = pipe_to_detect_->Read();
+  auto &&msg = detect_reader_->Read();
   if (msg == nullptr) {
     return detected_risks;
   }
@@ -73,6 +77,15 @@ std::list<std::shared_ptr<RiskInstance>> DummyRisk1::Detect() {
   }
 
   return detected_risks;
+}
+bool DummyRisk1::init_config() {
+  // Acquire pipe reader
+  std::string config_file = "../../config/risk/dummy_risk_1.yaml";
+  auto &&node = YAML::LoadFile(config_file);
+  auto pipe_name = node["sensor_pipe_name"].as<std::string>();
+  detect_reader_ = AcquireReader<message::DummyMessage>(pipe_name);
+
+  return true;
 }
 
 } // namespace gogort
