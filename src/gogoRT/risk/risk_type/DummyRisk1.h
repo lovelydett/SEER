@@ -42,9 +42,12 @@ public:
 
 class DummyRisk1 : public Risk {
 private:
-  std::shared_ptr<PipeReader<message::DummyMessage>> pipe_to_detect_;
+  std::shared_ptr<PipeReader<message::DummyMessage>> detect_reader_;
   double interval_ms_;
   std::chrono::system_clock::time_point time_point_;
+
+private:
+  bool init_config();
 
 public:
   DummyRisk1();
