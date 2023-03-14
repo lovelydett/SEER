@@ -12,12 +12,16 @@
 namespace task {
 
 DummyTask3::DummyTask3(const std::string task_name,
-                       const std::string config_path)
-    : Task<DummyMessage, DummyMessage2>(task_name), count(0) {
+                       const std::string config_file,
+                       std::vector<std::string> &&in_pipes,
+                       std::vector<std::string> &&out_pipes)
+    : Task<DummyMessage, DummyMessage2>(task_name, std::move(in_pipes),
+                                        std::move(out_pipes)),
+      count(0) {
   for (int i = 0; i < M_SIZE; ++i) {
     vec[i] = i;
   }
-  DummyTask3::init_config(config_path);
+  DummyTask3::init_config(config_file);
 }
 
 bool DummyTask3::Deal(const std::shared_ptr<DummyMessage> in_msg1,
@@ -44,11 +48,11 @@ bool DummyTask3::Deal(const std::shared_ptr<DummyMessage> in_msg1,
 
 std::shared_ptr<gogort::InvokerBase> DummyTask3::get_invoker() {
   auto comm_buffer = gogort::CommBuffer::Instance();
-  // Todo(yuting): read frequency_ms from config
+  assert(in_pipe_names_.size() >= 2);
   return std::make_shared<gogort::Invoker<DummyMessage, DummyMessage2>>(
       static_cast<std::shared_ptr<Task<DummyMessage, DummyMessage2>>>(this),
-      gogort::AcquireReader<DummyMessage>("dummy_pipe_1"),
-      gogort::AcquireReader<DummyMessage2>("dummy_pipe_2"));
+      gogort::AcquireReader<DummyMessage>(in_pipe_names_[0]),
+      gogort::AcquireReader<DummyMessage2>(in_pipe_names_[1]));
 }
 bool DummyTask3::init_config(const std::string config_file) {
   YAML::Node config = YAML::LoadFile("../../config/tasks/" + config_file);

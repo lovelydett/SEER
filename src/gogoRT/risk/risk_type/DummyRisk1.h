@@ -45,6 +45,7 @@ private:
   std::shared_ptr<PipeReader<message::DummyMessage>> detect_reader_;
   double interval_ms_;
   std::chrono::system_clock::time_point time_point_;
+  double expected_interval_ms_;
 
 private:
   bool init_config();

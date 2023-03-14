@@ -25,7 +25,9 @@ private:
 
 public:
   DummyTask3() = delete;
-  explicit DummyTask3(std::string, std::string);
+  explicit DummyTask3(std::string task_name, std::string config_file,
+                      std::vector<std::string> &&in_pipes,
+                      std::vector<std::string> &&out_pipes);
   bool Deal(std::shared_ptr<DummyMessage>,
             std::shared_ptr<DummyMessage2>) override;
   std::shared_ptr<gogort::InvokerBase> get_invoker() override;
