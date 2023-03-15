@@ -8,7 +8,7 @@
 #include <exception>
 #include <cassert>
 
-#include "serial/serial.h"
+#include <serial/serial.h>
 
 int main() {
 //    try{
