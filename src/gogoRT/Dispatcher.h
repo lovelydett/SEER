@@ -1,6 +1,6 @@
 /* Dispatcher is the main character of Gogo for it supports the following:
- * 1. Hot-swappable tasks (by listening to a socket)
- * 2. Create routines (timer-task or event-driven tasks)
+ * 1. Hot-swappable task (by listening to a socket)
+ * 2. Create routines (timer-task or event-driven task)
  * 3. Maintain a thread pool and conduct routine-thread mapping
  * */
 // Created by Yuting Xie

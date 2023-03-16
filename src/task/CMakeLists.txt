@@ -8,3 +8,5 @@ add_library(${PROJECT_NAME} STATIC ${SRC_LIST})
 target_link_libraries(${PROJECT_NAME} gogort gogo_messages glog yaml-cpp)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ./)
+
+add_subdirectory(mock)

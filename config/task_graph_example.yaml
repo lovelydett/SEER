@@ -1,5 +1,5 @@
-# Elements in tasks are objects
-# Yuting@2022.12.30: no need to name tasks, just specify the type
+# Elements in task are objects
+# Yuting@2022.12.30: no need to name task, just specify the type
 tasks:
 
   - type: DummyTask

@@ -17,10 +17,10 @@ Dispatcher::Dispatcher() : scheduler_(nullptr) { init_config(); }
 
 bool Dispatcher::init_config() {
   YAML::Node config = YAML::LoadFile("../../config/task_graph_example.yaml");
-  LOG(INFO) << config["tasks"];
+  LOG(INFO) << config["task"];
 
-  // Init tasks based on config file
-  for (auto &&task : config["tasks"]) {
+  // Init task based on config file
+  for (auto &&task : config["task"]) {
     auto &&task_type = task["type"].as<std::string>();
     auto &&task_name = task["name"].as<std::string>();
     auto &&config_file = task["config_file"].as<std::string>();

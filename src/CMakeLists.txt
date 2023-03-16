@@ -24,4 +24,4 @@ target_link_libraries(${PROJECT_NAME} gogort gogo_messages gogo_tasks glog yaml-
 
 add_subdirectory(gogoRT)
 add_subdirectory(messages)
-add_subdirectory(tasks)
+add_subdirectory(task)

@@ -41,13 +41,6 @@ public:
       : task_name_(std::move(task_name)), id_(get_next_uuid()),
         in_pipe_names_(std::move(in_pipe_names)),
         out_pipe_names_(std::move(out_pipe_names)){};
-  bool Init(const gogo_id_t id, const std::string &config_path) {
-    if (id == 0) {
-      return false;
-    }
-    id_ = id;
-    return init_config(config_path);
-  }
   [[nodiscard]] std::string get_task_name() const { return task_name_; }
   [[nodiscard]] gogo_id_t get_task_id() const { return id_; }
   [[nodiscard]] uint16 get_priority() const { return priority_; }

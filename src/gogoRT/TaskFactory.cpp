@@ -3,9 +3,9 @@
 // 22-12-7
 
 #include "TaskFactory.h"
-#include "../tasks/DummyTask.h"
-#include "../tasks/DummyTask2.h"
-#include "../tasks/DummyTask3.h"
+#include "../task/DummyTask.h"
+#include "../task/DummyTask2.h"
+#include "../task/DummyTask3.h"
 
 #include <glog/logging.h>
 

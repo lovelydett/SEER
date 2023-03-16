@@ -22,7 +22,7 @@ private:
 private:
   // Yuting@2022.12.6: the status of readability should be maintained by a
   // reader rather a pipe, since readers are task-owned, a piece of message may
-  // expire for some tasks while still alive for the others not yet consume it.
+  // expire for some task while still alive for the others not yet consume it.
   bool isUpdated() const {
     assert(pipe_ != nullptr);
     return ts_updated_ < pipe_->get_timestamp();

@@ -34,7 +34,7 @@ bool DummyTask2::Deal() {
   return true;
 }
 bool DummyTask2::init_config(const std::string config_file) {
-  YAML::Node config = YAML::LoadFile("../../config/tasks/" + config_file);
+  YAML::Node config = YAML::LoadFile("../../config/task/" + config_file);
   frequency_ms_ = config["frequency_ms"].as<int16>();
   priority_ = config["priority"].as<uint16>();
   affinities_.clear();
