@@ -20,24 +20,22 @@ TaskFactory *TaskFactory::Instance() {
   return instance_;
 }
 
-std::shared_ptr<TaskBase> TaskFactory::CreateTask(
-    const std::string task_name, const std::string config_path,
-    std::vector<std::string> &&in_pipes, std::vector<std::string> &&out_pipes) {
-  static int count = 0;
-  if (task_name == "DummyTask") {
+std::shared_ptr<TaskBase>
+TaskFactory::CreateTask(const std::string type, const std::string name,
+                        const std::string config_path,
+                        std::vector<std::string> &&in_pipes,
+                        std::vector<std::string> &&out_pipes) {
+  if (type == "DummyTask") {
     return std::make_shared<task::DummyTask>(
-        task_name + "_" + std::to_string(++count), config_path,
-        std::move(in_pipes), std::move(out_pipes));
-  } else if (task_name == "DummyTask2") {
+        name, config_path, std::move(in_pipes), std::move(out_pipes));
+  } else if (type == "DummyTask2") {
     return std::make_shared<task::DummyTask2>(
-        task_name + "_" + std::to_string(++count), config_path,
-        std::move(in_pipes), std::move(out_pipes));
-  } else if (task_name == "DummyTask3") {
+        name, config_path, std::move(in_pipes), std::move(out_pipes));
+  } else if (type == "DummyTask3") {
     return std::make_shared<task::DummyTask3>(
-        task_name + "_" + std::to_string(++count), config_path,
-        std::move(in_pipes), std::move(out_pipes));
+        name, config_path, std::move(in_pipes), std::move(out_pipes));
   } else {
-    LOG(ERROR) << "Task " << task_name << " not found!";
+    LOG(ERROR) << "Task " << type << " not found!";
     return nullptr;
   }
   return nullptr;

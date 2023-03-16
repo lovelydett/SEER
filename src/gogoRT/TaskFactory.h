@@ -19,7 +19,8 @@ private:
 
 public:
   static TaskFactory *Instance();
-  std::shared_ptr<TaskBase> CreateTask(const std::string task_name,
+  std::shared_ptr<TaskBase> CreateTask(const std::string type,
+                                       const std::string name,
                                        const std::string config_path,
                                        std::vector<std::string> &&in_pipes,
                                        std::vector<std::string> &&out_pipes);
