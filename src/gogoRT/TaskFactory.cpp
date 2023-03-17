@@ -6,6 +6,7 @@
 #include "../task/DummyTask.h"
 #include "../task/DummyTask2.h"
 #include "../task/DummyTask3.h"
+#include "../task/mock/MockTask.h"
 
 #include <glog/logging.h>
 
@@ -34,11 +35,15 @@ TaskFactory::CreateTask(const std::string type, const std::string name,
   } else if (type == "DummyTask3") {
     return std::make_shared<task::DummyTask3>(
         name, config_path, std::move(in_pipes), std::move(out_pipes));
+  } else if (type == "MockTask_0_1") {
+    return std::make_shared<task::MockTask_0_1>(
+        name, config_path, std::move(in_pipes), std::move(out_pipes));
   } else {
     LOG(ERROR) << "Task " << type << " not found!";
     return nullptr;
   }
-  return nullptr;
+}
+return nullptr;
 }
 
 } // namespace gogort

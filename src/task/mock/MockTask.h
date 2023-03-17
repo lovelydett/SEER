@@ -24,6 +24,9 @@ private:
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer_;
 
 public:
+  MockTask_0_1(const std::string &name, const std::string &config_path,
+               std::vector<std::string> &&in_pipes,
+               std::vector<std::string> &&out_pipes);
   bool Deal() override;
   [[nodiscard]] std::shared_ptr<gogort::InvokerBase> get_invoker() override;
 };

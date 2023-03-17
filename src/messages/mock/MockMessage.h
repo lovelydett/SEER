@@ -15,7 +15,7 @@ namespace message {
 
 class MockMessage : public Message {
 public:
-  std::string to_string();
+  std::string to_string() override;
 };
 
 } // namespace message

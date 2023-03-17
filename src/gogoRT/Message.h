@@ -16,15 +16,16 @@ private:
   uint64 timestamp_;
 
 public:
-  Message() : timestamp_(get_next_uuid()) { ; }
+  Message() : timestamp_(get_next_uuid()) {}
   // Message should do hard-copied.
-  virtual Message &operator=(const Message &&other_msg) {
+  Message &operator=(Message &&other_msg) noexcept {
     timestamp_ = other_msg.timestamp_;
     return *this;
   }
-  virtual ~Message(){};
+  virtual ~Message() = default;
+  ;
   virtual std::string to_string() = 0;
-  uint64 get_timestamp() { return timestamp_; }
+  uint64 get_timestamp() const { return timestamp_; }
 };
 
 } // namespace gogort
