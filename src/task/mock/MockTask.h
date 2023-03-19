@@ -40,6 +40,9 @@ private:
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer2_;
 
 public:
+  MockTask_0_2(const std::string &name, const std::string &config_path,
+               std::vector<std::string> &&in_pipes,
+               std::vector<std::string> &&out_pipes);
   bool Deal() override;
   [[nodiscard]] std::shared_ptr<gogort::InvokerBase> get_invoker() override;
 };
@@ -51,6 +54,9 @@ private:
   bool init_config(std::string) override;
 
 public:
+  MockTask_1_0(const std::string &name, const std::string &config_path,
+               std::vector<std::string> &&in_pipes,
+               std::vector<std::string> &&out_pipes);
   bool Deal(std::shared_ptr<MockMessage> msg) override;
   [[nodiscard]] std::shared_ptr<gogort::InvokerBase> get_invoker() override;
 };
@@ -63,6 +69,9 @@ private:
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer_;
 
 public:
+  MockTask_1_1(const std::string &name, const std::string &config_path,
+               std::vector<std::string> &&in_pipes,
+               std::vector<std::string> &&out_pipes);
   bool Deal(std::shared_ptr<MockMessage> msg) override;
   [[nodiscard]] std::shared_ptr<gogort::InvokerBase> get_invoker() override;
 };
@@ -76,6 +85,9 @@ private:
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer2_;
 
 public:
+  MockTask_1_2(const std::string &name, const std::string &config_path,
+               std::vector<std::string> &&in_pipes,
+               std::vector<std::string> &&out_pipes);
   bool Deal(std::shared_ptr<MockMessage> msg) override;
   [[nodiscard]] std::shared_ptr<gogort::InvokerBase> get_invoker() override;
 };
@@ -87,6 +99,9 @@ private:
   bool init_config(std::string) override;
 
 public:
+  MockTask_2_0(const std::string &name, const std::string &config_path,
+               std::vector<std::string> &&in_pipes,
+               std::vector<std::string> &&out_pipes);
   bool Deal(std::shared_ptr<MockMessage> msg1,
             std::shared_ptr<MockMessage> msg2) override;
   [[nodiscard]] std::shared_ptr<gogort::InvokerBase> get_invoker() override;
@@ -100,6 +115,9 @@ private:
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer_;
 
 public:
+  MockTask_2_1(const std::string &name, const std::string &config_path,
+               std::vector<std::string> &&in_pipes,
+               std::vector<std::string> &&out_pipes);
   bool Deal(std::shared_ptr<MockMessage> msg1,
             std::shared_ptr<MockMessage> msg2) override;
   [[nodiscard]] std::shared_ptr<gogort::InvokerBase> get_invoker() override;
@@ -114,6 +132,9 @@ private:
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer2_;
 
 public:
+  MockTask_2_2(const std::string &name, const std::string &config_path,
+               std::vector<std::string> &&in_pipes,
+               std::vector<std::string> &&out_pipes);
   bool Deal(std::shared_ptr<MockMessage> msg1,
             std::shared_ptr<MockMessage> msg2) override;
   [[nodiscard]] std::shared_ptr<gogort::InvokerBase> get_invoker() override;

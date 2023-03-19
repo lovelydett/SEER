@@ -162,7 +162,7 @@ public:
 template <class MSG0, class MSG1, class MSG2>
 class Invoker<MSG0, MSG1, MSG2, NullClass> : public InvokerBase {
 private:
-  std::shared_ptr<TaskBase> task_;
+  std::shared_ptr<Task<MSG0, MSG1, MSG2>> task_;
   std::shared_ptr<PipeReader<MSG0>> pipe0_;
   std::shared_ptr<PipeReader<MSG1>> pipe1_;
   std::shared_ptr<PipeReader<MSG2>> pipe2_;
@@ -182,7 +182,7 @@ private:
   }
 
 public:
-  Invoker(std::shared_ptr<TaskBase> task,
+  Invoker(std::shared_ptr<Task<MSG0, MSG1, MSG2>> task,
           std::shared_ptr<PipeReader<MSG0>> pipe0,
           std::shared_ptr<PipeReader<MSG1>> pipe1,
           std::shared_ptr<PipeReader<MSG2>> pipe2)
