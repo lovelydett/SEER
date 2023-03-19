@@ -84,7 +84,7 @@ public:
   }
 
 private:
-  std::shared_ptr<Task<>> task_;
+  std::shared_ptr<Task<>> task_ = nullptr;
   const std::chrono::milliseconds frequency_;
   time_point last_invoke_time_point_;
 
@@ -96,6 +96,7 @@ private:
     if (duration_cast<std::chrono::milliseconds>(time_elapsed) >= frequency_) {
       last_invoke_time_point_ = now_time_point;
       auto &&routine_func = std::bind(&Task<>::Deal, task_);
+      LOG(INFO) << "Invoke timer task: " << task_->get_task_name();
       return std::make_shared<Routine>(routine_func, task_->get_task_name(),
                                        task_->get_priority());
     }
@@ -107,8 +108,8 @@ private:
 template <class MSG0>
 class Invoker<MSG0, NullClass, NullClass, NullClass> : public InvokerBase {
 private:
-  std::shared_ptr<Task<MSG0>> task_;
-  std::shared_ptr<PipeReader<MSG0>> pipe0_;
+  std::shared_ptr<Task<MSG0>> task_ = nullptr;
+  std::shared_ptr<PipeReader<MSG0>> pipe0_ = nullptr;
 
 private:
   std::shared_ptr<Routine> InnerInvoke() override {
@@ -132,9 +133,9 @@ public:
 template <class MSG0, class MSG1>
 class Invoker<MSG0, MSG1, NullClass, NullClass> : public InvokerBase {
 private:
-  std::shared_ptr<Task<MSG0, MSG1>> task_;
-  std::shared_ptr<PipeReader<MSG0>> pipe0_;
-  std::shared_ptr<PipeReader<MSG1>> pipe1_;
+  std::shared_ptr<Task<MSG0, MSG1>> task_ = nullptr;
+  std::shared_ptr<PipeReader<MSG0>> pipe0_ = nullptr;
+  std::shared_ptr<PipeReader<MSG1>> pipe1_ = nullptr;
 
 private:
   std::shared_ptr<Routine> InnerInvoke() override {
@@ -162,10 +163,10 @@ public:
 template <class MSG0, class MSG1, class MSG2>
 class Invoker<MSG0, MSG1, MSG2, NullClass> : public InvokerBase {
 private:
-  std::shared_ptr<Task<MSG0, MSG1, MSG2>> task_;
-  std::shared_ptr<PipeReader<MSG0>> pipe0_;
-  std::shared_ptr<PipeReader<MSG1>> pipe1_;
-  std::shared_ptr<PipeReader<MSG2>> pipe2_;
+  std::shared_ptr<Task<MSG0, MSG1, MSG2>> task_ = nullptr;
+  std::shared_ptr<PipeReader<MSG0>> pipe0_ = nullptr;
+  std::shared_ptr<PipeReader<MSG1>> pipe1_ = nullptr;
+  std::shared_ptr<PipeReader<MSG2>> pipe2_ = nullptr;
 
 private:
   std::shared_ptr<Routine> InnerInvoke() override {

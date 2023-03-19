@@ -16,17 +16,31 @@ std::shared_ptr<Dispatcher> Dispatcher::instance_ = nullptr;
 Dispatcher::Dispatcher() : scheduler_(nullptr) { init_config(); }
 
 bool Dispatcher::init_config() {
-  YAML::Node config = YAML::LoadFile("../../config/task_graph_example.yaml");
-  LOG(INFO) << config["task"];
+  YAML::Node config = YAML::LoadFile(
+      "../../config/mock/mock_task_graph_1/task_graph_mock_1.yaml");
+  // YAML::Node config = YAML::LoadFile("../../config/task_graph_example.yaml");
+  LOG(INFO) << config["tasks"].size() << " tasks in the graph";
+  // invokers_.reserve(config["tasks"].size());
 
   // Init task based on config file
-  for (auto &&task : config["task"]) {
+  for (auto &&task : config["tasks"]) {
     auto &&task_type = task["type"].as<std::string>();
     auto &&task_name = task["name"].as<std::string>();
     auto &&config_file = task["config_file"].as<std::string>();
     auto &&in_pipe_names = task["in_pipe_names"].as<std::vector<std::string>>();
     auto &&out_pipe_names =
         task["out_pipe_names"].as<std::vector<std::string>>();
+    LOG(INFO) << "Creating task " << task_name << " of type " << task_type;
+
+    // First, make sure the pipes are created
+    for (auto &&pipe : in_pipe_names) {
+      CommBuffer::Instance()->AddPipe(pipe);
+    }
+    for (auto &&pipe : out_pipe_names) {
+      CommBuffer::Instance()->AddPipe(pipe);
+    }
+
+    // Then create the task
     auto p_task = TaskFactory::Instance()->CreateTask(
         task_type, task_name, config_file, std::move(in_pipe_names),
         std::move(out_pipe_names));
@@ -34,11 +48,12 @@ bool Dispatcher::init_config() {
       LOG(ERROR) << "Failed to create task: " << task_name;
       exit(0);
     }
-    id_to_task_.insert({p_task->get_task_id(), p_task});
-    task_name_to_id_.insert({p_task->get_task_name(), p_task->get_task_id()});
-    // Get the invoker of this task
-    invokers_.emplace_back(p_task->get_invoker());
+    // MUST keep a copy of the task pointer!!!!!!!!!!
+    id_to_task_[p_task->get_task_id()] = p_task;
+    invokers_.push_back(p_task->get_invoker());
   }
+  LOG(INFO) << "In total " << invokers_.size() << " tasks are created";
+  // exit(-1);
 
   // Init workers based on config file
   const int num_workers = config["num_workers"].as<int>();

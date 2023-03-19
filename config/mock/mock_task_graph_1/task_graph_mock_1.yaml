@@ -1,0 +1,44 @@
+tasks:
+
+  - type: MockTask_0_1
+    name: sensor_task_1
+    in_pipe_names: [ ]
+    out_pipe_names: [ "mock_pipe_1" ]
+    config_file: mock_task_graph_1/sensor_task_1.yaml
+
+  - type: MockTask_0_1
+    name: sensor_task_2
+    in_pipe_names: [ ]
+    out_pipe_names: [ "mock_pipe_2" ]
+    config_file: mock_task_graph_1/sensor_task_2.yaml
+
+  - type: MockTask_0_1
+    name: sensor_task_3
+    in_pipe_names: [ ]
+    out_pipe_names: [ "mock_pipe_3" ]
+    config_file: mock_task_graph_1/sensor_task_3.yaml
+
+  - type: MockTask_1_1
+    name: middle_task_1
+    in_pipe_names: [ "mock_pipe_1" ]
+    out_pipe_names: [ "mock_pipe_4" ]
+    config_file: mock_task_graph_1/middle_task_1.yaml
+
+  - type: MockTask_2_1
+    name: middle_task_2
+    in_pipe_names: [ "mock_pipe_2", "mock_pipe_3" ]
+    out_pipe_names: [ "mock_pipe_5" ]
+    config_file: mock_task_graph_1/middle_task_2.yaml
+
+  - type: MockTask_2_0
+    name: exit_task_1
+    in_pipe_names: [ "mock_pipe_4", "mock_pipe_5" ]
+    out_pipe_names: [ ]
+    config_file: mock_task_graph_1/exit_task_1.yaml
+
+num_workers: 4
+
+# The smaller, the prior, range is 1 -> x
+priority_range: 4
+
+scheduler: DummyScheduler

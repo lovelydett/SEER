@@ -25,13 +25,13 @@ private:
 
 private:
   CommBuffer();
-  bool init_config(const std::string config_path);
   // Pipe name to pipe
   std::unordered_map<std::string, std::shared_ptr<Pipe>> name_to_pipe_;
 
 public:
   static std::shared_ptr<CommBuffer> Instance();
   std::shared_ptr<Pipe> GetPipe(const std::string pipe_name);
+  bool AddPipe(std::string pipe_name);
 };
 
 // Tell CommBuffer you need a reader

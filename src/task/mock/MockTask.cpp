@@ -8,6 +8,7 @@
 
 #include <cassert>
 #include <memory>
+#include <yaml-cpp/yaml.h>
 
 namespace task {
 
@@ -16,18 +17,24 @@ MockTask_0_1::MockTask_0_1(const std::string &name,
                            const std::string &config_path,
                            std::vector<std::string> &&in_pipes,
                            std::vector<std::string> &&out_pipes)
-    : Task<>(name, std::move(in_pipes), std::move(out_pipes)), count(0) {
+    : Task<>(name, std::move(in_pipes), std::move(out_pipes)), count_(0),
+      expected_latency_ms_(-1) {
   MockTask_0_1::init_config(config_path);
 }
 bool MockTask_0_1::init_config(std::string config_path) {
-  count = 0;
+  count_ = 0;
   assert(out_pipe_names_.size() == 1);
   writer_ = gogort::AcquireWriter<message::MockMessage>(out_pipe_names_[0]);
+
+  auto &&config = YAML::LoadFile("../../config/mock/" + config_path);
+  frequency_ms_ = config["frequency_ms"].as<int>();
+  expected_latency_ms_ = config["expected_latency_ms"].as<int>();
+
   return true;
 }
 bool MockTask_0_1::Deal() {
   auto &&msg = std::make_shared<message::MockMessage>();
-  count++;
+  count_++;
 
   // Todo(yuting): mock the pre-defined computational load and memory access.
 
@@ -46,19 +53,25 @@ MockTask_0_2::MockTask_0_2(const std::string &name,
                            const std::string &config_path,
                            std::vector<std::string> &&in_pipes,
                            std::vector<std::string> &&out_pipes)
-    : Task<>(name, std::move(in_pipes), std::move(out_pipes)), count(0) {
+    : Task<>(name, std::move(in_pipes), std::move(out_pipes)), count_(0),
+      expected_latency_ms_(-1) {
   MockTask_0_2::init_config(config_path);
 }
 bool MockTask_0_2::init_config(std::string config_path) {
-  count = 0;
+  count_ = 0;
   assert(out_pipe_names_.size() == 2);
   writer1_ = gogort::AcquireWriter<message::MockMessage>(out_pipe_names_[0]);
   writer2_ = gogort::AcquireWriter<message::MockMessage>(out_pipe_names_[1]);
+
+  auto &&config = YAML::LoadFile("../../config/mock/" + config_path);
+  frequency_ms_ = config["frequency_ms"].as<int>();
+  expected_latency_ms_ = config["expected_latency_ms"].as<int>();
+
   return true;
 }
 bool MockTask_0_2::Deal() {
   auto &&msg = std::make_shared<message::MockMessage>();
-  count++;
+  count_++;
 
   // Todo(yuting): mock the pre-defined computational load and memory access.
 
@@ -79,15 +92,17 @@ MockTask_1_0::MockTask_1_0(const std::string &name,
                            std::vector<std::string> &&in_pipes,
                            std::vector<std::string> &&out_pipes)
     : Task<MockMessage>(name, std::move(in_pipes), std::move(out_pipes)),
-      count(0) {
+      count_(0), expected_latency_ms_(-1) {
   MockTask_1_0::init_config(config_path);
 }
 bool MockTask_1_0::init_config(std::string config_path) {
-  count = 0;
+  count_ = 0;
+  auto &&config = YAML::LoadFile("../../config/mock/" + config_path);
+  expected_latency_ms_ = config["expected_latency_ms"].as<int>();
   return true;
 }
 bool MockTask_1_0::Deal(std::shared_ptr<message::MockMessage> msg) {
-  count++;
+  count_++;
 
   // Todo(yuting): mock the pre-defined computational load and memory access.
 
@@ -107,17 +122,21 @@ MockTask_1_1::MockTask_1_1(const std::string &name,
                            std::vector<std::string> &&in_pipes,
                            std::vector<std::string> &&out_pipes)
     : Task<MockMessage>(name, std::move(in_pipes), std::move(out_pipes)),
-      count(0) {
+      count_(0), expected_latency_ms_(-1) {
   MockTask_1_1::init_config(config_path);
 }
 bool MockTask_1_1::init_config(std::string config_path) {
-  count = 0;
+  count_ = 0;
   assert(out_pipe_names_.size() == 1);
   writer_ = gogort::AcquireWriter<message::MockMessage>(out_pipe_names_[0]);
+
+  auto &&config = YAML::LoadFile("../../config/mock/" + config_path);
+  expected_latency_ms_ = config["expected_latency_ms"].as<int>();
+
   return true;
 }
 bool MockTask_1_1::Deal(std::shared_ptr<message::MockMessage> msg) {
-  count++;
+  count_++;
 
   // Todo(yuting): mock the pre-defined computational load and memory access.
 
@@ -138,18 +157,22 @@ MockTask_1_2::MockTask_1_2(const std::string &name,
                            std::vector<std::string> &&in_pipes,
                            std::vector<std::string> &&out_pipes)
     : Task<MockMessage>(name, std::move(in_pipes), std::move(out_pipes)),
-      count(0) {
+      count_(0), expected_latency_ms_(-1) {
   MockTask_1_2::init_config(config_path);
 }
 bool MockTask_1_2::init_config(std::string config_path) {
-  count = 0;
+  count_ = 0;
   assert(out_pipe_names_.size() == 2);
   writer1_ = gogort::AcquireWriter<message::MockMessage>(out_pipe_names_[0]);
   writer2_ = gogort::AcquireWriter<message::MockMessage>(out_pipe_names_[1]);
+
+  auto &&config = YAML::LoadFile("../../config/mock/" + config_path);
+  expected_latency_ms_ = config["expected_latency_ms"].as<int>();
+
   return true;
 }
 bool MockTask_1_2::Deal(std::shared_ptr<message::MockMessage> msg) {
-  count++;
+  count_++;
 
   // Todo(yuting): mock the pre-defined computational load and memory access.
 
@@ -172,16 +195,18 @@ MockTask_2_0::MockTask_2_0(const std::string &name,
                            std::vector<std::string> &&out_pipes)
     : Task<MockMessage, MockMessage>(name, std::move(in_pipes),
                                      std::move(out_pipes)),
-      count(0) {
+      count_(0), expected_latency_ms_(-1) {
   MockTask_2_0::init_config(config_path);
 }
 bool MockTask_2_0::init_config(std::string config_path) {
-  count = 0;
+  count_ = 0;
+  auto &&config = YAML::LoadFile("../../config/mock/" + config_path);
+  expected_latency_ms_ = config["expected_latency_ms"].as<int>();
   return true;
 }
 bool MockTask_2_0::Deal(std::shared_ptr<message::MockMessage> msg1,
                         std::shared_ptr<message::MockMessage> msg2) {
-  count++;
+  count_++;
 
   // Todo(yuting): mock the pre-defined computational load and memory access.
 
@@ -203,18 +228,20 @@ MockTask_2_1::MockTask_2_1(const std::string &name,
                            std::vector<std::string> &&out_pipes)
     : Task<MockMessage, MockMessage>(name, std::move(in_pipes),
                                      std::move(out_pipes)),
-      count(0) {
+      count_(0), expected_latency_ms_(-1) {
   MockTask_2_1::init_config(config_path);
 }
 bool MockTask_2_1::init_config(std::string config_path) {
-  count = 0;
+  count_ = 0;
   assert(out_pipe_names_.size() == 1);
   writer_ = gogort::AcquireWriter<message::MockMessage>(out_pipe_names_[0]);
+  auto &&config = YAML::LoadFile("../../config/mock/" + config_path);
+  expected_latency_ms_ = config["expected_latency_ms"].as<int>();
   return true;
 }
 bool MockTask_2_1::Deal(std::shared_ptr<message::MockMessage> msg1,
                         std::shared_ptr<message::MockMessage> msg2) {
-  count++;
+  count_++;
 
   // Todo(yuting): mock the pre-defined computational load and memory access.
 
@@ -237,19 +264,22 @@ MockTask_2_2::MockTask_2_2(const std::string &name,
                            std::vector<std::string> &&out_pipes)
     : Task<MockMessage, MockMessage>(name, std::move(in_pipes),
                                      std::move(out_pipes)),
-      count(0) {
+      count_(0), expected_latency_ms_(-1) {
   MockTask_2_2::init_config(config_path);
 }
 bool MockTask_2_2::init_config(std::string config_path) {
-  count = 0;
+  count_ = 0;
   assert(out_pipe_names_.size() == 2);
   writer1_ = gogort::AcquireWriter<message::MockMessage>(out_pipe_names_[0]);
   writer2_ = gogort::AcquireWriter<message::MockMessage>(out_pipe_names_[1]);
+
+  auto &&config = YAML::LoadFile("../../config/mock/" + config_path);
+  expected_latency_ms_ = config["expected_latency_ms"].as<int>();
   return true;
 }
 bool MockTask_2_2::Deal(std::shared_ptr<message::MockMessage> msg1,
                         std::shared_ptr<message::MockMessage> msg2) {
-  count++;
+  count_++;
 
   // Todo(yuting): mock the pre-defined computational load and memory access.
 
@@ -268,13 +298,13 @@ std::shared_ptr<gogort::InvokerBase> MockTask_2_2::get_invoker() {
 
 // Mocking task with 3 input and 0 output
 bool MockTask_3_0::init_config(std::string config_path) {
-  count = 0;
+  count_ = 0;
   return true;
 }
 bool MockTask_3_0::Deal(std::shared_ptr<message::MockMessage> msg1,
                         std::shared_ptr<message::MockMessage> msg2,
                         std::shared_ptr<message::MockMessage> msg3) {
-  count++;
+  count_++;
 
   // Todo(yuting): mock the pre-defined computational load and memory access.
 
@@ -294,7 +324,7 @@ std::shared_ptr<gogort::InvokerBase> MockTask_3_0::get_invoker() {
 
 // Mocking task with 3 input and 1 output
 bool MockTask_3_1::init_config(std::string config_path) {
-  count = 0;
+  count_ = 0;
   assert(out_pipe_names_.size() == 1);
   writer_ = gogort::AcquireWriter<message::MockMessage>(out_pipe_names_[0]);
   return true;
@@ -302,7 +332,7 @@ bool MockTask_3_1::init_config(std::string config_path) {
 bool MockTask_3_1::Deal(std::shared_ptr<message::MockMessage> msg1,
                         std::shared_ptr<message::MockMessage> msg2,
                         std::shared_ptr<message::MockMessage> msg3) {
-  count++;
+  count_++;
 
   // Todo(yuting): mock the pre-defined computational load and memory access.
 
@@ -323,7 +353,7 @@ std::shared_ptr<gogort::InvokerBase> MockTask_3_1::get_invoker() {
 
 // Mocking task with 3 input and 2 output
 bool MockTask_3_2::init_config(std::string config_path) {
-  count = 0;
+  count_ = 0;
   assert(out_pipe_names_.size() == 2);
   writer1_ = gogort::AcquireWriter<message::MockMessage>(out_pipe_names_[0]);
   writer2_ = gogort::AcquireWriter<message::MockMessage>(out_pipe_names_[1]);
@@ -332,7 +362,7 @@ bool MockTask_3_2::init_config(std::string config_path) {
 bool MockTask_3_2::Deal(std::shared_ptr<message::MockMessage> msg1,
                         std::shared_ptr<message::MockMessage> msg2,
                         std::shared_ptr<message::MockMessage> msg3) {
-  count++;
+  count_++;
 
   // Todo(yuting): mock the pre-defined computational load and memory access.
 

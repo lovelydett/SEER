@@ -19,7 +19,8 @@ namespace task {
 // Mocking task with 0 input and 1 output
 class MockTask_0_1 : public Task<> {
 private:
-  int count;
+  int count_;
+  int expected_latency_ms_;
   bool init_config(std::string) override;
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer_;
 
@@ -34,7 +35,8 @@ public:
 // Mocking task with 0 input and 2 output
 class MockTask_0_2 : public Task<> {
 private:
-  int count;
+  int count_;
+  int expected_latency_ms_;
   bool init_config(std::string) override;
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer1_;
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer2_;
@@ -50,7 +52,8 @@ public:
 // Mocking task with 1 input and 0 output
 class MockTask_1_0 : public Task<MockMessage> {
 private:
-  int count;
+  int count_;
+  int expected_latency_ms_;
   bool init_config(std::string) override;
 
 public:
@@ -64,7 +67,8 @@ public:
 // Mocking task with 1 input and 1 output
 class MockTask_1_1 : public Task<MockMessage> {
 private:
-  int count;
+  int count_;
+  int expected_latency_ms_;
   bool init_config(std::string) override;
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer_;
 
@@ -79,7 +83,8 @@ public:
 // Mocking task with 1 input and 2 output
 class MockTask_1_2 : public Task<MockMessage> {
 private:
-  int count;
+  int count_;
+  int expected_latency_ms_;
   bool init_config(std::string) override;
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer1_;
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer2_;
@@ -95,7 +100,8 @@ public:
 // Mocking task with 2 input and 0 output
 class MockTask_2_0 : public Task<MockMessage, MockMessage> {
 private:
-  int count;
+  int count_;
+  int expected_latency_ms_;
   bool init_config(std::string) override;
 
 public:
@@ -110,7 +116,8 @@ public:
 // Mocking task with 2 input and 1 output
 class MockTask_2_1 : public Task<MockMessage, MockMessage> {
 private:
-  int count;
+  int count_;
+  int expected_latency_ms_;
   bool init_config(std::string) override;
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer_;
 
@@ -126,7 +133,8 @@ public:
 // Mocking task with 2 input and 2 output
 class MockTask_2_2 : public Task<MockMessage, MockMessage> {
 private:
-  int count;
+  int count_;
+  int expected_latency_ms_;
   bool init_config(std::string) override;
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer1_;
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer2_;
@@ -143,7 +151,7 @@ public:
 // Mocking task with 3 input and 0 output
 class MockTask_3_0 : public Task<MockMessage, MockMessage, MockMessage> {
 private:
-  int count;
+  int count_;
   bool init_config(std::string) override;
 
 public:
@@ -156,7 +164,7 @@ public:
 // Mocking task with 3 input and 1 output
 class MockTask_3_1 : public Task<MockMessage, MockMessage, MockMessage> {
 private:
-  int count;
+  int count_;
   bool init_config(std::string) override;
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer_;
 
@@ -170,7 +178,7 @@ public:
 // Mocking task with 3 input and 2 output
 class MockTask_3_2 : public Task<MockMessage, MockMessage, MockMessage> {
 private:
-  int count;
+  int count_;
   bool init_config(std::string) override;
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer1_;
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer2_;
