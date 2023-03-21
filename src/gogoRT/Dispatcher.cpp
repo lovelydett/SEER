@@ -48,7 +48,7 @@ bool Dispatcher::init_config() {
       LOG(ERROR) << "Failed to create task: " << task_name;
       exit(0);
     }
-    // MUST keep a copy of the task pointer!!!!!!!!!!
+    // MUST keep a copy of the task pointer, otherwise we lose it!!!!!!!
     id_to_task_[p_task->get_task_id()] = p_task;
     invokers_.push_back(p_task->get_invoker());
   }
