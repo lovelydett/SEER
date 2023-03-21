@@ -11,6 +11,7 @@
 #include <string>
 #include <unordered_set>
 #include <utility>
+#include <vector>
 
 namespace gogort {
 
@@ -26,14 +27,20 @@ protected:
   const std::string task_name_;
   uint16 priority_ = 0;
   std::unordered_set<uint16> affinities_;
+  std::vector<std::string> &&in_pipe_names_;
+  std::vector<std::string> &&out_pipe_names_;
 
 protected:
   virtual bool init_config(std::string) = 0;
 
 public:
   TaskBase() = delete;
-  explicit TaskBase(std::string task_name)
-      : task_name_(std::move(task_name)), id_(get_next_uuid()){};
+  explicit TaskBase(std::string task_name,
+                    std::vector<std::string> &&in_pipe_names,
+                    std::vector<std::string> &&out_pipe_names)
+      : task_name_(std::move(task_name)), id_(get_next_uuid()),
+        in_pipe_names_(std::move(in_pipe_names)),
+        out_pipe_names_(std::move(out_pipe_names)){};
   bool Init(const gogo_id_t id, const std::string &config_path) {
     if (id == 0) {
       return false;
@@ -53,7 +60,10 @@ template <class MSG0 = NullClass, class MSG1 = NullClass,
 class Task : public TaskBase {
 public:
   Task() = delete;
-  Task(const std::string task_name) : TaskBase(task_name) {}
+  Task(const std::string task_name, std::vector<std::string> &&in_pipe_names,
+       std::vector<std::string> &&out_pipe_names)
+      : TaskBase(task_name, std::move(in_pipe_names),
+                 std::move(out_pipe_names)) {}
   virtual bool Deal(std::shared_ptr<MSG0>, std::shared_ptr<MSG1>,
                     std::shared_ptr<MSG2>, std::shared_ptr<MSG3>) = 0;
 };
@@ -68,8 +78,11 @@ protected:
 public:
   Task() = delete;
   // Set frequency to -1 before load it from config file
-  explicit Task(const std::string task_name)
-      : TaskBase(task_name), frequency_ms_(-1){};
+  Task(const std::string task_name, std::vector<std::string> &&in_pipe_names,
+       std::vector<std::string> &&out_pipe_names)
+      : TaskBase(task_name, std::move(in_pipe_names),
+                 std::move(out_pipe_names)),
+        frequency_ms_(-1) {}
   virtual bool Deal() = 0;
 };
 
@@ -78,7 +91,10 @@ template <class MSG0>
 class Task<MSG0, NullClass, NullClass, NullClass> : public TaskBase {
 public:
   Task() = delete;
-  explicit Task(const std::string task_name) : TaskBase(task_name){};
+  Task(const std::string task_name, std::vector<std::string> &&in_pipe_names,
+       std::vector<std::string> &&out_pipe_names)
+      : TaskBase(task_name, std::move(in_pipe_names),
+                 std::move(out_pipe_names)) {}
   virtual bool Deal(std::shared_ptr<MSG0>) = 0;
 };
 
@@ -87,7 +103,10 @@ template <class MSG0, class MSG1>
 class Task<MSG0, MSG1, NullClass, NullClass> : public TaskBase {
 public:
   Task() = delete;
-  explicit Task(const std::string task_name) : TaskBase(task_name){};
+  Task(const std::string task_name, std::vector<std::string> &&in_pipe_names,
+       std::vector<std::string> &&out_pipe_names)
+      : TaskBase(task_name, std::move(in_pipe_names),
+                 std::move(out_pipe_names)) {}
   virtual bool Deal(std::shared_ptr<MSG0>, std::shared_ptr<MSG1>) = 0;
 };
 
@@ -96,7 +115,10 @@ template <class MSG0, class MSG1, class MSG2>
 class Task<MSG0, MSG1, MSG2, NullClass> : public TaskBase {
 public:
   Task() = delete;
-  explicit Task(const std::string task_name) : TaskBase(task_name){};
+  Task(const std::string task_name, std::vector<std::string> &&in_pipe_names,
+       std::vector<std::string> &&out_pipe_names)
+      : TaskBase(task_name, std::move(in_pipe_names),
+                 std::move(out_pipe_names)) {}
   virtual bool Deal(std::shared_ptr<MSG0>, std::shared_ptr<MSG1>,
                     std::shared_ptr<MSG2>) = 0;
 };

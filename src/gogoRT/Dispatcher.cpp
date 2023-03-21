@@ -16,14 +16,19 @@ std::shared_ptr<Dispatcher> Dispatcher::instance_ = nullptr;
 Dispatcher::Dispatcher() : scheduler_(nullptr) { init_config(); }
 
 bool Dispatcher::init_config() {
-  YAML::Node config = YAML::LoadFile("../../configs/task_graph_example.yaml");
+  YAML::Node config = YAML::LoadFile("../../config/task_graph_example.yaml");
   LOG(INFO) << config["tasks"];
 
   // Init tasks based on config file
   for (auto &&task : config["tasks"]) {
     auto &&task_name = task["task_name"].as<std::string>();
     auto &&config_file = task["config_file"].as<std::string>();
-    auto p_task = TaskFactory::Instance()->CreateTask(task_name, config_file);
+    auto &&in_pipe_names = task["in_pipe_names"].as<std::vector<std::string>>();
+    auto &&out_pipe_names =
+        task["out_pipe_names"].as<std::vector<std::string>>();
+    auto p_task = TaskFactory::Instance()->CreateTask(
+        task_name, config_file, std::move(in_pipe_names),
+        std::move(out_pipe_names));
     if (p_task == nullptr) {
       LOG(ERROR) << "Failed to create task: " << task_name;
       exit(0);
@@ -37,7 +42,6 @@ bool Dispatcher::init_config() {
   // Init workers based on config file
   const int num_workers = config["num_workers"].as<int>();
   const int priority_range = config["priority_range"].as<int>();
-  LOG(INFO) << num_workers << ", " << priority_range;
   int a[num_workers];
   a[0] = 0;
   // num_workers = 1; // Set num of workers to 1 to debug

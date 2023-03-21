@@ -12,9 +12,9 @@ add_subdirectory(third_party/yaml-cpp)
 add_subdirectory(third_party/glog)
 
 #Use serial from github to write the communication
-add_subdirectory(third_party/serial)
+#add_subdirectory(third_party/serial)
 
 # Yuting: add sub directories
-# add_subdirectory(src)
+add_subdirectory(src)
 
 add_subdirectory(experimental)

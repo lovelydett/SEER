@@ -11,11 +11,14 @@
 namespace task {
 
 DummyTask2::DummyTask2(const std::string task_name,
-                       const std::string config_file)
-    : Task<>(task_name), count(0) {
-  writer_ = gogort::AcquireWriter<DummyMessage2>("dummy_pipe_2");
+                       const std::string config_file,
+                       std::vector<std::string> &&in_pipes,
+                       std::vector<std::string> &&out_pipes)
+    : Task<>(task_name, std::move(in_pipes), std::move(out_pipes)), count(0) {
+  assert(!out_pipe_names_.empty());
+  writer_ = gogort::AcquireWriter<DummyMessage2>(out_pipe_names_[0]);
   assert(writer_ != nullptr);
-  init_config(config_file);
+  DummyTask2::init_config(config_file);
 }
 
 bool DummyTask2::Deal() {
@@ -31,7 +34,7 @@ bool DummyTask2::Deal() {
   return true;
 }
 bool DummyTask2::init_config(const std::string config_file) {
-  YAML::Node config = YAML::LoadFile("../../configs/tasks/" + config_file);
+  YAML::Node config = YAML::LoadFile("../../config/tasks/" + config_file);
   frequency_ms_ = config["frequency_ms"].as<int16>();
   priority_ = config["priority"].as<uint16>();
   affinities_.clear();

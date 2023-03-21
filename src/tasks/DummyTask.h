@@ -11,6 +11,7 @@
 #include "Task.h"
 
 #include <memory>
+#include <vector>
 
 using gogort::Task;
 using message::DummyMessage;
@@ -25,7 +26,9 @@ private:
 
 public:
   DummyTask() = delete;
-  DummyTask(std::string, std::string);
+  DummyTask(std::string task_name, std::string config_file,
+            std::vector<std::string> &&in_pipes,
+            std::vector<std::string> &&out_pipes);
   bool Deal() override;
   std::shared_ptr<gogort::InvokerBase> get_invoker() override;
 };

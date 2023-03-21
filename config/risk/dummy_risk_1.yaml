@@ -1,0 +1,3 @@
+sensor_pipe_name: dummy_pipe_1
+
+expected_interval_ms: 100.00
