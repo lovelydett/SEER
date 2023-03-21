@@ -29,4 +29,14 @@ std::string Routine::get_task_name() const { return task_name_; }
 bool Routine::is_finished() const { return is_finished_; }
 uint16 Routine::get_priority() const { return priority_; }
 
+// Wrapper can only be added, not removable
+void Routine::add_wrapper(std::function<void()> before,
+                          std::function<void()> after) {
+  func_ = [&]() {
+    before();
+    func_();
+    after();
+  };
+}
+
 } // namespace gogort

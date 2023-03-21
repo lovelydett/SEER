@@ -27,6 +27,7 @@ public:
   [[nodiscard]] std::string get_task_name() const;
   [[nodiscard]] uint16 get_priority() const;
   [[nodiscard]] bool is_finished() const;
+  void add_wrapper(std::function<void()>, std::function<void()>);
 };
 
 } // namespace gogort
