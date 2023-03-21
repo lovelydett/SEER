@@ -36,16 +36,25 @@ private:
   std::shared_ptr<PipeReader<MSG1>> pipe1_;
   std::shared_ptr<PipeReader<MSG2>> pipe2_;
   std::shared_ptr<PipeReader<MSG3>> pipe3_;
+  std::shared_ptr<MSG0> msg0_ = nullptr;
+  std::shared_ptr<MSG1> msg1_ = nullptr;
+  std::shared_ptr<MSG2> msg2_ = nullptr;
+  std::shared_ptr<MSG3> msg3_ = nullptr;
 
 private:
   std::shared_ptr<Routine> InnerInvoke() override {
-    auto msg0 = pipe0_->Read();
-    auto msg1 = pipe1_->Read();
-    auto msg2 = pipe2_->Read();
-    auto msg3 = pipe3_->Read();
-    if (msg0 && msg1 && msg2 && msg3) {
+    msg0_ = (msg0_ == nullptr) ? pipe0_->Read() : msg0_;
+    msg1_ = (msg1_ == nullptr) ? pipe1_->Read() : msg1_;
+    msg2_ = (msg2_ == nullptr) ? pipe2_->Read() : msg2_;
+    msg3_ = (msg3_ == nullptr) ? pipe3_->Read() : msg3_;
+
+    if (msg0_ && msg1_ && msg2_ && msg3_) {
       auto &&routine_func = std::bind(&Task<MSG0, MSG1, MSG2, MSG3>::Deal,
-                                      &task_, msg0, msg1, msg2, msg3);
+                                      &task_, msg0_, msg1_, msg2_, msg3_);
+      msg0_ = nullptr;
+      msg1_ = nullptr;
+      msg2_ = nullptr;
+      msg3_ = nullptr;
       return std::make_shared<Routine>(routine_func, task_->get_task_name(),
                                        task_->get_priority());
     }
@@ -98,12 +107,14 @@ class Invoker<MSG0, NullClass, NullClass, NullClass> : public InvokerBase {
 private:
   std::shared_ptr<Task<MSG0>> task_ = nullptr;
   std::shared_ptr<PipeReader<MSG0>> pipe0_ = nullptr;
+  std::shared_ptr<MSG0> msg0_ = nullptr;
 
 private:
   std::shared_ptr<Routine> InnerInvoke() override {
-    auto msg0 = pipe0_->Read();
-    if (msg0) {
-      auto &&routine_func = std::bind(&Task<MSG0>::Deal, task_, msg0);
+    msg0_ = (msg0_ == nullptr) ? pipe0_->Read() : msg0_;
+    if (msg0_) {
+      auto &&routine_func = std::bind(&Task<MSG0>::Deal, task_, msg0_);
+      msg0_ = nullptr;
       return std::make_shared<Routine>(routine_func, task_->get_task_name(),
                                        task_->get_priority());
     }
@@ -124,14 +135,18 @@ private:
   std::shared_ptr<Task<MSG0, MSG1>> task_ = nullptr;
   std::shared_ptr<PipeReader<MSG0>> pipe0_ = nullptr;
   std::shared_ptr<PipeReader<MSG1>> pipe1_ = nullptr;
+  std::shared_ptr<MSG0> msg0_ = nullptr;
+  std::shared_ptr<MSG1> msg1_ = nullptr;
 
 private:
   std::shared_ptr<Routine> InnerInvoke() override {
-    auto msg0 = pipe0_->Read();
-    auto msg1 = pipe1_->Read();
-    if (msg0 && msg1) {
+    msg0_ = (msg0_ == nullptr) ? pipe0_->Read() : msg0_;
+    msg1_ = (msg1_ == nullptr) ? pipe1_->Read() : msg1_;
+    if (msg0_ && msg1_) {
       auto &&routine_func =
-          std::bind(&Task<MSG0, MSG1>::Deal, task_, msg0, msg1);
+          std::bind(&Task<MSG0, MSG1>::Deal, task_, msg0_, msg1_);
+      msg0_ = nullptr;
+      msg1_ = nullptr;
       return std::make_shared<Routine>(routine_func, task_->get_task_name(),
                                        task_->get_priority());
     }
@@ -155,15 +170,21 @@ private:
   std::shared_ptr<PipeReader<MSG0>> pipe0_ = nullptr;
   std::shared_ptr<PipeReader<MSG1>> pipe1_ = nullptr;
   std::shared_ptr<PipeReader<MSG2>> pipe2_ = nullptr;
+  std::shared_ptr<MSG0> msg0_ = nullptr;
+  std::shared_ptr<MSG1> msg1_ = nullptr;
+  std::shared_ptr<MSG2> msg2_ = nullptr;
 
 private:
   std::shared_ptr<Routine> InnerInvoke() override {
-    auto msg0 = pipe0_->Read();
-    auto msg1 = pipe1_->Read();
-    auto msg2 = pipe2_->Read();
-    if (msg0 && msg1 && msg2) {
+    msg0_ = (msg0_ == nullptr) ? pipe0_->Read() : msg0_;
+    msg1_ = (msg1_ == nullptr) ? pipe1_->Read() : msg1_;
+    msg2_ = (msg2_ == nullptr) ? pipe2_->Read() : msg2_;
+    if (msg0_ && msg1_ && msg2_) {
       auto &&routine_func =
-          std::bind(&Task<MSG0, MSG1, MSG2>::Deal, task_, msg0, msg1, msg2);
+          std::bind(&Task<MSG0, MSG1, MSG2>::Deal, task_, msg0_, msg1_, msg2_);
+      msg0_ = nullptr;
+      msg1_ = nullptr;
+      msg2_ = nullptr;
       return std::make_shared<Routine>(routine_func, task_->get_task_name(),
                                        task_->get_priority());
     }
