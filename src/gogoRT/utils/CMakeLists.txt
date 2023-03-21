@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
-project(gogort_utils)
+set(MODULE_NAME "lib_utils")
 
 FILE(GLOB SRC_LIST "*.cpp" "*.h")
 
-add_library(${PROJECT_NAME} STATIC ${SRC_LIST})
+add_library(${MODULE_NAME} ${SRC_LIST})
 
-target_include_directories(${PROJECT_NAME} PUBLIC ./)
+target_include_directories(${MODULE_NAME} PUBLIC ./)
