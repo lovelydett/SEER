@@ -13,9 +13,9 @@ DummyScheduler::DummyScheduler(std::vector<std::shared_ptr<Worker>> &workers)
 
 bool DummyScheduler::DoOnce() {
   // Simply pick the first routine for next worker.
-  LOG(INFO) << "DummyScheduler scheduling";
+  // LOG(INFO) << "DummyScheduler scheduling";
   if (routines_.empty()) {
-    LOG(INFO) << "No routine to schedule";
+    // LOG(INFO) << "No routine to schedule";
     return true;
   }
   for (auto &worker : workers_) {

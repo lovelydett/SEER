@@ -30,13 +30,16 @@ bool MockTask_0_1::init_config(std::string config_path) {
   frequency_ms_ = config["frequency_ms"].as<int>();
   expected_latency_ms_ = config["expected_latency_ms"].as<int>();
 
+  // Todo(yuting): load workload type and io_load_ from config
+  workload_ = std::make_shared<MonteCarloPiWorkload>(0.5);
+
   return true;
 }
 bool MockTask_0_1::Deal() {
   auto &&msg = std::make_shared<message::MockMessage>();
   count_++;
 
-  // Todo(yuting): mock the pre-defined computational load and memory access.
+  workload_->RunFor(expected_latency_ms_);
 
   writer_->Publish(msg);
   return true;
@@ -67,13 +70,15 @@ bool MockTask_0_2::init_config(std::string config_path) {
   frequency_ms_ = config["frequency_ms"].as<int>();
   expected_latency_ms_ = config["expected_latency_ms"].as<int>();
 
+  workload_ = std::make_shared<MonteCarloPiWorkload>(0.5);
+
   return true;
 }
 bool MockTask_0_2::Deal() {
   auto &&msg = std::make_shared<message::MockMessage>();
   count_++;
 
-  // Todo(yuting): mock the pre-defined computational load and memory access.
+  workload_->RunFor(expected_latency_ms_);
 
   writer1_->Publish(msg);
   writer2_->Publish(msg);
@@ -99,12 +104,13 @@ bool MockTask_1_0::init_config(std::string config_path) {
   count_ = 0;
   auto &&config = YAML::LoadFile("../../config/mock/" + config_path);
   expected_latency_ms_ = config["expected_latency_ms"].as<int>();
+  workload_ = std::make_shared<MonteCarloPiWorkload>(0.5);
   return true;
 }
 bool MockTask_1_0::Deal(std::shared_ptr<message::MockMessage> msg) {
   count_++;
 
-  // Todo(yuting): mock the pre-defined computational load and memory access.
+  workload_->RunFor(expected_latency_ms_);
 
   return true;
 }
@@ -133,12 +139,14 @@ bool MockTask_1_1::init_config(std::string config_path) {
   auto &&config = YAML::LoadFile("../../config/mock/" + config_path);
   expected_latency_ms_ = config["expected_latency_ms"].as<int>();
 
+  workload_ = std::make_shared<MonteCarloPiWorkload>(0.5);
+
   return true;
 }
 bool MockTask_1_1::Deal(std::shared_ptr<message::MockMessage> msg) {
   count_++;
 
-  // Todo(yuting): mock the pre-defined computational load and memory access.
+  workload_->RunFor(expected_latency_ms_);
 
   writer_->Publish(msg);
   return true;
@@ -169,12 +177,14 @@ bool MockTask_1_2::init_config(std::string config_path) {
   auto &&config = YAML::LoadFile("../../config/mock/" + config_path);
   expected_latency_ms_ = config["expected_latency_ms"].as<int>();
 
+  workload_ = std::make_shared<MonteCarloPiWorkload>(0.5);
+
   return true;
 }
 bool MockTask_1_2::Deal(std::shared_ptr<message::MockMessage> msg) {
   count_++;
 
-  // Todo(yuting): mock the pre-defined computational load and memory access.
+  workload_->RunFor(expected_latency_ms_);
 
   writer1_->Publish(msg);
   writer2_->Publish(msg);
@@ -202,13 +212,16 @@ bool MockTask_2_0::init_config(std::string config_path) {
   count_ = 0;
   auto &&config = YAML::LoadFile("../../config/mock/" + config_path);
   expected_latency_ms_ = config["expected_latency_ms"].as<int>();
+
+  workload_ = std::make_shared<MonteCarloPiWorkload>(0.5);
+
   return true;
 }
 bool MockTask_2_0::Deal(std::shared_ptr<message::MockMessage> msg1,
                         std::shared_ptr<message::MockMessage> msg2) {
   count_++;
 
-  // Todo(yuting): mock the pre-defined computational load and memory access.
+  workload_->RunFor(expected_latency_ms_);
 
   return true;
 }
@@ -237,13 +250,16 @@ bool MockTask_2_1::init_config(std::string config_path) {
   writer_ = gogort::AcquireWriter<message::MockMessage>(out_pipe_names_[0]);
   auto &&config = YAML::LoadFile("../../config/mock/" + config_path);
   expected_latency_ms_ = config["expected_latency_ms"].as<int>();
+
+  workload_ = std::make_shared<MonteCarloPiWorkload>(0.5);
+
   return true;
 }
 bool MockTask_2_1::Deal(std::shared_ptr<message::MockMessage> msg1,
                         std::shared_ptr<message::MockMessage> msg2) {
   count_++;
 
-  // Todo(yuting): mock the pre-defined computational load and memory access.
+  workload_->RunFor(expected_latency_ms_);
 
   writer_->Publish(msg1);
   return true;
@@ -275,13 +291,16 @@ bool MockTask_2_2::init_config(std::string config_path) {
 
   auto &&config = YAML::LoadFile("../../config/mock/" + config_path);
   expected_latency_ms_ = config["expected_latency_ms"].as<int>();
+
+  workload_ = std::make_shared<MonteCarloPiWorkload>(0.5);
+
   return true;
 }
 bool MockTask_2_2::Deal(std::shared_ptr<message::MockMessage> msg1,
                         std::shared_ptr<message::MockMessage> msg2) {
   count_++;
 
-  // Todo(yuting): mock the pre-defined computational load and memory access.
+  workload_->RunFor(expected_latency_ms_);
 
   writer1_->Publish(msg1);
   writer2_->Publish(msg2);

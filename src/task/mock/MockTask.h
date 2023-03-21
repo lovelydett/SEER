@@ -8,6 +8,7 @@
 #include "../../Comm/PipeWriter.h"
 #include "../../Task.h"
 #include "../../messages/mock/MockMessage.h"
+#include "MockWorkload.h"
 
 #include <memory>
 
@@ -23,6 +24,7 @@ private:
   int expected_latency_ms_;
   bool init_config(std::string) override;
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer_;
+  std::shared_ptr<MockWorkload> workload_;
 
 public:
   MockTask_0_1(const std::string &name, const std::string &config_path,
@@ -40,6 +42,7 @@ private:
   bool init_config(std::string) override;
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer1_;
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer2_;
+  std::shared_ptr<MockWorkload> workload_;
 
 public:
   MockTask_0_2(const std::string &name, const std::string &config_path,
@@ -55,6 +58,7 @@ private:
   int count_;
   int expected_latency_ms_;
   bool init_config(std::string) override;
+  std::shared_ptr<MockWorkload> workload_;
 
 public:
   MockTask_1_0(const std::string &name, const std::string &config_path,
@@ -71,6 +75,7 @@ private:
   int expected_latency_ms_;
   bool init_config(std::string) override;
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer_;
+  std::shared_ptr<MockWorkload> workload_;
 
 public:
   MockTask_1_1(const std::string &name, const std::string &config_path,
@@ -88,6 +93,7 @@ private:
   bool init_config(std::string) override;
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer1_;
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer2_;
+  std::shared_ptr<MockWorkload> workload_;
 
 public:
   MockTask_1_2(const std::string &name, const std::string &config_path,
@@ -103,6 +109,7 @@ private:
   int count_;
   int expected_latency_ms_;
   bool init_config(std::string) override;
+  std::shared_ptr<MockWorkload> workload_;
 
 public:
   MockTask_2_0(const std::string &name, const std::string &config_path,
@@ -120,6 +127,7 @@ private:
   int expected_latency_ms_;
   bool init_config(std::string) override;
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer_;
+  std::shared_ptr<MockWorkload> workload_;
 
 public:
   MockTask_2_1(const std::string &name, const std::string &config_path,
@@ -138,6 +146,7 @@ private:
   bool init_config(std::string) override;
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer1_;
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer2_;
+  std::shared_ptr<MockWorkload> workload_;
 
 public:
   MockTask_2_2(const std::string &name, const std::string &config_path,
@@ -153,6 +162,7 @@ class MockTask_3_0 : public Task<MockMessage, MockMessage, MockMessage> {
 private:
   int count_;
   bool init_config(std::string) override;
+  std::shared_ptr<MockWorkload> workload_;
 
 public:
   bool Deal(std::shared_ptr<MockMessage> msg1,
@@ -167,6 +177,7 @@ private:
   int count_;
   bool init_config(std::string) override;
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer_;
+  std::shared_ptr<MockWorkload> workload_;
 
 public:
   bool Deal(std::shared_ptr<MockMessage> msg1,
@@ -182,6 +193,7 @@ private:
   bool init_config(std::string) override;
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer1_;
   std::shared_ptr<gogort::PipeWriter<MockMessage>> writer2_;
+  std::shared_ptr<MockWorkload> workload_;
 
 public:
   bool Deal(std::shared_ptr<MockMessage> msg1,

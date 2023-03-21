@@ -13,10 +13,12 @@ using std::chrono::duration_cast;
 void Timer::start() {
   start_ = high_resolution_clock::now();
   last_ = high_resolution_clock::now();
+  check_points_.clear();
   is_started_ = true;
 }
 uint64_t Timer::get_ms_and_check(const std::string event_name) {
   auto elapse_ms = get_ms();
+  last_ = high_resolution_clock::now();
   check_points_.emplace_back(elapse_ms, event_name);
   return elapse_ms;
 }
@@ -25,7 +27,6 @@ uint64_t Timer::get_ms() {
   auto elapse_ms =
       duration_cast<duration<uint64_t, std::ratio<1, 1000>>>(now - last_)
           .count();
-  last_ = now;
   return elapse_ms;
 }
 uint64_t Timer::get_ms_and_reset() {

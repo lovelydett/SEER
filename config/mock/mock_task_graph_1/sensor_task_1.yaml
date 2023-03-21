@@ -7,4 +7,4 @@ is_time_series: false
 # the expected latency in ms
 expected_latency_ms: 3
 
-frequency_ms: 125
+frequency_ms: 12

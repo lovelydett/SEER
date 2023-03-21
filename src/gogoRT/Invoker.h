@@ -93,7 +93,7 @@ private:
     if (elapse_ms >= frequency_) {
       timer_.get_ms_and_check();
       auto &&routine_func = std::bind(&Task<>::Deal, task_);
-      LOG(INFO) << "Invoke timer task: " << task_->get_task_name();
+      LOG(INFO) << "Invoking task: " << task_->get_task_name();
       return std::make_shared<Routine>(routine_func, task_->get_task_name(),
                                        task_->get_priority());
     }
@@ -115,6 +115,7 @@ private:
     if (msg0_) {
       auto &&routine_func = std::bind(&Task<MSG0>::Deal, task_, msg0_);
       msg0_ = nullptr;
+      LOG(INFO) << "Invoking task: " << task_->get_task_name();
       return std::make_shared<Routine>(routine_func, task_->get_task_name(),
                                        task_->get_priority());
     }
@@ -147,6 +148,7 @@ private:
           std::bind(&Task<MSG0, MSG1>::Deal, task_, msg0_, msg1_);
       msg0_ = nullptr;
       msg1_ = nullptr;
+      LOG(INFO) << "Invoking task: " << task_->get_task_name();
       return std::make_shared<Routine>(routine_func, task_->get_task_name(),
                                        task_->get_priority());
     }
@@ -185,6 +187,7 @@ private:
       msg0_ = nullptr;
       msg1_ = nullptr;
       msg2_ = nullptr;
+      LOG(INFO) << "Invoking task: " << task_->get_task_name();
       return std::make_shared<Routine>(routine_func, task_->get_task_name(),
                                        task_->get_priority());
     }

@@ -6,6 +6,7 @@
 #include "../../gogoRT/utils/utils.h"
 
 #include <cassert>
+#include <glog/logging.h>
 
 namespace task {
 
@@ -25,6 +26,7 @@ MonteCarloPiWorkload::MonteCarloPiWorkload(float io_load)
 void MonteCarloPiWorkload::RunFor(uint64_t duration_ms) {
   int hit = 0, count = 0;
   int pos[2] = {0, CAPACITY - 1}, idx = 0;
+  double pi;
   timer_.start();
   while (timer_.get_ms() < duration_ms)
     [[likely]] {
@@ -34,12 +36,14 @@ void MonteCarloPiWorkload::RunFor(uint64_t duration_ms) {
       if (x * x + y * y <= 1) {
         ++hit;
       }
-      double pi = 4.0 * hit / count;
+      pi = 4.0 * hit / count;
       if (random_double(0, 1) < io_load_) {
         result_[pos[idx]] = pi;
         idx = 1 - idx; // idx alternates between 0 and 1
       }
     }
+  LOG(INFO) << "MonteCarloPiWorkload ends in " << timer_.get_ms()
+            << " ms with pi = " << pi;
 }
 
 MonteCarloPiWorkload::~MonteCarloPiWorkload() {
@@ -61,7 +65,7 @@ MatMulWorkload::MatMulWorkload(float io_load) : MockWorkload(io_load) {
 }
 
 void MatMulWorkload::RunFor(uint64_t duration_ms) {
-  timer_.start();
+  timer_.get_ms_and_reset();
   while (true) {
     for (int i = 0; i < N; ++i) {
       for (int j = 0; j < N; ++j) {
