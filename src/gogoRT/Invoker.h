@@ -8,22 +8,12 @@
 #include "Comm/PipeReader.h"
 #include "Routine.h"
 #include "Task.h"
+#include "utils/time_utils.h"
 
 #include <chrono>
 #include <functional>
 #include <memory>
 #include <utility>
-
-using std::chrono::duration_cast;
-using std::chrono::high_resolution_clock;
-
-// Todo(yuting): figure out use steady clock or system clock
-// If on MAC
-#ifdef __APPLE__
-using time_point = std::chrono::steady_clock::time_point;
-#else
-using time_point = std::chrono::system_clock::time_point;
-#endif
 
 namespace gogort {
 
@@ -78,23 +68,21 @@ template <>
 class Invoker<NullClass, NullClass, NullClass, NullClass> : public InvokerBase {
 public:
   Invoker() = delete;
-  explicit Invoker(std::shared_ptr<Task<>> task, const int16 frequency_ms)
+  explicit Invoker(std::shared_ptr<Task<>> task, const int16_t frequency_ms)
       : task_(std::move(task)), frequency_(frequency_ms) {
-    last_invoke_time_point_ = high_resolution_clock::now();
+    timer_.start();
   }
 
 private:
   std::shared_ptr<Task<>> task_ = nullptr;
-  const std::chrono::milliseconds frequency_;
-  time_point last_invoke_time_point_;
+  const int16_t frequency_;
+  Timer timer_;
 
 private:
   std::shared_ptr<Routine> InnerInvoke() override {
-    auto now_time_point = high_resolution_clock::now();
-    auto time_elapsed = duration_cast<std::chrono::milliseconds>(
-        now_time_point - last_invoke_time_point_);
-    if (duration_cast<std::chrono::milliseconds>(time_elapsed) >= frequency_) {
-      last_invoke_time_point_ = now_time_point;
+    auto elapse_ms = timer_.get_ms();
+    if (elapse_ms >= frequency_) {
+      timer_.get_ms_and_check();
       auto &&routine_func = std::bind(&Task<>::Deal, task_);
       LOG(INFO) << "Invoke timer task: " << task_->get_task_name();
       return std::make_shared<Routine>(routine_func, task_->get_task_name(),

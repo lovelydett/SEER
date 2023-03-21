@@ -13,17 +13,29 @@ using std::chrono::duration_cast;
 void Timer::start() {
   start_ = high_resolution_clock::now();
   last_ = high_resolution_clock::now();
+  is_started_ = true;
 }
-uint64_t Timer::check_and_get_ms(const std::string event_name = "") {
+uint64_t Timer::get_ms_and_check(const std::string event_name) {
+  auto elapse_ms = get_ms();
+  check_points_.emplace_back(elapse_ms, event_name);
+  return elapse_ms;
+}
+uint64_t Timer::get_ms() {
   auto now = high_resolution_clock::now();
   auto elapse_ms =
       duration_cast<duration<uint64_t, std::ratio<1, 1000>>>(now - last_)
           .count();
   last_ = now;
-  // Take down this event
-  check_points_.emplace_back(elapse_ms, event_name);
   return elapse_ms;
 }
+uint64_t Timer::get_ms_and_reset() {
+  auto elapse_ms = get_ms();
+  check_points_.clear();
+  is_started_ = false;
+  return elapse_ms;
+}
+
+bool Timer::is_started() const { return is_started_; }
 
 RAIITimer::RAIITimer(uint64_t *duration_ms) : duration_ms_(duration_ms) {
   start();
