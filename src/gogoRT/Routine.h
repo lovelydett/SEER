@@ -4,6 +4,7 @@
 #ifndef GOGO_ROUTINE_H
 #define GOGO_ROUTINE_H
 
+#include "utils/perf_utils.h"
 #include "utils/utils.h"
 
 #include <functional>
@@ -18,6 +19,7 @@ private:
   gogo_id_t id_;
   std::function<void()> func_;
   uint16 priority_;
+  PerfMonitor perf_monitor_;
 
 public:
   Routine(std::function<void()>, std::string, uint16 priority = 1);

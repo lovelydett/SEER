@@ -19,7 +19,9 @@ Routine::~Routine() { // LOG(INFO) << "Routine " << id_ << " is destroyed";
 }
 bool Routine::Run() {
   assert(is_finished_ == false);
+  perf_monitor_.start();
   func_();
+  perf_monitor_.stop_and_record(task_name_);
   is_finished_ = true;
   return true;
 }
