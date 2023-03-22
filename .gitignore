@@ -5,3 +5,4 @@ build
 *cmake-build-release*
 *build*
 *.DS_Store
+record/*.csv
