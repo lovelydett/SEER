@@ -9,6 +9,9 @@
 
 namespace gogort {
 
+// If on Linux
+#ifdef __linux__
+
 bool PerfMonitor::init() {
   auto make_perf_ctx = [](PerfContext &ctx, std::string name, uint32_t type,
                           uint64_t config, long leader_fd = -1) {
@@ -101,5 +104,17 @@ bool PerfMonitor::stop_and_record(std::string event) {
   is_running_ = false;
   return true;
 }
+
+// Else if on Mac
+#elif __APPLE__
+
+bool PerfMonitor::start() { return true; }
+
+bool PerfMonitor::stop_and_record(std::string event) { return true; }
+
+// Else if on Windows
+#elif _WIN32
+
+#endif
 
 } // namespace gogort

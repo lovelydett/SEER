@@ -5,6 +5,11 @@
 #ifndef GOGO_PROJ_PERF_UTILS_H
 #define GOGO_PROJ_PERF_UTILS_H
 
+#include <string>
+
+// If on Linux
+#ifdef __linux__
+
 #define _GNU_SOURCE
 #include <asm/unistd.h>
 #include <errno.h>
@@ -20,9 +25,12 @@
 #include <unistd.h>
 
 #include <array>
-#include <string>
+
+#endif
 
 namespace gogort {
+
+#ifdef __linux__
 
 class PerfMonitor {
 private:
@@ -55,6 +63,31 @@ public:
   bool start();
   bool stop_and_record(std::string event);
 };
+
+// Else if on Mac
+#elif __APPLE__
+
+class PerfMonitor {
+private:
+public:
+  PerfMonitor() = default;
+  bool start();
+  bool stop_and_record(std::string event);
+};
+
+// Else if on Windows
+#elif _WIN32
+
+class PerfMonitor {
+private:
+public:
+  PerfMonitor() = default;
+  bool start() { return true; }
+  bool stop_and_record(std::string event) { return true; }
+};
+
+#endif
+
 } // namespace gogort
 
 #endif // GOGO_PROJ_PERF_UTILS_H
