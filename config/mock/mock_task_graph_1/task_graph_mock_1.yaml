@@ -41,4 +41,4 @@ num_workers: 4
 # The smaller, the prior, range is 1 -> x
 priority_range: 1
 
-scheduler: DummyScheduler
+scheduler: DynamicScheduler

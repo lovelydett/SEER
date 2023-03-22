@@ -8,7 +8,14 @@
 
 namespace gogort {
 
+using std::chrono::duration;
 using std::chrono::duration_cast;
+
+uint64_t Timer::now_ms() {
+  auto elapsed = std::chrono::high_resolution_clock::now().time_since_epoch();
+  return duration_cast<duration<uint64_t, std::ratio<1, 1000>>>(elapsed)
+      .count();
+}
 
 void Timer::start() {
   start_ = high_resolution_clock::now();

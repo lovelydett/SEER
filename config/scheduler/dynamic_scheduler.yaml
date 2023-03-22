@@ -1,4 +1,5 @@
 base_scheduler: DummyScheduler
 base_scheduler_config: null
 
-registered_risks: [ DummyRisk1 ]
+# registered_risks: [ DummyRisk1 ]
+registered_risks: [ ]

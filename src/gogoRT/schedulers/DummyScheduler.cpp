@@ -4,6 +4,8 @@
 
 #include "DummyScheduler.h"
 #include "../Worker.h"
+#include "../utils/Recorder.h"
+
 #include <glog/logging.h>
 
 namespace gogort {
@@ -30,6 +32,8 @@ bool DummyScheduler::DoOnce() {
     LOG(INFO) << "Assigning routine (" << routines_.front()->get_id() << ", "
               << routines_.front()->get_task_name()
               << ") to worker: " << worker->get_id();
+    Recorder::Instance()->Append("DummyScheduler_do_assign", Recorder::kPoint,
+                                 routines_.front()->get_id(), "routine_id");
     routines_.pop_front();
   }
   return true;

@@ -3,7 +3,6 @@
 //
 
 #include "DynamicScheduler.h"
-#include "../SchedulerFactory.h"
 #include "../risk/RiskFactory.h"
 
 #include <cassert>

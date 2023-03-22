@@ -24,6 +24,7 @@ private:
 
 public:
   Timer() = default;
+  static uint64_t now_ms();
   void start();
   // Mark an event and return the time elapsed since last event.
   uint64_t get_ms_and_check(std::string event_name = "<NULL>");
