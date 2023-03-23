@@ -28,20 +28,27 @@ bool DummyScheduler::DoOnce() {
       continue;
     }
     // First assign, then pop!
-    worker->Assign(routines_.front());
-    LOG(INFO) << "Assigning routine (" << routines_.front()->get_id() << ", "
-              << routines_.front()->get_task_name()
+    auto routine = routines_.front();
+    routines_.pop_front();
+    auto task_name = routine->get_task_name();
+    assert(latest_tasks_.contains(task_name));
+    if (latest_tasks_[task_name] > routine->get_id()) {
+      continue;
+    }
+
+    worker->Assign(routine);
+    LOG(INFO) << "Assigning routine (" << routine->get_id() << ", " << task_name
               << ") to worker: " << worker->get_id();
     Recorder::Instance()->Append("DummyScheduler_do_assign", Recorder::kPoint,
-                                 routines_.front()->get_id(), "routine_id");
-    routines_.pop_front();
+                                 routine->get_id(), task_name);
   }
   return true;
 }
 
 bool DummyScheduler::AddRoutine(std::shared_ptr<Routine> routine) {
   assert(routine != nullptr);
-  routines_.emplace_back(routine);
+  latest_tasks_[routine->get_task_name()] = routine->get_id();
+  routines_.push_back(routine);
   return true;
 }
 
