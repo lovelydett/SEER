@@ -5,6 +5,8 @@
 #ifndef GOGO_PROJ_PERF_UTILS_H
 #define GOGO_PROJ_PERF_UTILS_H
 
+#include "time_utils.h"
+
 #include <string>
 
 // If on Linux
@@ -69,6 +71,8 @@ public:
 
 class PerfMonitor {
 private:
+  Timer timer_;
+
 public:
   PerfMonitor() = default;
   bool start();

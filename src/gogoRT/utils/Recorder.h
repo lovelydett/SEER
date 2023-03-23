@@ -6,6 +6,7 @@
 #define GOGO_PROJ_RECORDER_H
 
 #include <fstream>
+#include <mutex>
 #include <string>
 #include <unordered_map>
 
@@ -21,6 +22,7 @@ private:
   // Consider most events happen over time, use map to avoid memory release.
   std::unordered_map<std::string, uint64_t> duration_events_;
   Recorder();
+  static std::mutex mtx_;
 
 public:
   enum RecordType { kPoint = 0, kDuration };

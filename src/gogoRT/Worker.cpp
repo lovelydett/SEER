@@ -65,7 +65,19 @@ bool Worker::StartStateMachine() {
     }
   };
   inner_thread_ = std::make_unique<std::thread>(state_machine);
-  LOG(INFO) << "Starts state-machine";
+  // If on Linux, set the thread affinity
+#ifdef __linux__
+  cpu_set_t cpuset;
+  CPU_ZERO(&cpuset);
+  CPU_SET(0, &cpuset);
+  int rc = pthread_setaffinity_np(inner_thread_->native_handle(),
+                                  sizeof(cpu_set_t), &cpuset);
+  if (rc != 0) {
+    LOG(ERROR) << "Error calling pthread_setaffinity_np: " << rc << "\n";
+  }
+#endif
+  LOG(INFO) << "Tid = " << std::this_thread::get_id()
+            << " starts state-machine";
   return true;
 }
 void Worker::Join() {

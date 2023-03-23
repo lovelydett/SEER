@@ -6,6 +6,7 @@
 #include "Recorder.h"
 
 #include <cassert>
+#include <utility>
 
 namespace gogort {
 
@@ -108,9 +109,16 @@ bool PerfMonitor::stop_and_record(std::string event) {
 // Else if on Mac
 #elif __APPLE__
 
-bool PerfMonitor::start() { return true; }
+bool PerfMonitor::start() {
+  timer_.start();
+  return true;
+}
 
-bool PerfMonitor::stop_and_record(std::string event) { return true; }
+bool PerfMonitor::stop_and_record(std::string event) {
+  auto elapsed_ms = timer_.get_ms_and_reset();
+  return Recorder::Instance()->Append(std::move(event), Recorder::kPoint,
+                                      elapsed_ms, "end_after_ms");
+}
 
 // Else if on Windows
 #elif _WIN32

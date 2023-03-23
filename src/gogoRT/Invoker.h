@@ -91,9 +91,9 @@ private:
   std::shared_ptr<Routine> InnerInvoke() override {
     auto elapse_ms = timer_.get_ms();
     if (elapse_ms >= frequency_) {
-      timer_.get_ms_and_check();
-      auto &&routine_func = std::bind(&Task<>::Deal, task_);
+      auto routine_func = std::bind(&Task<>::Deal, task_);
       LOG(INFO) << "Invoking task: " << task_->get_task_name();
+      timer_.start();
       return std::make_shared<Routine>(routine_func, task_->get_task_name(),
                                        task_->get_priority());
     }

@@ -11,7 +11,7 @@
 namespace gogort {
 Routine::Routine(std::function<void()> func, const std::string task_name,
                  const uint16 priority)
-    : func_(std::move(func)), task_name_(task_name), id_(get_next_uuid()),
+    : func_(func), task_name_(task_name), id_(get_next_uuid()),
       is_finished_(false), priority_(priority) {
   assert(priority < uint64(4));
 }

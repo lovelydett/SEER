@@ -11,6 +11,7 @@
 namespace gogort {
 
 Recorder Recorder::instance_;
+std::mutex Recorder::mtx_;
 
 Recorder::Recorder() {
   auto now_ms = Timer::now_ms();
@@ -38,6 +39,9 @@ bool Recorder::Append(const std::string event, const RecordType type,
   auto tid = std::this_thread::get_id();
   auto tid_uint32 = *(uint32_t *)&tid;
   auto now_ms = Timer::now_ms();
+
+  std::lock_guard<std::mutex> lockGuard(mtx_);
+
   if (type == kPoint) {
     fout_point_ << tid_uint32 << ',' << now_ms << ',' << event << ',' << value
                 << ',' << explain << '\n';

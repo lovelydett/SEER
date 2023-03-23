@@ -36,7 +36,7 @@ tasks:
     out_pipe_names: [ ]
     config_file: mock_task_graph_1/exit_task_1.yaml
 
-num_workers: 4
+num_workers: 1
 
 # The smaller, the prior, range is 1 -> x
 priority_range: 1

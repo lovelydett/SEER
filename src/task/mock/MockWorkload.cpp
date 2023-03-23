@@ -6,7 +6,6 @@
 #include "../../gogoRT/utils/utils.h"
 
 #include <cassert>
-#include <glog/logging.h>
 
 namespace task {
 
@@ -42,8 +41,6 @@ void MonteCarloPiWorkload::RunFor(uint64_t duration_ms) {
         idx = 1 - idx; // idx alternates between 0 and 1
       }
     }
-  LOG(INFO) << "MonteCarloPiWorkload ends in " << timer_.get_ms()
-            << " ms with pi = " << pi;
 }
 
 MonteCarloPiWorkload::~MonteCarloPiWorkload() {
