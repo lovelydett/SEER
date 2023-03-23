@@ -1,5 +1,6 @@
 #define _GNU_SOURCE
 #include <asm/unistd.h>
+#include <chrono>
 #include <errno.h>
 #include <inttypes.h>
 #include <linux/hw_breakpoint.h>
@@ -10,7 +11,9 @@
 #include <string.h>
 #include <sys/ioctl.h>
 #include <sys/syscall.h>
+#include <thread>
 #include <unistd.h>
+#include <vector>
 
 struct read_format {
   uint64_t nr;
@@ -25,7 +28,6 @@ static double A[M][M];
 static double B[M][M];
 static double C[M][M];
 void matmul1() {
-  printf("matmul1 begins\n");
   for (int i = 0; i < M; i++) {
     for (int j = 0; j < M; j++) {
       for (int k = 0; k < M; k++) {
@@ -33,10 +35,28 @@ void matmul1() {
       }
     }
   }
-  printf("matmul1 finishes\n");
 }
 
-int main(int argc, char *argv[]) {
+// An IO intensive function
+void io_func() {
+  std::vector<int> v;
+  for (int i = 0; i < 1000000; i++) {
+    v.push_back(i);
+  }
+}
+
+void do_perf(void (*func)(void), int priority) {
+  // Set affinity
+  cpu_set_t cpuset;
+  CPU_ZERO(&cpuset);
+  CPU_SET(0, &cpuset);
+  sched_setaffinity(pthread_self(), sizeof(cpu_set_t), &cpuset);
+
+  // Set priority
+  struct sched_param param;
+  param.sched_priority = priority;
+  sched_setscheduler(pthread_self(), SCHED_RR, &param);
+
   struct perf_event_attr pea;
   int fd1, fd2, fd3;
   uint64_t id1, id2, id3;
@@ -80,7 +100,16 @@ int main(int argc, char *argv[]) {
 
   ioctl(fd1, PERF_EVENT_IOC_RESET, PERF_IOC_FLAG_GROUP);
   ioctl(fd1, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP);
-  matmul1();
+
+  auto start = std::chrono::high_resolution_clock::now();
+
+  func();
+
+  auto end = std::chrono::high_resolution_clock::now();
+  auto duration_ms =
+      std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
+          .count();
+
   ioctl(fd1, PERF_EVENT_IOC_DISABLE, PERF_IOC_FLAG_GROUP);
 
   read(fd1, buf, sizeof(buf));
@@ -94,10 +123,33 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  printf("cpu cycles: %" PRIu64 "\n", val1);
-  printf("page faults: %" PRIu64 "\n", val2);
-  printf("instructions: %" PRIu64 "\n", val3);
-  printf("utilization: %.2f%%\n", (double)val3 / val1 * 100);
+  printf("priority: %d, cycle: %lld, page fault: %lld, instruction: %lld, "
+         "duration(ms): %lld, "
+         "utilization: %.2f\n",
+         priority, val1, val2, val3, duration_ms, (double)val3 / val1 * 100);
+}
 
+int main(int argc, char *argv[]) {
+  printf("Begin");
+  // Spawn threads
+  const int N = 16;
+  std::vector<std::thread> threads;
+  threads.reserve(2 * N);
+  for (int i = 0; i < N; ++i) {
+    std::thread t(do_perf, matmul1, i % 100);
+    threads.push_back(std::move(t));
+  }
+
+  for (int i = 0; i < N; ++i) {
+    std::thread t(do_perf, io_func, i % 100);
+    threads.push_back(std::move(t));
+  }
+
+  // Join threads
+  for (auto &t : threads) {
+    t.join();
+  }
+
+  printf("Done\n");
   return 0;
 }
