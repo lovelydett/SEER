@@ -13,7 +13,7 @@ namespace gogort {
 
 bool Worker::Assign(std::shared_ptr<Routine> routine) {
   assert(next_routine_ == nullptr);
-  next_routine_ = std::move(routine);
+  next_routine_ = routine;
   // next_routine_ = routine;
   return true;
 }
@@ -54,6 +54,7 @@ bool Worker::StartStateMachine() {
         if (next_routine_ != nullptr) {
           // LOG(INFO) << "Executing routine " << next_routine_->get_id();
           next_routine_->Run();
+          assert(next_routine_.use_count() == 1);
           next_routine_ = nullptr;
         }
         worker_stage_ = STAGE_PENDING_COMM;

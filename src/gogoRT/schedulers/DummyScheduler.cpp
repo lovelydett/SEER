@@ -37,6 +37,7 @@ bool DummyScheduler::DoOnce() {
     }
 
     worker->Assign(routine);
+    assert(routine.use_count() == 2);
     LOG(INFO) << "Assigning routine (" << routine->get_id() << ", " << task_name
               << ") to worker: " << worker->get_id();
     Recorder::Instance()->Append("DummyScheduler_do_assign", Recorder::kPoint,

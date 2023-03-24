@@ -78,7 +78,7 @@ class Invoker<NullClass, NullClass, NullClass, NullClass> : public InvokerBase {
 public:
   Invoker() = delete;
   explicit Invoker(std::shared_ptr<Task<>> task, const int16_t frequency_ms)
-      : task_(std::move(task)), frequency_(frequency_ms) {
+      : task_(task), frequency_(frequency_ms) {
     timer_.start();
   }
 
@@ -91,11 +91,13 @@ private:
   std::shared_ptr<Routine> InnerInvoke() override {
     auto elapse_ms = timer_.get_ms();
     if (elapse_ms >= frequency_) {
-      auto routine_func = std::bind(&Task<>::Deal, task_);
+      // auto routine_func = std::bind(&Task<>::Deal, task_);
       LOG(INFO) << "Invoking task: " << task_->get_task_name();
       timer_.start();
-      return std::make_shared<Routine>(routine_func, task_->get_task_name(),
-                                       task_->get_priority());
+      auto routine = std::make_shared<Routine>(std::bind(&Task<>::Deal, task_),
+                                               task_->get_task_name(),
+                                               task_->get_priority());
+      return routine;
     }
     return nullptr;
   }

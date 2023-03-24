@@ -75,6 +75,7 @@ private:
 
 public:
   PerfMonitor() = default;
+  ~PerfMonitor() = default;
   bool start();
   bool stop_and_record(std::string event);
 };
