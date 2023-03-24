@@ -6,6 +6,7 @@
 #define GOGO_PIPE_H
 
 #include <memory>
+#include <mutex>
 #include <queue>
 #include <string>
 #include <unordered_map>
@@ -22,6 +23,7 @@ private:
   std::shared_ptr<Message>
       inner_msg_; // Yuting@2022-12-5: For now we only store 1 message.
   // std::queue<MSG> inner_queue_;
+  std::mutex mtx_; // Now lock pipe
 
 private:
   Pipe() = default;
@@ -30,6 +32,7 @@ public:
   explicit Pipe(const std::string pipe_name) : pipe_name_(pipe_name) {}
   // This function can be multi-threaded.
   bool Enqueue(std::shared_ptr<Message> message) {
+    std::lock_guard<std::mutex> lockGuard(mtx_);
     inner_msg_ = message;
     return true;
   }
