@@ -1,20 +1,4 @@
 tasks:
-
-#  - task_name: DummyTask
-#    in_pipe_names: [ ]
-#    out_pipe_names: [ "dummy_pipe_1" ]
-#    config_file: dummy_task.yaml
-#
-#  - task_name: DummyTask2
-#    in_pipe_names: [ ]
-#    out_pipe_names: [ "dummy_pipe_2" ]
-#    config_file: dummy_task_2.yaml
-#
-#  - task_name: DummyTask3
-#    in_pipe_names: [ "dummy_pipe_1", "dummy_pipe_2" ]
-#    out_pipe_names: [ ]
-#    config_file: dummy_task_3.yaml
-
     -     type: Mock_sensor_task_0_1 #7
           task name: sensor_task_1
           in_pipe_names: [ ]
