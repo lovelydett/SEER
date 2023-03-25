@@ -14,17 +14,20 @@ namespace gogort {
 DummyRisk1Instance::DummyRisk1Instance(float zeta, float kappa)
     : RiskInstanceReader<message::DummyMessage>(zeta, kappa) {
   // TODO(yuting): Acquire the pipe name from the config file
-  pipe_to_match_ = AcquireReader<message::DummyMessage>("pipe_risk1");
+  pipe_to_match_ = AcquireReader<message::DummyMessage>("mock_pipe_1");
   reactive_control_ = nullptr;
 }
 
 bool DummyRisk1Instance::Match() {
-  auto &&msg = pipe_to_match_->Read();
+  auto msg = pipe_to_match_->Read();
   if (msg == nullptr) {
     return false;
   }
 
   // Todo(yuting): Implement the matching logic
+  if (random_double(0, 1) < 0.5) {
+    return true;
+  }
 
   return false;
 }
@@ -40,17 +43,32 @@ std::shared_ptr<Routine> DummyRisk1Instance::GetHandler() {
 
 std::shared_ptr<message::ControlCommand>
 DummyRisk1Instance::GetReactiveControl() {
+  assert(reactive_control_ != nullptr);
   return reactive_control_;
 }
 
-bool DummyRisk1Instance::IsExpired() { return false; }
+bool DummyRisk1Instance::IsExpired() {
+  // Todo(yuting): Read from config!!!
+  if (get_current_timestamp_ms() - timestamp_ > 50) {
+    return true;
+  }
+  return false;
+}
 std::string DummyRisk1Instance::get_risk_name() { return {"risk1_instance"}; }
 bool DummyRisk1Instance::IsHandled() {
   // If the instance is handled, the control will not be NULL.
   return reactive_control_ != nullptr;
 }
 
-void DummyRisk1Instance::inner_handler() {}
+void DummyRisk1Instance::inner_handler() {
+  // Todo(yuting): calculate a proper reactive control
+  assert(reactive_control_ == nullptr);
+  for (int i = 0; i < 10000; ++i) {
+    int x = i;
+    x *= i;
+  }
+  reactive_control_ = std::make_shared<message::ControlCommand>();
+}
 
 DummyRisk1::DummyRisk1() : interval_ms_(-1.), expected_interval_ms_(-1) {
   time_point_ = std::chrono::system_clock::now();
@@ -59,7 +77,7 @@ DummyRisk1::DummyRisk1() : interval_ms_(-1.), expected_interval_ms_(-1) {
 
 std::list<std::shared_ptr<RiskInstance>> DummyRisk1::Detect() {
   std::list<std::shared_ptr<RiskInstance>> detected_risks;
-  auto &&msg = detect_reader_->Read();
+  auto msg = detect_reader_->Read();
   if (msg == nullptr) {
     return detected_risks;
   }
@@ -75,7 +93,6 @@ std::list<std::shared_ptr<RiskInstance>> DummyRisk1::Detect() {
     interval_ms_ = random_exponential(expected_interval_ms_);
     time_point_ = cur_time_point;
   }
-
   return detected_risks;
 }
 bool DummyRisk1::init_config() {

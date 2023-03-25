@@ -39,7 +39,10 @@ public:
   // This function can be multi-threaded.
   bool Dequeue() { return true; }
   // This function can be multi-threaded.
-  std::shared_ptr<Message> Top() { return inner_msg_; }
+  std::shared_ptr<Message> Top() {
+    std::lock_guard<std::mutex> lockGuard(mtx_);
+    return inner_msg_;
+  }
   [[nodiscard]] time_t get_timestamp() const {
     if (inner_msg_ == nullptr) {
       return 0;

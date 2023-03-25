@@ -32,7 +32,7 @@ private:
 
 public:
   DummyRisk1Instance(float zeta, float kappa);
-  bool Match() override;
+  [[nodiscard]] bool Match() override;
   std::shared_ptr<Routine> GetHandler() override;
   std::shared_ptr<message::ControlCommand> GetReactiveControl() override;
   bool IsExpired() override;

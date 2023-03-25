@@ -41,7 +41,8 @@ public:
   std::shared_ptr<MSG> Read() {
     assert(pipe_ != nullptr);
     if (isUpdated()) {
-      std::shared_ptr<MSG> msg = std::dynamic_pointer_cast<MSG>(pipe_->Top());
+      std::shared_ptr<Message> message_ptr = pipe_->Top();
+      std::shared_ptr<MSG> msg = std::dynamic_pointer_cast<MSG>(message_ptr);
       // Todo(yuting): Messages should implement copy constructor.
       ts_updated_ = pipe_->get_timestamp();
       return msg;
