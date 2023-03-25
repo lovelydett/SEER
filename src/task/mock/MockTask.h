@@ -161,10 +161,14 @@ public:
 class MockTask_3_0 : public Task<DummyMessage, DummyMessage, DummyMessage> {
 private:
   int count_;
+  int expected_latency_ms_;
   bool init_config(std::string) override;
   std::shared_ptr<MockWorkload> workload_;
 
 public:
+  MockTask_3_0(const std::string &name, const std::string &config_path,
+               std::vector<std::string> &&in_pipes,
+               std::vector<std::string> &&out_pipes);
   bool Deal(std::shared_ptr<DummyMessage> msg1,
             std::shared_ptr<DummyMessage> msg2,
             std::shared_ptr<DummyMessage> msg3) override;
@@ -175,6 +179,7 @@ public:
 class MockTask_3_1 : public Task<DummyMessage, DummyMessage, DummyMessage> {
 private:
   int count_;
+  int expected_latency_ms_;
   bool init_config(std::string) override;
   std::shared_ptr<gogort::PipeWriter<DummyMessage>> writer_;
   std::shared_ptr<MockWorkload> workload_;
@@ -190,6 +195,7 @@ public:
 class MockTask_3_2 : public Task<DummyMessage, DummyMessage, DummyMessage> {
 private:
   int count_;
+  int expected_latency_ms_;
   bool init_config(std::string) override;
   std::shared_ptr<gogort::PipeWriter<DummyMessage>> writer1_;
   std::shared_ptr<gogort::PipeWriter<DummyMessage>> writer2_;

@@ -316,8 +316,21 @@ std::shared_ptr<gogort::InvokerBase> MockTask_2_2::get_invoker() {
 }
 
 // Mocking task with 3 input and 0 output
+MockTask_3_0::MockTask_3_0(const std::string &name,
+                           const std::string &config_path,
+                           std::vector<std::string> &&in_pipes,
+                           std::vector<std::string> &&out_pipes)
+    : Task<DummyMessage, DummyMessage, DummyMessage>(name, std::move(in_pipes),
+                                                     std::move(out_pipes)),
+      count_(0), expected_latency_ms_(-1) {
+  MockTask_3_0::init_config(config_path);
+}
 bool MockTask_3_0::init_config(std::string config_path) {
   count_ = 0;
+  auto &&config = YAML::LoadFile("../../config/mock/" + config_path);
+  expected_latency_ms_ = config["expected_latency_ms"].as<int>();
+
+  workload_ = std::make_shared<MonteCarloPiWorkload>(0.5);
   return true;
 }
 bool MockTask_3_0::Deal(std::shared_ptr<message::DummyMessage> msg1,
@@ -325,7 +338,7 @@ bool MockTask_3_0::Deal(std::shared_ptr<message::DummyMessage> msg1,
                         std::shared_ptr<message::DummyMessage> msg3) {
   count_++;
 
-  // Todo(yuting): mock the pre-defined computational load and memory access.
+  workload_->RunFor(expected_latency_ms_);
 
   return true;
 }

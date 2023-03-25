@@ -62,6 +62,9 @@ TaskFactory::CreateTask(const std::string type, const std::string name,
   } else if (type == "MockTask_2_2") {
     return std::make_shared<task::MockTask_2_2>(
         name, config_path, std::move(in_pipes), std::move(out_pipes));
+  } else if (type == "MockTask_3_0") {
+    return std::make_shared<task::MockTask_3_0>(
+        name, config_path, std::move(in_pipes), std::move(out_pipes));
   } else {
     LOG(ERROR) << "Task " << type << " not found!";
     return nullptr;

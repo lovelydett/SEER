@@ -1,0 +1,10 @@
+# 1 for computational stress, 2 for IO stress
+workload_type: 2
+
+# whether the latency displays chrono correlations
+is_time_series: false
+
+# the expected latency in ms
+expected_latency_ms: 17
+
+frequency_ms: 7

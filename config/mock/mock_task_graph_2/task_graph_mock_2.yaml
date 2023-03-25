@@ -1,0 +1,109 @@
+tasks:
+  - type: MockTask_0_1 #7
+    name: sensor_task_1
+    in_pipe_names: [ ]
+    out_pipe_names: [ "mock_pipe_1" ]
+    config_file: mock_task_graph_2/sensor_task_1.yaml
+
+  - type: MockTask_0_1 #12
+    name: sensor_task_2
+    in_pipe_names: [ ]
+    out_pipe_names: [ "mock_pipe_2" ]
+    config_file: mock_task_graph_2/sensor_task_2.yaml
+
+  - type: MockTask_0_1 #3
+    name: sensor_task_3
+    in_pipe_names: [ ]
+    out_pipe_names: [ "mock_pipe_3" ]
+    config_file: mock_task_graph_2/sensor_task_3.yaml
+
+  - type: MockTask_0_1 #4
+    name: sensor_task_4
+    in_pipe_names: [ ]
+    out_pipe_names: [ "mock_pipe_4" ]
+    config_file: mock_task_graph_2/sensor_task_4.yaml
+
+  - type: MockTask_1_1 # 27
+    name: middle_task_1
+    in_pipe_names: [ "mock_pipe_1" ]
+    out_pipe_names: [ "mock_pipe_5" ]
+    config_file: mock_task_graph_2/middle_task_1.yaml
+
+  - type: MockTask_1_2 #17
+    name: middle_task_2
+    in_pipe_names: [ "mock_pipe_1" ]
+    out_pipe_names: [ "mock_pipe_6", "mock_pipe_7" ]
+    config_file: mock_task_graph_2/middle_task_2.yaml
+
+  - type: MockTask_1_1 # 45
+    name: middle_task_3
+    in_pipe_names: [ "mock_pipe_2" ]
+    out_pipe_names: [ "mock_pipe_7" ]
+    config_file: mock_task_graph_2/middle_task_3.yaml
+
+  - type: MockTask_1_1 # 12
+    name: middle_task_4
+    in_pipe_names: [ "mock_pipe_3" ]
+    out_pipe_names: [ "mock_pipe_7" ]
+    config_file: mock_task_graph_2/middle_task_4.yaml
+
+  - type: MockTask_1_1 # 5
+    name: middle_task_5
+    in_pipe_names: [ "mock_pipe_3" ]
+    out_pipe_names: [ "mock_pipe_8" ]
+    config_file: mock_task_graph_2/middle_task_5.yaml
+
+  - type: MockTask_1_1 # 21
+    name: middle_task_6
+    in_pipe_names: [ "mock_pipe_4" ]
+    out_pipe_names: [ "mock_pipe_9" ]
+    config_file: mock_task_graph_2/middle_task_6.yaml
+
+  - type: MockTask_2_1 # 32
+    name: middle_task_7
+    in_pipe_names: [ "mock_pipe_5", "mock_pipe_6" ]
+    out_pipe_names: [ "mock_pipe_13" ]
+    config_file: mock_task_graph_2/middle_task_7.yaml
+
+  - type: MockTask_1_1 # 11
+    name: middle_task_8
+    in_pipe_names: [ "mock_pipe_6" ]
+    out_pipe_names: [ "mock_pipe_13" ]
+    config_file: mock_task_graph_2/middle_task_8.yaml
+
+  - type: MockTask_2_1 # 3
+    name: middle_task_9
+    in_pipe_names: [ "mock_pipe_7", "mock_pipe_8" ]
+    out_pipe_names: [ "mock_pipe_10" ]
+    config_file: mock_task_graph_2/middle_task_9.yaml
+
+  - type: MockTask_2_1 # 18
+    name: middle_task_10
+    in_pipe_names: [ "mock_pipe_8", "mock_pipe_9" ]
+    out_pipe_names: [ "mock_pipe_12" ]
+    config_file: mock_task_graph_2/middle_task_10.yaml
+
+  - type: MockTask_1_1 # 7
+    name: middle_task_11
+    in_pipe_names: [ "mock_pipe_9" ]
+    out_pipe_names: [ "mock_pipe_11" ]
+    config_file: mock_task_graph_2/middle_task_11.yaml
+
+  - type: MockTask_1_1 # 17
+    name: middle_task_12
+    in_pipe_names: [ "mock_pipe_10" ]
+    out_pipe_names: [ "mock_pipe_12" ]
+    config_file: mock_task_graph_2/middle_task_12.yaml
+
+  - type: MockTask_3_0 # 2
+    name: exit_task_1
+    in_pipe_names: [ "mock_pipe_11", "mock_pipe_12", "mock_pipe_13" ]
+    out_pipe_names: [ ]
+    config_file: mock_task_graph_2/exit_task_1.yaml
+
+num_workers: 2
+
+# The smaller, the prior, range is 1 -> x
+priority_range: 1
+
+scheduler: DynamicScheduler

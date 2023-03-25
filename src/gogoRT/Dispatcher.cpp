@@ -17,7 +17,7 @@ Dispatcher::Dispatcher() : scheduler_(nullptr) { init_config(); }
 
 bool Dispatcher::init_config() {
   YAML::Node config = YAML::LoadFile(
-      "../../config/mock/mock_task_graph_1/task_graph_mock_1.yaml");
+      "../../config/mock/mock_task_graph_2/task_graph_mock_2.yaml");
   // YAML::Node config = YAML::LoadFile("../../config/task_graph_example.yaml");
   LOG(INFO) << config["tasks"].size() << " tasks in the graph";
   // invokers_.reserve(config["tasks"].size());
