@@ -49,7 +49,7 @@ public:
   // The whole program happens here
   bool Run();
   bool DoSchedule();
-  bool UpdateRoutine();
+  bool InvokeRoutine();
   void JoinWorkers();
   bool AcquireSchedLock();
   void ReleaseSchedLock();

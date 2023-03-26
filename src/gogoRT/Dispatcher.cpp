@@ -5,11 +5,14 @@
 #include "SchedulerFactory.h"
 #include "TaskFactory.h"
 #include "Worker.h"
+#include "utils/Recorder.h"
 
 #include <glog/logging.h>
 #include <yaml-cpp/yaml.h>
 
 namespace gogort {
+
+static Recorder *recorder = Recorder::Instance();
 
 std::shared_ptr<Dispatcher> Dispatcher::instance_ = nullptr;
 
@@ -20,7 +23,7 @@ bool Dispatcher::init_config() {
       "../../config/mock/mock_task_graph_2/task_graph_mock_2.yaml");
   // YAML::Node config = YAML::LoadFile("../../config/task_graph_example.yaml");
   LOG(INFO) << config["tasks"].size() << " tasks in the graph";
-  // invokers_.reserve(config["tasks"].size());
+  invokers_.reserve(config["tasks"].size());
 
   // Init task based on config file
   for (auto &&task : config["tasks"]) {
@@ -104,11 +107,14 @@ bool Dispatcher::DoSchedule() {
   return scheduler_->DoSchedule();
 }
 
-bool Dispatcher::UpdateRoutine() {
+bool Dispatcher::InvokeRoutine() {
   int count = 0;
   for (auto &invoker : invokers_) {
     auto routine = invoker->Invoke();
     if (routine) {
+      // Todo(yuting): expand the logging system
+      recorder->Append(routine->get_task_name(), Recorder::kPoint,
+                       routine->get_id(), "invoke_id");
       scheduler_->AddRoutine(routine);
       count++;
     }

@@ -67,8 +67,8 @@ public:
           std::shared_ptr<PipeReader<MSG1>> pipe1,
           std::shared_ptr<PipeReader<MSG2>> pipe2,
           std::shared_ptr<PipeReader<MSG3>> pipe3)
-      : task_(std::move(task)), pipe0_(std::move(pipe0)),
-        pipe1_(std::move(pipe1)), pipe2_(std::move(pipe2)), pipe3_(pipe3) {}
+      : task_(task), pipe0_(pipe0), pipe1_(pipe1), pipe2_(pipe2),
+        pipe3_(pipe3) {}
   ~Invoker() override = default;
 };
 
@@ -92,7 +92,7 @@ private:
     auto elapse_ms = timer_.get_ms();
     if (elapse_ms >= frequency_) {
       // auto routine_func = std::bind(&Task<>::Deal, task_);
-      LOG(INFO) << "Invoking task: " << task_->get_task_name();
+      // LOG(INFO) << "Invoking task: " << task_->get_task_name();
       timer_.start();
       auto routine = std::make_shared<Routine>(std::bind(&Task<>::Deal, task_),
                                                task_->get_task_name(),
@@ -117,7 +117,7 @@ private:
     if (msg0_) {
       auto &&routine_func = std::bind(&Task<MSG0>::Deal, task_, msg0_);
       msg0_ = nullptr;
-      LOG(INFO) << "Invoking task: " << task_->get_task_name();
+      // LOG(INFO) << "Invoking task: " << task_->get_task_name();
       return std::make_shared<Routine>(routine_func, task_->get_task_name(),
                                        task_->get_priority());
     }
@@ -150,7 +150,7 @@ private:
           std::bind(&Task<MSG0, MSG1>::Deal, task_, msg0_, msg1_);
       msg0_ = nullptr;
       msg1_ = nullptr;
-      LOG(INFO) << "Invoking task: " << task_->get_task_name();
+      // LOG(INFO) << "Invoking task: " << task_->get_task_name();
       return std::make_shared<Routine>(routine_func, task_->get_task_name(),
                                        task_->get_priority());
     }
@@ -189,7 +189,7 @@ private:
       msg0_ = nullptr;
       msg1_ = nullptr;
       msg2_ = nullptr;
-      LOG(INFO) << "Invoking task: " << task_->get_task_name();
+      // LOG(INFO) << "Invoking task: " << task_->get_task_name();
       return std::make_shared<Routine>(routine_func, task_->get_task_name(),
                                        task_->get_priority());
     }

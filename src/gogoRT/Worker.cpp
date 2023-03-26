@@ -4,12 +4,14 @@
 
 #include "Worker.h"
 #include "Dispatcher.h"
+#include "utils/Recorder.h"
 #include "utils/utils.h"
 #include <cassert>
 #include <glog/logging.h>
-#include <utility>
 
 namespace gogort {
+
+static Recorder *recorder = Recorder::Instance();
 
 bool Worker::Assign(std::shared_ptr<Routine> routine) {
   assert(next_routine_ == nullptr);
@@ -34,7 +36,7 @@ bool Worker::StartStateMachine() {
       case STAGE_PENDING_COMM: {
         if (dispatcher_.AcquireSchedLock()) {
           // LOG(INFO) << "Get lock and do updating";
-          dispatcher_.UpdateRoutine();
+          dispatcher_.InvokeRoutine();
           dispatcher_.ReleaseSchedLock();
         }
         worker_stage_ = STAGE_PENDING_SCHED;
@@ -52,6 +54,8 @@ bool Worker::StartStateMachine() {
       case STAGE_PENDING_EXEC: {
         if (next_routine_ != nullptr) {
           // LOG(INFO) << "Executing routine " << next_routine_->get_id();
+          recorder->Append(next_routine_->get_task_name(), Recorder::kPoint,
+                           next_routine_->get_id(), "execute_id");
           next_routine_->Run();
           assert(next_routine_.use_count() == 1);
           next_routine_ = nullptr;
@@ -76,8 +80,8 @@ bool Worker::StartStateMachine() {
     LOG(ERROR) << "Error calling pthread_setaffinity_np: " << rc << "\n";
   }
 #endif
-  LOG(INFO) << "Tid = " << std::this_thread::get_id()
-            << " starts state-machine";
+  // Worker id is tid, mod a relatively large number for display
+  LOG(INFO) << "Tid = " << get_id() % 1000 << " starts state-machine";
   return true;
 }
 void Worker::Join() {

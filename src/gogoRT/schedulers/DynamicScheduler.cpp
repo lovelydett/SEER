@@ -95,8 +95,8 @@ bool DynamicScheduler::inner_do_once(const int num_idle_worker) {
     if (!worker->isBusy()) {
       auto instance = pending_instances_.front();
       worker->Assign(instance->GetHandler());
-      LOG(INFO) << "Assigning " << instance->get_risk_name() << " to worker "
-                << worker->get_id();
+      // LOG(INFO) << "Assigning " << instance->get_risk_name() << " to worker "
+      // << worker->get_id();
       handled_instances_.push_back(instance);
       pending_instances_.pop_front();
     }

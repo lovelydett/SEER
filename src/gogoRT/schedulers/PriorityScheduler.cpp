@@ -4,8 +4,11 @@
 
 #include "PriorityScheduler.h"
 #include "../Worker.h"
+#include "../utils/Recorder.h"
 
 namespace gogort {
+
+static Recorder *recorder = Recorder::Instance();
 
 PriorityScheduler::PriorityScheduler(
     std::vector<std::shared_ptr<Worker>> &workers) {
@@ -49,6 +52,8 @@ bool PriorityScheduler::DoOnce() {
       routines_.pop();
       if (!routine->Expire()) {
         worker->Assign(routine);
+        recorder->Append(routine->get_task_name(), Recorder::kPoint,
+                         routine->get_id(), "assign_id");
         return;
       }
     }
