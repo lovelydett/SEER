@@ -29,6 +29,7 @@ bool MockTask_0_1::init_config(std::string config_path) {
   auto &&config = YAML::LoadFile("../../config/mock/" + config_path);
   frequency_ms_ = config["frequency_ms"].as<int>();
   expected_latency_ms_ = config["expected_latency_ms"].as<int>();
+  priority_ = config["priority"].as<int>();
 
   // Todo(yuting): load workload type and io_load_ from config
   workload_ = std::make_shared<MonteCarloPiWorkload>(0.5);
@@ -69,6 +70,7 @@ bool MockTask_0_2::init_config(std::string config_path) {
   auto &&config = YAML::LoadFile("../../config/mock/" + config_path);
   frequency_ms_ = config["frequency_ms"].as<int>();
   expected_latency_ms_ = config["expected_latency_ms"].as<int>();
+  priority_ = config["priority"].as<int>();
 
   workload_ = std::make_shared<MonteCarloPiWorkload>(0.5);
 
@@ -104,6 +106,8 @@ bool MockTask_1_0::init_config(std::string config_path) {
   count_ = 0;
   auto &&config = YAML::LoadFile("../../config/mock/" + config_path);
   expected_latency_ms_ = config["expected_latency_ms"].as<int>();
+  priority_ = config["priority"].as<int>();
+
   workload_ = std::make_shared<MonteCarloPiWorkload>(0.5);
   return true;
 }
@@ -138,6 +142,7 @@ bool MockTask_1_1::init_config(std::string config_path) {
 
   auto &&config = YAML::LoadFile("../../config/mock/" + config_path);
   expected_latency_ms_ = config["expected_latency_ms"].as<int>();
+  priority_ = config["priority"].as<int>();
 
   workload_ = std::make_shared<MonteCarloPiWorkload>(0.5);
 
@@ -176,6 +181,7 @@ bool MockTask_1_2::init_config(std::string config_path) {
 
   auto &&config = YAML::LoadFile("../../config/mock/" + config_path);
   expected_latency_ms_ = config["expected_latency_ms"].as<int>();
+  priority_ = config["priority"].as<int>();
 
   workload_ = std::make_shared<MonteCarloPiWorkload>(0.5);
 
@@ -212,6 +218,7 @@ bool MockTask_2_0::init_config(std::string config_path) {
   count_ = 0;
   auto &&config = YAML::LoadFile("../../config/mock/" + config_path);
   expected_latency_ms_ = config["expected_latency_ms"].as<int>();
+  priority_ = config["priority"].as<int>();
 
   workload_ = std::make_shared<MonteCarloPiWorkload>(0.5);
 
@@ -250,6 +257,7 @@ bool MockTask_2_1::init_config(std::string config_path) {
   writer_ = gogort::AcquireWriter<message::DummyMessage>(out_pipe_names_[0]);
   auto &&config = YAML::LoadFile("../../config/mock/" + config_path);
   expected_latency_ms_ = config["expected_latency_ms"].as<int>();
+  priority_ = config["priority"].as<int>();
 
   workload_ = std::make_shared<MonteCarloPiWorkload>(0.5);
 
@@ -291,6 +299,7 @@ bool MockTask_2_2::init_config(std::string config_path) {
 
   auto &&config = YAML::LoadFile("../../config/mock/" + config_path);
   expected_latency_ms_ = config["expected_latency_ms"].as<int>();
+  priority_ = config["priority"].as<int>();
 
   workload_ = std::make_shared<MonteCarloPiWorkload>(0.5);
 
@@ -329,6 +338,7 @@ bool MockTask_3_0::init_config(std::string config_path) {
   count_ = 0;
   auto &&config = YAML::LoadFile("../../config/mock/" + config_path);
   expected_latency_ms_ = config["expected_latency_ms"].as<int>();
+  priority_ = config["priority"].as<int>();
 
   workload_ = std::make_shared<MonteCarloPiWorkload>(0.5);
   return true;
@@ -360,6 +370,11 @@ bool MockTask_3_1::init_config(std::string config_path) {
   count_ = 0;
   assert(out_pipe_names_.size() == 1);
   writer_ = gogort::AcquireWriter<message::DummyMessage>(out_pipe_names_[0]);
+
+  auto &&config = YAML::LoadFile("../../config/mock/" + config_path);
+  expected_latency_ms_ = config["expected_latency_ms"].as<int>();
+  priority_ = config["priority"].as<int>();
+
   return true;
 }
 bool MockTask_3_1::Deal(std::shared_ptr<message::DummyMessage> msg1,
@@ -391,6 +406,11 @@ bool MockTask_3_2::init_config(std::string config_path) {
   assert(out_pipe_names_.size() == 2);
   writer1_ = gogort::AcquireWriter<message::DummyMessage>(out_pipe_names_[0]);
   writer2_ = gogort::AcquireWriter<message::DummyMessage>(out_pipe_names_[1]);
+
+  auto &&config = YAML::LoadFile("../../config/mock/" + config_path);
+  expected_latency_ms_ = config["expected_latency_ms"].as<int>();
+  priority_ = config["priority"].as<int>();
+
   return true;
 }
 bool MockTask_3_2::Deal(std::shared_ptr<message::DummyMessage> msg1,

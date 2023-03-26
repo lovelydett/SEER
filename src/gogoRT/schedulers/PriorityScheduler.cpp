@@ -9,41 +9,63 @@ namespace gogort {
 
 PriorityScheduler::PriorityScheduler(
     std::vector<std::shared_ptr<Worker>> &workers) {
-  for (auto worker : workers) {
-    workers_[worker->get_priority()].emplace_back(worker);
+  for (const auto &worker : workers) {
+    // workers_[worker->get_priority()].emplace_back(worker);
+    workers_.push_back(worker);
   }
-  assert(workers_.size() > 0);
+  assert(!workers_.empty());
 }
 
 bool PriorityScheduler::DoOnce() {
-  assert(workers_.size() > 0);
-  const auto num_routines = routines_.size();
-  for (int i = 0; i < num_routines; ++i) {
-    auto routine = routines_.top();
-    uint16 priority = routine->get_priority();
-    // Look for usable worker
-    while (routine != nullptr && priority > 0) {
-      auto it = workers_.find(routine->get_priority());
-      assert(it != workers_.end());
-      for (const auto &worker : it->second) {
-        if (!worker->isBusy()) {
-          worker->Assign(routine);
-          routine = nullptr;
-          break;
-        }
-      }
-      priority--;
+  assert(!workers_.empty());
+  // Yuting@2023-03-23: For now we just dont consider OS thread priority
+  //  const auto num_routines = routines_.size();
+  //  for (int i = 0; i < num_routines; ++i) {
+  //    auto routine = routines_.top();
+  //    uint16 priority = routine->get_priority();
+  //    // Look for usable worker
+  //    while (routine != nullptr && priority > 0) {
+  //      auto it = workers_.find(routine->get_priority());
+  //      assert(it != workers_.end());
+  //      for (const auto &worker : it->second) {
+  //        if (!worker->isBusy()) {
+  //          worker->Assign(routine);
+  //          routine = nullptr;
+  //          break;
+  //        }
+  //      }
+  //      priority--;
+  //    }
+  //    routines_.pop();
+  //  }
+
+  auto assign = [&](const std::shared_ptr<Worker> &worker) {
+    if (worker->isBusy()) {
+      return;
     }
-    routines_.pop();
-  }
+
+    while (!routines_.empty()) {
+      auto routine = routines_.top();
+      routines_.pop();
+      if (!routine->Expire()) {
+        worker->Assign(routine);
+        return;
+      }
+    }
+
+    return;
+  };
+
+  std::for_each(workers_.begin(), workers_.end(), assign);
 
   return true;
 }
 bool PriorityScheduler::AddRoutine(const std::shared_ptr<Routine> routine) {
-  routines_.emplace(routine);
+  routines_.push(routine);
   return false;
 }
 
+// Equivalent to std::less<T>
 bool RoutineCmp::operator()(const RoutinePtr &routine1,
                             const RoutinePtr &routine2) {
   return routine1->get_priority() > routine2->get_priority();

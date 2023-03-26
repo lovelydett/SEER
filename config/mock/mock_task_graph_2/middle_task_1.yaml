@@ -6,3 +6,5 @@ is_time_series: true
 
 # the expected latency in ms
 expected_latency_ms: 33
+
+priority: 3

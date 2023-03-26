@@ -1,4 +1,4 @@
-base_scheduler: DummyScheduler
+base_scheduler: PriorityScheduler
 base_scheduler_config: null
 
 registered_risks: [ DummyRisk1 ]

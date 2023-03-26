@@ -14,7 +14,6 @@ namespace gogort {
 bool Worker::Assign(std::shared_ptr<Routine> routine) {
   assert(next_routine_ == nullptr);
   next_routine_ = routine;
-  // next_routine_ = routine;
   return true;
 }
 

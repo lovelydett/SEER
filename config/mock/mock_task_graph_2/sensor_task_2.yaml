@@ -5,6 +5,8 @@ workload_type: 2
 is_time_series: false
 
 # the expected latency in ms
-expected_latency_ms: 7
+expected_latency_ms: 12
 
-frequency_ms: 10
+frequency_ms: 5
+
+priority: 4
