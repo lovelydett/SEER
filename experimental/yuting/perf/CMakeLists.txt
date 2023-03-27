@@ -1,4 +1,3 @@
-project(exp_yuting_perfmon2)
+project(exp_yuting_perf)
 
-add_executable(no_pfm no_libpfm.cpp)
-target_link_libraries(no_pfm pfm)
+add_executable(try_perf try_perf.cpp workload.cpp)

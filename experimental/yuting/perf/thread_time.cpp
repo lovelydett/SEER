@@ -8,56 +8,7 @@
 #include <thread>
 #include <vector>
 
-// Matmul implementations
-double A[500][500], B[500][500], C[500][500];
-
-void matmul1() {
-  for (int i = 0; i < 500; i++) {
-    for (int j = 0; j < 500; j++) {
-      for (int k = 0; k < 500; k++) {
-        C[i][j] += A[i][k] * B[k][j];
-      }
-    }
-  }
-}
-
-void matmul2() {
-  for (int i = 0; i < 500; i++) {
-    for (int k = 0; k < 500; k++) {
-      for (int j = 0; j < 500; j++) {
-        C[i][j] += A[i][k] * B[k][j];
-      }
-    }
-  }
-}
-
-void matmul3() {
-  for (int k = 0; k < 500; k++) {
-    for (int i = 0; i < 500; i++) {
-      for (int j = 0; j < 500; j++) {
-        C[i][j] += A[i][k] * B[k][j];
-      }
-    }
-  }
-}
-
-void matmul4() {
-  for (int k = 0; k < 500; k++) {
-    for (int j = 0; j < 500; j++) {
-      for (int i = 0; i < 500; i++) {
-        C[i][j] += A[i][k] * B[k][j];
-      }
-    }
-  }
-}
-
-// An IO intensive function
-void io_func() {
-  std::vector<int> v;
-  for (int i = 0; i < 1000000; i++) {
-    v.push_back(i);
-  }
-}
+#include "workload.h"
 
 uint64_t get_thread_time_ms(pthread_t tid) {
   clockid_t cid;
@@ -89,12 +40,11 @@ void func(int priority) {
   // set thread priority
   struct sched_param param;
   param.sched_priority = priority;
-  pthread_setschedparam(pthread_self(), SCHED_FIFO, &param);
+  pthread_setschedparam(pthread_self(), SCHED_RR, &param);
 
   uint64_t start_ms = get_thread_time_ms(pthread_self());
   auto start_time = std::chrono::high_resolution_clock::now();
-  // matmul1();
-  io_func();
+  matmul_ijk();
   auto end_time = std::chrono::high_resolution_clock::now();
   uint64_t end_ms = get_thread_time_ms(pthread_self());
   uint64_t thread_time_ms = (end_ms - start_ms);
