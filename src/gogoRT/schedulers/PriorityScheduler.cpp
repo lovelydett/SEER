@@ -70,9 +70,10 @@ bool PriorityScheduler::AddRoutine(const std::shared_ptr<Routine> routine) {
   return false;
 }
 
-// Equivalent to std::less<T>
+// Equivalent to std::less<T>, and remember priority_queue is big-top heap!
 bool RoutineCmp::operator()(const RoutinePtr &routine1,
                             const RoutinePtr &routine2) {
+  // Smaller number means higher priority
   return routine1->get_priority() > routine2->get_priority();
 }
 } // namespace gogort

@@ -5,6 +5,7 @@
 #ifndef GOGO_PIPE_H
 #define GOGO_PIPE_H
 
+#include <cassert>
 #include <memory>
 #include <mutex>
 #include <queue>
@@ -34,6 +35,7 @@ public:
   bool Enqueue(std::shared_ptr<Message> message) {
     std::lock_guard<std::mutex> lockGuard(mtx_);
     inner_msg_ = message;
+    assert(inner_msg_ != nullptr);
     return true;
   }
   // This function can be multi-threaded.

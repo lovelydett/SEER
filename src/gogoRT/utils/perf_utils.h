@@ -50,13 +50,17 @@ private:
     long fd;
     uint64_t id;
     uint64_t value;
-    char buf[4096];
     ReadFormat *result;
   } PerfContext;
 
 private:
   bool is_running_ = false;
   std::array<PerfContext, 10> perf_ctx_;
+  char read_buf_[4096];
+  ReadFormat *rf_p_;
+  Timer timer_;
+
+private:
   bool init();
 
 private:

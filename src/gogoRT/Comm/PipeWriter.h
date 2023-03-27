@@ -23,7 +23,9 @@ public:
   virtual ~PipeWriter() = default;
 
   bool Publish(std::shared_ptr<MSG> message) {
-    return pipe_->Enqueue(std::dynamic_pointer_cast<Message>(message));
+    auto message_base = std::dynamic_pointer_cast<Message>(message);
+    assert(message_base != nullptr);
+    return pipe_->Enqueue(message_base);
   }
 };
 

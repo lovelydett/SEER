@@ -17,7 +17,7 @@ namespace gogort {
 template <class MSG> class PipeReader {
 private:
   std::shared_ptr<Pipe> pipe_;
-  uint64 ts_updated_;
+  uint64 ts_updated_ = 0;
 
 private:
   // Yuting@2022.12.6: the status of readability should be maintained by a

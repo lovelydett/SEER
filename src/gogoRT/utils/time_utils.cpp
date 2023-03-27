@@ -18,9 +18,9 @@ uint64_t Timer::now_ms() {
 }
 
 void Timer::start() {
+  check_points_.clear();
   start_ = high_resolution_clock::now();
   last_ = high_resolution_clock::now();
-  check_points_.clear();
   is_started_ = true;
 }
 uint64_t Timer::get_ms_and_check(const std::string event_name) {

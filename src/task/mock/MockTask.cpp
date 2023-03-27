@@ -38,7 +38,7 @@ bool MockTask_0_1::init_config(std::string config_path) {
   return true;
 }
 bool MockTask_0_1::Deal() {
-  auto &&msg = std::make_shared<message::DummyMessage>();
+  auto msg = std::make_shared<message::DummyMessage>();
   count_++;
 
   workload_->RunFor(expected_latency_ms_);
@@ -78,7 +78,7 @@ bool MockTask_0_2::init_config(std::string config_path) {
   return true;
 }
 bool MockTask_0_2::Deal() {
-  auto &&msg = std::make_shared<message::DummyMessage>();
+  auto msg = std::make_shared<message::DummyMessage>();
   count_++;
 
   workload_->RunFor(expected_latency_ms_);

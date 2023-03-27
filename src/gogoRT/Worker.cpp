@@ -70,17 +70,17 @@ bool Worker::StartStateMachine() {
   };
   inner_thread_ = std::make_unique<std::thread>(state_machine);
   // If on Linux, set the thread affinity
-#ifdef __linux__
-  cpu_set_t cpuset;
-  CPU_ZERO(&cpuset);
-  CPU_SET(0, &cpuset);
-  int rc = pthread_setaffinity_np(inner_thread_->native_handle(),
-                                  sizeof(cpu_set_t), &cpuset);
-  if (rc != 0) {
-    LOG(ERROR) << "Error calling pthread_setaffinity_np: " << rc << "\n";
-  }
-#endif
-  // Worker id is tid, mod a relatively large number for display
+  // #ifdef __linux__
+  //   cpu_set_t cpuset;
+  //   CPU_ZERO(&cpuset);
+  //   CPU_SET(0, &cpuset);
+  //   int rc = pthread_setaffinity_np(inner_thread_->native_handle(),
+  //                                   sizeof(cpu_set_t), &cpuset);
+  //   if (rc != 0) {
+  //     LOG(ERROR) << "Error calling pthread_setaffinity_np: " << rc << "\n";
+  //   }
+  // #endif
+  //  Worker id is tid, mod a relatively large number for display
   LOG(INFO) << "Tid = " << get_id() % 1000 << " starts state-machine";
   return true;
 }
