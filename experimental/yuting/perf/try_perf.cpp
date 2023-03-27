@@ -20,7 +20,7 @@
 void perf_with_thread_time(Workload &workload, int priority, int cpu_core,
                            std::string name, uint64_t *thread_time_ptr);
 void perf_with_hw_counters(Workload &workload, int priority, int cpu_core,
-                           std::string name);
+                           std::string name, uint64_t *thread_time_ptr);
 void perf_with_roofline(Workload &workload, int priority, int cpu_core,
                         std::string name);
 
@@ -161,10 +161,11 @@ void do_profiling_single_core_comp(int num_workload) {
     io();
   }
 
+  uint64_t time_ms;
   for (int i = 0; i < num_workload; ++i) {
     threads.emplace_back(perf_with_hw_counters, std::ref(io),
                          sched_get_priority_max(SCHED_RR), 0,
-                         "io" + std::to_string(i));
+                         "io" + std::to_string(i), &time_ms);
   }
   // Join threads
   for (auto &t : threads) {
@@ -214,9 +215,9 @@ void do_profiling_single_core_multi_type_workload(int iter_num) {
     int i1 = rand() % workloads.size();
     int i2 = rand() % workloads.size();
 
-    std::thread t1(perf_with_thread_time, std::ref(*workloads[i1]),
+    std::thread t1(perf_with_hw_counters, std::ref(*workloads[i1]),
                    sched_get_priority_max(SCHED_RR), 0, names[i1], &res1[i1]);
-    std::thread t2(perf_with_thread_time, std::ref(*workloads[i2]),
+    std::thread t2(perf_with_hw_counters, std::ref(*workloads[i2]),
                    sched_get_priority_max(SCHED_RR), 0, names[i2], &res2[i2]);
     t1.join();
     t2.join();
@@ -242,15 +243,15 @@ struct read_format {
 };
 
 void perf_with_hw_counters(Workload &workload, int priority, int cpu_core,
-                           std::string name) {
+                           std::string name, uint64_t *thread_time_ptr) {
   // Set affinity and priority
   set_thread_affinity(pthread_self(), cpu_core);
   set_thread_priority(pthread_self(), priority, SCHED_RR);
 
   struct perf_event_attr pea;
-  int fd1, fd2, fd3;
-  uint64_t id1, id2, id3;
-  uint64_t val1, val2, val3;
+  int fd1, fd2, fd3, fd4, fd5;
+  uint64_t id1, id2, id3, id4, id5;
+  uint64_t val1, val2, val3, val4, val5;
   char buf[4096];
   struct read_format *rf = (struct read_format *)buf;
   int i;
@@ -288,6 +289,28 @@ void perf_with_hw_counters(Workload &workload, int priority, int cpu_core,
   fd3 = syscall(__NR_perf_event_open, &pea, 0, -1, fd1 /*!!!*/, 0);
   ioctl(fd3, PERF_EVENT_IOC_ID, &id3);
 
+  memset(&pea, 0, sizeof(struct perf_event_attr));
+  pea.type = PERF_TYPE_HARDWARE;
+  pea.size = sizeof(struct perf_event_attr);
+  pea.config = PERF_COUNT_HW_CACHE_REFERENCES;
+  pea.disabled = 1;
+  pea.exclude_kernel = 1;
+  pea.exclude_hv = 1;
+  pea.read_format = PERF_FORMAT_GROUP | PERF_FORMAT_ID;
+  fd4 = syscall(__NR_perf_event_open, &pea, 0, -1, fd1 /*!!!*/, 0);
+  ioctl(fd4, PERF_EVENT_IOC_ID, &id4);
+
+  memset(&pea, 0, sizeof(struct perf_event_attr));
+  pea.type = PERF_TYPE_HARDWARE;
+  pea.size = sizeof(struct perf_event_attr);
+  pea.config = PERF_COUNT_HW_CACHE_MISSES;
+  pea.disabled = 1;
+  pea.exclude_kernel = 1;
+  pea.exclude_hv = 1;
+  pea.read_format = PERF_FORMAT_GROUP | PERF_FORMAT_ID;
+  fd5 = syscall(__NR_perf_event_open, &pea, 0, -1, fd1 /*!!!*/, 0);
+  ioctl(fd5, PERF_EVENT_IOC_ID, &id5);
+
   auto start = std::chrono::high_resolution_clock::now();
 
   ioctl(fd1, PERF_EVENT_IOC_RESET, PERF_IOC_FLAG_GROUP);
@@ -310,14 +333,21 @@ void perf_with_hw_counters(Workload &workload, int priority, int cpu_core,
       val2 = rf->values[i].value;
     } else if (rf->values[i].id == id3) {
       val3 = rf->values[i].value;
+    } else if (rf->values[i].id == id4) {
+      val4 = rf->values[i].value;
+    } else if (rf->values[i].id == id5) {
+      val5 = rf->values[i].value;
     }
   }
 
   printf("name: %s, cpu: %d, priority: %d, cycle: %lu, page fault: %lu, "
-         "instruction: "
-         "%lu, "
+         "instruction: %lu, "
          "wall-clock(ms): %lu, "
-         "utilization: %.2f%%\n",
-         name.c_str(), cpu_core, priority, val1, val2, val3, duration_ms,
-         (double)val3 / val1 * 100);
+         "cache-ref: %lu, "
+         "cache-miss: %lu, "
+         "roofline: %.3f\n",
+         name.c_str(), cpu_core, priority, val1, val2, val3, duration_ms, val4,
+         val5, (double)val3 / (double)(val4 + val5));
+
+  *thread_time_ptr = duration_ms;
 }
