@@ -26,6 +26,7 @@ class Worker {
   };
 
 private:
+  static std::array<std::atomic<bool>, 32> cpu_cores_;
   std::unique_ptr<std::thread> inner_thread_;
   std::unordered_set<int16> affinity_;
   bool is_running_;

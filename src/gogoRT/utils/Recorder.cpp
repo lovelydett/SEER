@@ -27,14 +27,19 @@ Recorder::Recorder() {
    * [point events]    tid,time_ms,event,value,explain
    * [duration events] tid,start_ms,end_ms,duration_ms,event,value,explain
    * */
-  fout_point_ << "tid,time_ms,event,value,explain\n";
-  fout_duration_ << "tid,start_ms,end_ms,duration_ms,event,value,explain\n";
+  fout_point_ << "core,tid,time_ms,event,value,explain\n";
+  fout_duration_
+      << "core,tid,start_ms,end_ms,duration_ms,event,value,explain\n";
 }
 
 Recorder *Recorder::Instance() { return &instance_; }
 
 bool Recorder::Append(const std::string event, const RecordType type,
                       const uint64_t value, const std::string explain) {
+  // Get current core
+  auto core = sched_getcpu();
+  assert(core >= 0);
+
   // Todo(yuting): make sure no ',' in event string.
   auto tid = std::this_thread::get_id();
   auto tid_uint32 = *(uint32_t *)&tid;
@@ -43,8 +48,8 @@ bool Recorder::Append(const std::string event, const RecordType type,
   std::lock_guard<std::mutex> lockGuard(mtx_);
 
   if (type == kPoint) {
-    fout_point_ << tid_uint32 << ',' << now_ms << ',' << event << ',' << value
-                << ',' << explain << '\n';
+    fout_point_ << core << "," << tid_uint32 << ',' << now_ms << ',' << event
+                << ',' << value << ',' << explain << '\n';
   } else if (type == kDuration) {
     if (!duration_events_.contains(event)) [[unlikely]] {
       duration_events_.insert({event, now_ms});
@@ -53,9 +58,9 @@ bool Recorder::Append(const std::string event, const RecordType type,
     assert(it != duration_events_.end());
     if (it->second != 0) {
       // Means recording ending now.
-      fout_duration_ << tid_uint32 << ',' << it->second << ',' << now_ms << ','
-                     << now_ms - it->second << ',' << event << ',' << value
-                     << ',' << explain << '\n';
+      fout_duration_ << core << "," << tid_uint32 << ',' << it->second << ','
+                     << now_ms << ',' << now_ms - it->second << ',' << event
+                     << ',' << value << ',' << explain << '\n';
     } else {
       // Means recording starting now.
       it->second = now_ms;

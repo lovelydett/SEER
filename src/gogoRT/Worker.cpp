@@ -13,6 +13,8 @@ namespace gogort {
 
 static Recorder *recorder = Recorder::Instance();
 
+std::array<std::atomic<bool>, 32> Worker::cpu_cores_;
+
 bool Worker::Assign(std::shared_ptr<Routine> routine) {
   assert(next_routine_ == nullptr);
   next_routine_ = routine;
@@ -69,17 +71,29 @@ bool Worker::StartStateMachine() {
     }
   };
   inner_thread_ = std::make_unique<std::thread>(state_machine);
-  // If on Linux, set the thread affinity
-  // #ifdef __linux__
-  //   cpu_set_t cpuset;
-  //   CPU_ZERO(&cpuset);
-  //   CPU_SET(0, &cpuset);
-  //   int rc = pthread_setaffinity_np(inner_thread_->native_handle(),
-  //                                   sizeof(cpu_set_t), &cpuset);
-  //   if (rc != 0) {
-  //     LOG(ERROR) << "Error calling pthread_setaffinity_np: " << rc << "\n";
-  //   }
-  // #endif
+// If on Linux, set the thread affinity and priority
+// Now all MAX priority
+#ifdef __linux__
+  auto num_core = std::thread::hardware_concurrency();
+  int core_id = -1;
+  for (int i = 0; i < num_core; i++) {
+    // exchange returns the old value
+    if (!cpu_cores_[i].exchange(true)) {
+      core_id = i;
+      break;
+    }
+  }
+  assert(core_id != -1);
+  cpu_set_t cpuset;
+  CPU_ZERO(&cpuset);
+  CPU_SET(core_id, &cpuset);
+  int rc = pthread_setaffinity_np(inner_thread_->native_handle(),
+                                  sizeof(cpu_set_t), &cpuset);
+  if (rc != 0) {
+    LOG(ERROR) << "Error calling pthread_setaffinity_np: " << rc << "\n";
+  }
+#endif
+
   //  Worker id is tid, mod a relatively large number for display
   LOG(INFO) << "Tid = " << get_id() % 1000 << " starts state-machine";
   return true;
