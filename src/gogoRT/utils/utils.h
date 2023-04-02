@@ -7,6 +7,7 @@
 
 #include <atomic>
 #include <random>
+#include <thread>
 
 // Define some integer types.
 typedef int int32;
@@ -20,6 +21,11 @@ typedef uint16 gogo_id_t;
 
 gogo_id_t get_next_uuid();
 uint64 get_current_timestamp_ms();
+
+// Thread utils
+void set_thread_priority(pthread_t tid, int priority);
+void set_thread_affinity(pthread_t tid, int core);
+int get_thread_priority(pthread_t tid);
 
 // Random functions
 int random_int();

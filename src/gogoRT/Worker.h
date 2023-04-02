@@ -18,43 +18,51 @@ namespace gogort {
 class Dispatcher;
 
 class Worker {
-  enum WORKER_STAGE {
-    STAGE_NONE = 0,
-    STAGE_PENDING_COMM,
-    STAGE_PENDING_SCHED,
-    STAGE_PENDING_EXEC,
+  enum Priority {
+    PRIORITY_LOW = 90,
+    PRIORITY_MID = 91,
+    PRIORITY_HIGH = 92,
+  };
+
+  enum Status {
+    WORKER_IDLE = 0,
+    WORKER_BASE = 1,
+    WORKER_PREEMPT = 2,
   };
 
 private:
-  static std::array<std::atomic<bool>, 32> cpu_cores_;
-  std::unique_ptr<std::thread> inner_thread_;
-  std::unordered_set<int16> affinity_;
-  bool is_running_;
-  uint16 priority_;
-  std::shared_ptr<Routine> next_routine_;
+  const int core_;
+  std::unique_ptr<std::thread> base_thread_;
+  std::unique_ptr<std::thread> preempt_thread_;
+
+  bool is_preempt_ = false;
+
+  std::shared_ptr<Routine> base_routine_;
+  std::shared_ptr<Routine> preempt_routine_;
+
   Dispatcher &dispatcher_;
-  WORKER_STAGE worker_stage_;
+  Status status_;
 
 public:
   Worker() = delete;
-  explicit Worker(Dispatcher &dispatcher);
+  Worker(Dispatcher &dispatcher, int core);
   Worker(const Worker &) = delete;
   Worker &operator=(const Worker &) = delete;
   Worker(Worker &&) = delete;
   ~Worker() = default;
 
   // The whole process of a worker happens here
-  bool StartStateMachine();
+  bool Start();
 
   // Other utils to manage current worker
   bool Assign(std::shared_ptr<Routine> routine);
-  bool Release();
-  bool isBusy() const;
   void Join();
+  void RequestPreempt(std::shared_ptr<Routine> routine);
 
   [[nodiscard]] uint32 get_id() const;
-  [[nodiscard]] uint16 get_priority() const;
-  void set_priority(const uint16 priority);
+  [[nodiscard]] Status get_status() const;
+  [[nodiscard]] bool is_preempting_() const;
+  [[nodiscard]] int get_core() const;
 };
 
 } // namespace gogort

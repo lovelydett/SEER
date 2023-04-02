@@ -4,6 +4,7 @@
 
 #include "utils.h"
 
+#include <cassert>
 #include <chrono>
 #include <random>
 
@@ -32,4 +33,27 @@ uint64 get_current_timestamp_ms() {
   auto duration = now.time_since_epoch();
   return std::chrono::duration_cast<std::chrono::milliseconds>(duration)
       .count();
+}
+
+void set_thread_priority(pthread_t tid, int priority) {
+  struct sched_param param;
+  param.sched_priority = priority;
+  auto ret = pthread_setschedparam(tid, SCHED_RR, &param);
+  assert(ret == 0);
+}
+
+void set_thread_affinity(pthread_t tid, int core) {
+  cpu_set_t cpuset;
+  CPU_ZERO(&cpuset);
+  CPU_SET(core, &cpuset);
+  auto ret = pthread_setaffinity_np(tid, sizeof(cpu_set_t), &cpuset);
+  assert(ret == 0);
+}
+
+int get_thread_priority(pthread_t tid) {
+  struct sched_param param;
+  int policy;
+  auto ret = pthread_getschedparam(tid, &policy, &param);
+  assert(ret == 0);
+  return param.sched_priority;
 }
