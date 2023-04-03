@@ -14,7 +14,6 @@
 
 namespace gogort {
 
-typedef std::vector<std::shared_ptr<Worker>> WorkerVec;
 typedef std::shared_ptr<Routine> RoutinePtr;
 typedef std::vector<RoutinePtr> RoutineVec;
 
@@ -26,9 +25,6 @@ public:
 class PriorityScheduler : public Scheduler {
 private:
   std::priority_queue<RoutinePtr, RoutineVec, RoutineCmp> routines_;
-  // Yuting@2023-03-26: For now we just dont consider OS thread priority
-  // std::unordered_map<uint16, WorkerVec> workers_;
-  WorkerVec workers_;
 
 private:
   bool DoOnce() override;

@@ -20,13 +20,14 @@ class Worker;
 
 class Scheduler {
 protected:
-  bool is_init_ = false;
+  int num_core = -1;
   // Yuting@2023.1.9: let actual schedulers decide what containers to use.
-  // std::vector<std::shared_ptr<Worker>> &workers_;
+  // Yuting@2023.4.3: now only use worker vector since they are bind to cores
+  std::vector<std::shared_ptr<Worker>> &workers_;
   // std::list<std::shared_ptr<Routine>> routines_;
 
 protected:
-  Scheduler() = default;
+  Scheduler(std::vector<std::shared_ptr<Worker>> &workers);
   virtual bool DoOnce() = 0;
 
 public:

@@ -12,7 +12,6 @@ namespace gogort {
 
 class DummyScheduler : public Scheduler {
 private:
-  std::vector<std::shared_ptr<Worker>> &workers_;
   std::list<std::shared_ptr<Routine>> routines_;
   // Yuting@2023.3.23: we must consider the task graph cycle order now
   std::unordered_map<std::string, uint64_t> latest_tasks_;

@@ -14,7 +14,7 @@ namespace gogort {
 
 DynamicScheduler::DynamicScheduler(
     std::vector<std::shared_ptr<Worker>> &workers)
-    : workers_(workers) {
+    : Scheduler(workers) {
   init_config("../../config/scheduler/dynamic_scheduler.yaml");
 }
 
@@ -23,21 +23,18 @@ bool DynamicScheduler::DoOnce() {
   base_scheduler_->DoSchedule();
 
   // IF idle workers, handle risks.
-  int num_idle = 0;
-  for (auto &worker : workers_) {
-    if (!worker->isBusy()) {
-      num_idle++;
-    }
-  }
-  if (num_idle == 0) {
+  if (std::none_of(workers_.begin(), workers_.end(),
+                   [&](const std::shared_ptr<Worker> &worker) {
+                     return worker->is_idle();
+                   })) {
     return true;
   }
 
   // Otherwise, do inner
-  return inner_do_once(num_idle);
+  return inner_do_once();
 }
 
-bool DynamicScheduler::inner_do_once(const int num_idle_worker) {
+bool DynamicScheduler::inner_do_once() {
   // UPDATE all pending instances, check whether handled.
   for (auto it = pending_instances_.begin(); it != pending_instances_.end();) {
     if ((*it)->IsHandled()) {
@@ -92,11 +89,11 @@ bool DynamicScheduler::inner_do_once(const int num_idle_worker) {
     if (pending_instances_.empty()) {
       break;
     }
-    if (!worker->isBusy()) {
+    if (worker->is_idle()) {
       auto instance = pending_instances_.front();
       worker->Assign(instance->GetHandler());
-      // LOG(INFO) << "Assigning " << instance->get_risk_name() << " to worker "
-      // << worker->get_id();
+      Recorder::Instance()->Append(instance->get_risk_name(), Recorder::kPoint,
+                                   instance->get_id(), "detect");
       handled_instances_.push_back(instance);
       pending_instances_.pop_front();
     }

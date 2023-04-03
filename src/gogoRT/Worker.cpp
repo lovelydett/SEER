@@ -34,8 +34,14 @@ bool Worker::Start() {
   assert(preempt_thread_ == nullptr);
 
   // The kernel executed by base_thread
+  // Make sure no any IO operation in this kernel
   std::function<void(void)> base_kernel = [&]() {
+    set_thread_affinity(pthread_self(), core_);
+    set_thread_priority(pthread_self(), PRIORITY_HIGH);
+    LOG(INFO) << "Base thread of worker " << get_id() << " is started";
     while (true) {
+      // LOG(INFO) << "This line good!!! from " <<
+      // get_thread_core(pthread_self());
       set_thread_priority(pthread_self(), PRIORITY_HIGH);
       if (dispatcher_.AcquireSchedLock()) {
         // LOG(INFO) << "Get lock and do updating";
@@ -58,13 +64,26 @@ bool Worker::Start() {
 
   // The kernel executed by preempt_thread
   std::function<void(void)> preempt_kernel = [&]() {
+    set_thread_affinity(pthread_self(), core_);
     set_thread_priority(pthread_self(), PRIORITY_LOW);
     while (true) {
+      set_thread_priority(pthread_self(), PRIORITY_LOW);
       // It should only be able to run when awake in high priority.
-      assert(get_thread_priority(pthread_self()) == PRIORITY_HIGH);
+      //      auto p = get_thread_priority(pthread_self());
+      //      if (p != PRIORITY_HIGH) {
+      //        LOG(INFO) << "Worker " << get_id() % 1000 << " is in wrong
+      //        priority "
+      //                  << p;
+      //      }
+      //      assert(get_thread_priority(pthread_self()) == PRIORITY_HIGH);
+      LOG(INFO) << "This line should not be printed from a preempt thread on "
+                << get_thread_core(pthread_self()) << " with priority "
+                << get_thread_priority(pthread_self());
       if (preempt_routine_ == nullptr) {
         // Should not happen
-        assert(false);
+        // assert(false);
+        set_thread_priority(pthread_self(), PRIORITY_LOW);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
         continue;
       }
       recorder->Append(preempt_routine_->get_task_name(), Recorder::kPoint,
@@ -78,11 +97,12 @@ bool Worker::Start() {
     }
   };
 
-  // Start the base thread and preempt thread
+  // Start the base thread and preempt thread kernels
   base_thread_ = std::make_unique<std::thread>(base_kernel);
+  std::this_thread::sleep_for(std::chrono::milliseconds(1));
   preempt_thread_ = std::make_unique<std::thread>(preempt_kernel);
 
-  LOG(INFO) << "Worker " << get_id() % 1000 << " starts working";
+  LOG(INFO) << "Worker " << get_id() << " starts working";
   return true;
 }
 
@@ -111,6 +131,10 @@ void Worker::RequestPreempt(std::shared_ptr<Routine> routine) {
 uint32 Worker::get_id() const {
   auto id = base_thread_->get_id();
   return *(uint32 *)&id;
+}
+
+[[nodiscard]] bool Worker::is_idle() const {
+  return base_routine_ == nullptr && preempt_routine_ == nullptr;
 }
 
 } // namespace gogort

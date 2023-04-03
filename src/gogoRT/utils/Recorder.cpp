@@ -36,6 +36,9 @@ Recorder *Recorder::Instance() { return &instance_; }
 
 bool Recorder::Append(const std::string event, const RecordType type,
                       const uint64_t value, const std::string explain) {
+  // Todo(yuting): make file IO asynchronous.
+  return true;
+
   // Get current core
   auto core = sched_getcpu();
   assert(core >= 0);

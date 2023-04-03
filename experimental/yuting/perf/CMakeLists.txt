@@ -7,3 +7,5 @@ add_executable(dead_loop dead_loop.cpp)
 add_executable(preemption preemption.cpp)
 
 add_executable(colocate_threads colocate_threads.cpp)
+
+add_executable(colocate_effect colocate_effect.cpp)

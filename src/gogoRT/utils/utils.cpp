@@ -57,3 +57,15 @@ int get_thread_priority(pthread_t tid) {
   assert(ret == 0);
   return param.sched_priority;
 }
+
+int get_thread_core(pthread_t tid) {
+  cpu_set_t cpuset;
+  auto ret = pthread_getaffinity_np(tid, sizeof(cpu_set_t), &cpuset);
+  assert(ret == 0);
+  for (int i = 0; i < CPU_SETSIZE; i++) {
+    if (CPU_ISSET(i, &cpuset)) {
+      return i;
+    }
+  }
+  return -1;
+}

@@ -11,39 +11,14 @@ namespace gogort {
 static Recorder *recorder = Recorder::Instance();
 
 PriorityScheduler::PriorityScheduler(
-    std::vector<std::shared_ptr<Worker>> &workers) {
-  for (const auto &worker : workers) {
-    // workers_[worker->get_priority()].emplace_back(worker);
-    workers_.push_back(worker);
-  }
-  assert(!workers_.empty());
-}
+    std::vector<std::shared_ptr<Worker>> &workers)
+    : Scheduler(workers) {}
 
 bool PriorityScheduler::DoOnce() {
   assert(!workers_.empty());
-  // Yuting@2023-03-23: For now we just dont consider OS thread priority
-  //  const auto num_routines = routines_.size();
-  //  for (int i = 0; i < num_routines; ++i) {
-  //    auto routine = routines_.top();
-  //    uint16 priority = routine->get_priority();
-  //    // Look for usable worker
-  //    while (routine != nullptr && priority > 0) {
-  //      auto it = workers_.find(routine->get_priority());
-  //      assert(it != workers_.end());
-  //      for (const auto &worker : it->second) {
-  //        if (!worker->isBusy()) {
-  //          worker->Assign(routine);
-  //          routine = nullptr;
-  //          break;
-  //        }
-  //      }
-  //      priority--;
-  //    }
-  //    routines_.pop();
-  //  }
 
   auto assign = [&](const std::shared_ptr<Worker> &worker) {
-    if (worker->isBusy()) {
+    if (!worker->is_idle()) {
       return;
     }
 

@@ -59,19 +59,12 @@ bool Dispatcher::init_config() {
   // exit(-1);
 
   // Init workers based on config file
-  const int num_workers = config["num_workers"].as<int>();
-  const int priority_range = config["priority_range"].as<int>();
-  int a[num_workers];
-  a[0] = 0;
-  // num_workers = 1; // Set num of workers to 1 to debug
-  workers_.reserve(num_workers * priority_range);
+  int num_core = config["num_core"].as<int>();
+  // num_core = 1; // Set num of workers to 1 to debug
+  workers_.reserve(num_core);
   // Mock for now
-  for (int i = 0; i < num_workers; ++i) {
-    for (int j = 1; j <= priority_range; ++j) {
-      auto &&worker = std::make_shared<Worker>(*this);
-      worker->set_priority(j);
-      workers_.emplace_back(worker);
-    }
+  for (int core = 0; core < num_core; ++core) {
+    workers_.emplace_back(std::make_shared<Worker>(*this, core));
   }
 
   // Init scheduler based on config file
@@ -85,7 +78,7 @@ bool Dispatcher::init_config() {
 bool Dispatcher::Run() {
   // 1. Launch workers
   for (auto &worker : workers_) {
-    worker->StartStateMachine();
+    worker->Start();
   }
   // 2. Join workers
   JoinWorkers();
@@ -129,8 +122,14 @@ void Dispatcher::JoinWorkers() {
   }
 }
 
-bool Dispatcher::AcquireSchedLock() { return mtx_sched_.try_lock(); }
+bool Dispatcher::AcquireSchedLock() {
+  // False means the lock is acquired
+  if (!sched_lock_.test_and_set(std::memory_order_acquire)) {
+    return true;
+  }
+  return false;
+}
 
-void Dispatcher::ReleaseSchedLock() { mtx_sched_.unlock(); }
+void Dispatcher::ReleaseSchedLock() { std::atomic_flag_clear(&sched_lock_); }
 
 } // namespace gogort

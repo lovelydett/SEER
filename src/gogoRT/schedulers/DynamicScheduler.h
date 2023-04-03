@@ -19,9 +19,6 @@ namespace gogort {
 
 class DynamicScheduler : public Scheduler {
 private:
-  std::vector<std::shared_ptr<Worker>> &workers_;
-  // No need to store routines here, but base scheduler.
-  // std::list<std::shared_ptr<Routine>> normal_routines_;
   std::list<std::shared_ptr<Routine>> quick_reactive_routines_;
 
   std::list<std::shared_ptr<RiskInstance>> pending_instances_;
@@ -32,7 +29,7 @@ private:
 
 private:
   bool DoOnce() override;
-  bool inner_do_once(int num_idle_worker);
+  bool inner_do_once();
   bool init_config(std::string config_file);
 
 public:

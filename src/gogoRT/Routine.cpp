@@ -3,6 +3,7 @@
 //
 
 #include "Routine.h"
+#include "utils/Recorder.h"
 
 #include <cassert>
 #include <glog/logging.h>
@@ -20,9 +21,13 @@ Routine::~Routine() { // LOG(INFO) << "Routine " << id_ << " is destroyed";
 }
 bool Routine::Run() {
   assert(is_finished_ == false);
-  perf_monitor_.start();
+  // perf_monitor_.start();
+  auto start = get_current_timestamp_ms();
   func_();
-  perf_monitor_.stop_and_record(task_name_);
+  auto end = get_current_timestamp_ms();
+  Recorder::Instance()->Append(task_name_, Recorder::kPoint, end - start,
+                               "end_after_ms");
+  // perf_monitor_.stop_and_record(task_name_);
   is_finished_ = true;
   return true;
 }

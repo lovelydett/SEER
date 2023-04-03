@@ -26,6 +26,7 @@ uint64 get_current_timestamp_ms();
 void set_thread_priority(pthread_t tid, int priority);
 void set_thread_affinity(pthread_t tid, int core);
 int get_thread_priority(pthread_t tid);
+int get_thread_core(pthread_t tid);
 
 // Random functions
 int random_int();

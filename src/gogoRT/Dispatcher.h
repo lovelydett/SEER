@@ -33,7 +33,10 @@ private:
   std::shared_ptr<Scheduler> scheduler_;
   std::shared_ptr<CommBuffer> comm_buffer_;
   // When one worker is scheduling, nobody gets work.
-  std::mutex mtx_sched_;
+  // std::mutex mtx_sched_;
+  // Yuting@2023.4.3: use atomic flag instead of mutex
+  std::atomic_flag sched_lock_ = ATOMIC_FLAG_INIT;
+
   // All invokers
   std::vector<std::shared_ptr<InvokerBase>> invokers_;
 

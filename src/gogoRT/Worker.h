@@ -21,7 +21,7 @@ class Worker {
   enum Priority {
     PRIORITY_LOW = 90,
     PRIORITY_MID = 91,
-    PRIORITY_HIGH = 92,
+    PRIORITY_HIGH = 99,
   };
 
   enum Status {
@@ -63,6 +63,8 @@ public:
   [[nodiscard]] Status get_status() const;
   [[nodiscard]] bool is_preempting_() const;
   [[nodiscard]] int get_core() const;
+
+  [[nodiscard]] bool is_idle() const;
 };
 
 } // namespace gogort

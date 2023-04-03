@@ -11,7 +11,7 @@
 namespace gogort {
 
 DummyScheduler::DummyScheduler(std::vector<std::shared_ptr<Worker>> &workers)
-    : workers_(workers) {}
+    : Scheduler(workers) {}
 
 bool DummyScheduler::DoOnce() {
   // Simply pick the first routine for next worker.
@@ -24,7 +24,7 @@ bool DummyScheduler::DoOnce() {
     if (routines_.empty()) {
       break;
     }
-    if (worker->isBusy()) {
+    if (!worker->is_idle()) {
       continue;
     }
     // First assign, then pop!
