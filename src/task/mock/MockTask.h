@@ -164,6 +164,7 @@ private:
   int expected_latency_ms_;
   bool init_config(std::string) override;
   std::shared_ptr<MockWorkload> workload_;
+  uint64_t last_time_ms_;
 
 public:
   MockTask_3_0(const std::string &name, const std::string &config_path,

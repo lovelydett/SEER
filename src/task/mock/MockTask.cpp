@@ -336,7 +336,8 @@ MockTask_3_0::MockTask_3_0(const std::string &name,
                            std::vector<std::string> &&out_pipes)
     : Task<DummyMessage, DummyMessage, DummyMessage>(name, std::move(in_pipes),
                                                      std::move(out_pipes)),
-      count_(0), expected_latency_ms_(-1) {
+      count_(0), expected_latency_ms_(-1),
+      last_time_ms_(get_current_timestamp_ms()) {
   MockTask_3_0::init_config(config_path);
 }
 bool MockTask_3_0::init_config(std::string config_path) {
@@ -355,7 +356,11 @@ bool MockTask_3_0::Deal(std::shared_ptr<message::DummyMessage> msg1,
 
   workload_->RunFor(expected_latency_ms_);
 
-  LOG(INFO) << "A MockTask_3_0 task finish once, count: " << count_ << "\n";
+  auto fps = 1000. / (get_current_timestamp_ms() - last_time_ms_);
+  auto E2E_latency_ms = get_current_timestamp_ms() - last_time_ms_;
+  last_time_ms_ = get_current_timestamp_ms();
+  LOG(INFO) << "A MockTask_3_0 task finish once, count: " << count_
+            << ", fps: " << fps << ", E2E: " << E2E_latency_ms << " ms";
 
   return true;
 }
