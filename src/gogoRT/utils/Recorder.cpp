@@ -39,7 +39,10 @@ Recorder *Recorder::Instance() { return &instance_; }
 bool Recorder::Append(const std::string event, const RecordType type,
                       const uint64_t value, const std::string explain) {
   // Get current core
-  auto core = sched_getcpu();
+  auto core = -1;
+#ifdef __linux__
+  core = sched_getcpu();
+#endif
   auto tid = std::this_thread::get_id();
   auto tid_uint32 = *(uint32_t *)&tid;
 

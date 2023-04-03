@@ -43,11 +43,13 @@ void set_thread_priority(pthread_t tid, int priority) {
 }
 
 void set_thread_affinity(pthread_t tid, int core) {
+#ifdef __linux__
   cpu_set_t cpuset;
   CPU_ZERO(&cpuset);
   CPU_SET(core, &cpuset);
   auto ret = pthread_setaffinity_np(tid, sizeof(cpu_set_t), &cpuset);
   assert(ret == 0);
+#endif
 }
 
 int get_thread_priority(pthread_t tid) {
@@ -59,6 +61,7 @@ int get_thread_priority(pthread_t tid) {
 }
 
 int get_thread_core(pthread_t tid) {
+#ifdef __linux__
   cpu_set_t cpuset;
   auto ret = pthread_getaffinity_np(tid, sizeof(cpu_set_t), &cpuset);
   assert(ret == 0);
@@ -67,5 +70,6 @@ int get_thread_core(pthread_t tid) {
       return i;
     }
   }
+#endif
   return -1;
 }
