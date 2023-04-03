@@ -117,7 +117,7 @@ bool MockTask_1_0::Deal(std::shared_ptr<message::DummyMessage> msg) {
 
   workload_->RunFor(expected_latency_ms_);
 
-  LOG(INFO) << "A MockTask_1_0 task finish once, count: " << count_ << "\n";
+  // LOG(INFO) << "A MockTask_1_0 task finish once, count: " << count_ << "\n";
 
   return true;
 }
@@ -233,7 +233,7 @@ bool MockTask_2_0::Deal(std::shared_ptr<message::DummyMessage> msg1,
 
   workload_->RunFor(expected_latency_ms_);
 
-  LOG(INFO) << "A MockTask_1_0 task finish once, count: " << count_ << "\n";
+  // LOG(INFO) << "A MockTask_2_0 task finish once, count: " << count_ << "\n";
 
   return true;
 }
@@ -355,7 +355,7 @@ bool MockTask_3_0::Deal(std::shared_ptr<message::DummyMessage> msg1,
 
   workload_->RunFor(expected_latency_ms_);
 
-  LOG(INFO) << "A MockTask_1_0 task finish once, count: " << count_ << "\n";
+  LOG(INFO) << "A MockTask_3_0 task finish once, count: " << count_ << "\n";
 
   return true;
 }

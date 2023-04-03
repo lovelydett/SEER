@@ -4,8 +4,10 @@
 
 #include "Recorder.h"
 #include "time_utils.h"
+#include "utils.h"
 
 #include <cassert>
+#include <future>
 #include <thread>
 
 namespace gogort {
@@ -36,41 +38,46 @@ Recorder *Recorder::Instance() { return &instance_; }
 
 bool Recorder::Append(const std::string event, const RecordType type,
                       const uint64_t value, const std::string explain) {
-  // Todo(yuting): make file IO asynchronous.
-  return true;
-
   // Get current core
   auto core = sched_getcpu();
-  assert(core >= 0);
-
-  // Todo(yuting): make sure no ',' in event string.
   auto tid = std::this_thread::get_id();
   auto tid_uint32 = *(uint32_t *)&tid;
-  auto now_ms = Timer::now_ms();
 
-  std::lock_guard<std::mutex> lockGuard(mtx_);
+  auto async_file_output = [&](const std::string event, const RecordType type,
+                               const uint64_t value, const std::string explain,
+                               const int core, const int tid) {
+    set_thread_affinity(pthread_self(), 15);
+    // Todo(yuting): make sure no ',' in event string.
+    auto now_ms = Timer::now_ms();
 
-  if (type == kPoint) {
-    fout_point_ << core << "," << tid_uint32 << ',' << now_ms << ',' << event
-                << ',' << value << ',' << explain << '\n';
-  } else if (type == kDuration) {
-    if (!duration_events_.contains(event)) [[unlikely]] {
-      duration_events_.insert({event, now_ms});
-    }
-    auto it = duration_events_.find(event);
-    assert(it != duration_events_.end());
-    if (it->second != 0) {
-      // Means recording ending now.
-      fout_duration_ << core << "," << tid_uint32 << ',' << it->second << ','
-                     << now_ms << ',' << now_ms - it->second << ',' << event
-                     << ',' << value << ',' << explain << '\n';
+    std::lock_guard<std::mutex> lockGuard(mtx_);
+
+    if (type == kPoint) {
+      fout_point_ << core << "," << tid << ',' << now_ms << ',' << event << ','
+                  << value << ',' << explain << '\n';
+    } else if (type == kDuration) {
+      if (!duration_events_.contains(event)) [[unlikely]] {
+        duration_events_.insert({event, now_ms});
+      }
+      auto it = duration_events_.find(event);
+      assert(it != duration_events_.end());
+      if (it->second != 0) {
+        // Means recording ending now.
+        fout_duration_ << core << "," << tid << ',' << it->second << ','
+                       << now_ms << ',' << now_ms - it->second << ',' << event
+                       << ',' << value << ',' << explain << '\n';
+      } else {
+        // Means recording starting now.
+        it->second = now_ms;
+      }
     } else {
-      // Means recording starting now.
-      it->second = now_ms;
+      assert(false && "Unknown record type");
     }
-  } else {
-    assert(false);
-  }
+  };
+
+  std::make_shared<std::thread>(async_file_output, event, type, value, explain,
+                                core, tid_uint32)
+      ->detach();
 
   return true;
 }

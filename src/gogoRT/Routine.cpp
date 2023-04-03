@@ -23,6 +23,7 @@ bool Routine::Run() {
   assert(is_finished_ == false);
   // perf_monitor_.start();
   auto start = get_current_timestamp_ms();
+  // Todo(yuting): what caused the block?
   func_();
   auto end = get_current_timestamp_ms();
   Recorder::Instance()->Append(task_name_, Recorder::kPoint, end - start,

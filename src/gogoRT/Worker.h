@@ -8,6 +8,8 @@
 #include "Dispatcher.h"
 #include "Routine.h"
 #include "utils/utils.h"
+
+#include <condition_variable>
 #include <functional>
 #include <memory>
 #include <thread>
@@ -34,6 +36,11 @@ private:
   const int core_;
   std::unique_ptr<std::thread> base_thread_;
   std::unique_ptr<std::thread> preempt_thread_;
+
+  // Lock and condition variable to awake the preemption thread
+  std::mutex preempt_lock_;
+  std::condition_variable preempt_cv_;
+  std::unique_lock<std::mutex> preempt_ul_;
 
   bool is_preempt_ = false;
 
