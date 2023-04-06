@@ -29,8 +29,10 @@ double random_exponential(double lambda) {
 }
 
 uint64 get_current_timestamp_ms() {
+  static auto base = std::chrono::system_clock::now();
   auto now = std::chrono::system_clock::now();
-  auto duration = now.time_since_epoch();
+  //  auto duration = now.time_since_epoch();
+  auto duration = now - base;
   return std::chrono::duration_cast<std::chrono::milliseconds>(duration)
       .count();
 }

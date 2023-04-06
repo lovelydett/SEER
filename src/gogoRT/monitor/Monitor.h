@@ -1,4 +1,4 @@
-//
+// Monitor is a singleton that stores the task graph and utilization status
 // Created by Yuting Xie on 03/04/2023.
 //
 
@@ -14,7 +14,8 @@ namespace gogort {
 class Monitor {
 private:
   static Monitor instance_;
-  TaskGraph task_graph_;
+  TaskGraph task_graph_; // Task graph are view from task instances
+  // TODO: add utilization status from core view
 
 private:
   Monitor();

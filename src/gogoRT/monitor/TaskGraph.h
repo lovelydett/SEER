@@ -9,6 +9,7 @@
 
 #include <array>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -30,18 +31,25 @@ typedef struct DirectedEdge {
 
 typedef struct StateNode {
   enum NodeType { kNodeNone = 0, kNodeReady, kNodeFinish };
+  enum StatusType {
+    kStatusNone = 0,
+    kStatusAssigned,
+    kStatusPreempting,
+    kStatusRunning
+  };
   NodeType type_ = kNodeNone;
   const std::string task_name_;
   const uint64_t id_;
+  enum StatusType status_ = kStatusNone;
   uint64_t timestamp_ms_ = 0; // Track the last triggered moment
-  int count_ = 0;             // VERY critical, track the task graph round
+  uint64_t round_ = 0;        // VERY critical, track the task graph round
   std::vector<std::shared_ptr<Edge>> edge_out_;
   explicit StateNode(std::string &task_name)
       : id_(get_next_uuid()), task_name_(task_name) {}
 } Node;
 
 enum DependencyType { kDepNone = 0, kDepPub, kDepSub };
-enum UpdateType { kUpNone = 0, kUpInvoke, kUpAssign, kUpExecute, kUpFinish };
+enum UpdateType { kUpNone = 0, kUpAssign, kUpPreempt, kUpExecute, kUpFinish };
 
 class TaskGraph {
 private:
@@ -55,13 +63,16 @@ private:
   std::string exit_task_name_;
   uint64_t last_exit_time_ms_ = 0;
 
+  static std::mutex mtx_;
+
 public:
   TaskGraph() = default;
   [[nodiscard]] bool AddTask(std::string task_name,
                              std::vector<std::string> pipe_in,
                              std::vector<std::string> pipe_out);
-  void Display();
-  void OnTaskUpdate(std::string task_name, UpdateType type);
+  void DisplayStatic();
+  void DisplayDynamic();
+  void OnTaskUpdate(const std::string &task_name, UpdateType type);
 };
 
 } // namespace gogort

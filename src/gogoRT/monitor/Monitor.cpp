@@ -4,6 +4,8 @@
 
 #include "Monitor.h"
 
+#include <cassert>
+
 namespace gogort {
 
 Monitor Monitor::instance_;

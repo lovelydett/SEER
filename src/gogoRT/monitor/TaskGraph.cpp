@@ -5,10 +5,13 @@
 #include "TaskGraph.h"
 #include "../utils/time_utils.h"
 
+#include <cassert>
 #include <cstdio>
 #include <stack>
 
 namespace gogort {
+
+std::mutex TaskGraph::mtx_;
 
 bool TaskGraph::AddTask(std::string task_name, std::vector<std::string> pipe_in,
                         std::vector<std::string> pipe_out) {
@@ -16,9 +19,8 @@ bool TaskGraph::AddTask(std::string task_name, std::vector<std::string> pipe_in,
 
   if (pipe_out.empty()) {
     assert(exit_task_name_.empty() && "Redundant exit task!");
+    exit_task_name_ = task_name;
   }
-
-  exit_task_name_ = task_name;
 
   // Task state nodes
   auto ready_node = std::make_shared<Node>(task_name);
@@ -68,17 +70,92 @@ bool TaskGraph::AddTask(std::string task_name, std::vector<std::string> pipe_in,
   return true;
 }
 
-void TaskGraph::OnTaskUpdate(std::string task_name, UpdateType type) {
-  if (type == kUpFinish) {
-    auto &[ready_node, finish_node] = name_to_node_pair_[task_name];
-    finish_node->timestamp_ms_ = get_current_timestamp_ms();
+void TaskGraph::OnTaskUpdate(const std::string &task_name,
+                             const UpdateType type) {
+  std::lock_guard<std::mutex> lock(mtx_);
+  // First validate the task status
+  auto &[ready_node, finish_node] = name_to_node_pair_[task_name];
+  ready_node->timestamp_ms_ = get_current_timestamp_ms();
+  finish_node->timestamp_ms_ = get_current_timestamp_ms();
+  switch (type) {
+  case kUpAssign: {
+    assert(ready_node->status_ == StateNode::kStatusNone);
+    ready_node->status_ = StateNode::kStatusAssigned;
+    finish_node->status_ = StateNode::kStatusAssigned;
+    ready_node->round_++;
+    break;
+  }
+  case kUpPreempt: {
+    assert(ready_node->status_ == StateNode::kStatusNone);
+    ready_node->status_ = StateNode::kStatusPreempting;
+    finish_node->status_ = StateNode::kStatusPreempting;
+    ready_node->round_++;
+    break;
+  }
+  case kUpExecute: {
+    assert(ready_node->status_ == StateNode::kStatusAssigned);
+    ready_node->status_ = StateNode::kStatusRunning;
+    finish_node->status_ = StateNode::kStatusRunning;
+    break;
+  }
+  case kUpFinish: {
+    assert(ready_node->status_ == StateNode::kStatusRunning);
+    ready_node->status_ = StateNode::kStatusNone;
+    finish_node->status_ = StateNode::kStatusNone;
+    finish_node->round_++; // Set finish_node->round_ here
+    assert(finish_node->round_ == ready_node->round_ &&
+           "Finish round should be equal to ready round now!");
+    break;
+  }
+  default:
+    assert(false && "Invalid update type!");
   }
 }
 
-void TaskGraph::Display() {
+// Display the realtime graph trace data
+void TaskGraph::DisplayDynamic() {
+  assert(!name_to_node_pair_.empty());
+  printf("Displaying dynamic graph trace data:\n");
+  static uint64_t time_base_ms = get_current_timestamp_ms();
+  // Only run once to get the dfs order
+  static const auto dfs_order = [&]() -> std::vector<std::string> {
+    std::vector<std::string> dfs_order;
+    std::unordered_map<uint64_t, bool> dfs_track;
+    for (auto &sensor : sensor_nodes_) {
+      std::stack<std::shared_ptr<Node>> stk;
+      stk.push(sensor);
+      while (!stk.empty()) {
+        auto cur = stk.top();
+        stk.pop();
+        if (dfs_track[cur->id_]) {
+          continue;
+        }
+        dfs_track[cur->id_] = true;
+        dfs_order.push_back(cur->task_name_);
+        for (auto &nxt : cur->edge_out_) {
+          stk.push(nxt->to_);
+        }
+      }
+    }
+    return dfs_order;
+  }();
+
+  for (auto &task_name : dfs_order) {
+    auto &[ready_node, finish_node] = name_to_node_pair_[task_name];
+    printf("Task: %s,\tround: %lu,\tstatus: %d,\tts: %lu\n", task_name.c_str(),
+           finish_node->round_, finish_node->status_,
+           finish_node->timestamp_ms_);
+  }
+}
+
+void TaskGraph::DisplayStatic() {
   // All tasks
   for (auto &[task_name, nodes] : name_to_node_pair_) {
     printf("Task name: %s\n", task_name.c_str());
+    assert(nodes.size() == 2);
+    auto &[ready_node, finish_node] = nodes;
+    assert(ready_node);
+    assert(finish_node);
   }
 
   // DFS from sensors

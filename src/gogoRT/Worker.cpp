@@ -4,8 +4,10 @@
 
 #include "Worker.h"
 #include "Dispatcher.h"
+#include "monitor/Monitor.h"
 #include "utils/Recorder.h"
 #include "utils/utils.h"
+
 #include <cassert>
 #include <glog/logging.h>
 
@@ -18,6 +20,8 @@ bool Worker::Assign(std::shared_ptr<Routine> routine) {
   assert(base_routine_ == nullptr);
   assert(preempt_routine_ == nullptr);
   base_routine_ = routine;
+  Monitor::Instance()->get_taskGraph()->OnTaskUpdate(routine->get_task_name(),
+                                                     kUpAssign);
   return true;
 }
 
@@ -41,9 +45,8 @@ bool Worker::Start() {
     set_thread_priority(pthread_self(), PRIORITY_MID);
     LOG(INFO) << "Base thread of worker " << get_id() << " is started";
     while (true) {
-      // LOG(INFO) << "This line good!!! from " <<
-      // get_thread_core(pthread_self());
-      // set_thread_priority(pthread_self(), PRIORITY_MID);
+      // Normally you dont preempt a scheduling worker, but whatever.
+      set_thread_priority(pthread_self(), PRIORITY_HIGH);
       if (dispatcher_.AcquireSchedLock()) {
         // LOG(INFO) << "Get lock and do updating";
         dispatcher_.InvokeRoutine();
@@ -51,11 +54,13 @@ bool Worker::Start() {
         dispatcher_.ReleaseSchedLock();
       }
       // Back to normal working priority
-      // set_thread_priority(pthread_self(), PRIORITY_MID);
+      set_thread_priority(pthread_self(), PRIORITY_MID);
       if (base_routine_ != nullptr) {
         // LOG(INFO) << "Executing routine " << next_routine_->get_id();
         recorder->Append(base_routine_->get_task_name(), Recorder::kPoint,
                          base_routine_->get_id(), "execute_id");
+        Monitor::Instance()->get_taskGraph()->OnTaskUpdate(
+            base_routine_->get_task_name(), kUpExecute);
         base_routine_->Run();
         if (base_routine_.use_count() != 1) {
           LOG(INFO) << "Wrong base routine use count: "
@@ -77,12 +82,12 @@ bool Worker::Start() {
       assert(preempt_routine_ != nullptr);
       recorder->Append(preempt_routine_->get_task_name(), Recorder::kPoint,
                        preempt_routine_->get_id(), "execute_preempt_id");
+      Monitor::Instance()->get_taskGraph()->OnTaskUpdate(
+          preempt_routine_->get_task_name(), kUpPreempt);
       preempt_routine_->Run();
       assert(preempt_routine_.use_count() == 1);
       preempt_routine_ = nullptr;
       is_preempt_ = false;
-      // Back to low priority
-      set_thread_priority(pthread_self(), PRIORITY_LOW);
     }
   };
 
@@ -112,6 +117,8 @@ void Worker::RequestPreempt(std::shared_ptr<Routine> routine) {
   assert(base_routine_ != nullptr); // Preempt should not happen when idle
   assert(base_thread_->get_id() != std::this_thread::get_id());
   preempt_routine_ = routine;
+  Monitor::Instance()->get_taskGraph()->OnTaskUpdate(routine->get_task_name(),
+                                                     kUpPreempt);
   is_preempt_ = true;
   // Notify the preempt thread
   preempt_cv_.notify_one();
