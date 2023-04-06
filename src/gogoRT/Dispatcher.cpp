@@ -58,28 +58,28 @@ bool Dispatcher::init_config() {
 
     assert(monitor_->get_taskGraph()->AddTask(task_name, in_pipe_names,
                                               out_pipe_names));
-
-    LOG(INFO) << "In total " << invokers_.size() << " tasks are created";
-    monitor_->get_taskGraph()->DisplayStatic();
-    monitor_->get_taskGraph()->DisplayDynamic();
-    // exit(-1);
-
-    // Init workers based on config file
-    int num_core = config["num_core"].as<int>();
-    // num_core = 1; // Set num of workers to 1 to debug
-    workers_.reserve(num_core);
-    // Mock for now
-    for (int core = 0; core < num_core; ++core) {
-      workers_.emplace_back(std::make_shared<Worker>(*this, core));
-    }
-
-    // Init scheduler based on config file
-    auto &&scheduler_name = config["scheduler"].as<std::string>();
-    scheduler_ = SchedulerFactory::Instance()->CreateScheduler(scheduler_name,
-                                                               "", workers_);
-
-    return true;
   }
+
+  LOG(INFO) << "In total " << invokers_.size() << " tasks are created";
+  monitor_->get_taskGraph()->DisplayStatic();
+  monitor_->get_taskGraph()->DisplayDynamic();
+  // exit(-1);
+
+  // Init workers based on config file
+  int num_core = config["num_core"].as<int>();
+  // num_core = 1; // Set num of workers to 1 to debug
+  workers_.reserve(num_core);
+  // Mock for now
+  for (int core = 0; core < num_core; ++core) {
+    workers_.emplace_back(std::make_shared<Worker>(*this, core));
+  }
+
+  // Init scheduler based on config file
+  auto &&scheduler_name = config["scheduler"].as<std::string>();
+  scheduler_ = SchedulerFactory::Instance()->CreateScheduler(scheduler_name, "",
+                                                             workers_);
+
+  return true;
 }
 
 bool Dispatcher::Run() {
