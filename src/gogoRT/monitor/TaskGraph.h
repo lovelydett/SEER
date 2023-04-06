@@ -40,8 +40,8 @@ typedef struct StateNode {
       : id_(get_next_uuid()), task_name_(task_name) {}
 } Node;
 
-enum DependencyType { kPub = 1, kSub };
-enum UpdateType { kInvoke = 1, kAssign, kExecute, kFinish };
+enum DependencyType { kDepNone = 0, kDepPub, kDepSub };
+enum UpdateType { kUpNone = 0, kUpInvoke, kUpAssign, kUpExecute, kUpFinish };
 
 class TaskGraph {
 private:
@@ -51,6 +51,9 @@ private:
       sensor_nodes_; // Only store sensor ready nodes
   std::unordered_map<std::string, std::array<std::vector<std::string>, 2>>
       pipe_to_task_;
+
+  std::string exit_task_name_;
+  uint64_t last_exit_time_ms_ = 0;
 
 public:
   TaskGraph() = default;

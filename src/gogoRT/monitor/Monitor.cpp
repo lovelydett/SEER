@@ -4,4 +4,13 @@
 
 #include "Monitor.h"
 
-namespace gogort {} // namespace gogort
+namespace gogort {
+
+Monitor Monitor::instance_;
+
+Monitor::Monitor() {}
+
+Monitor *Monitor::Instance() { return &instance_; }
+
+TaskGraph *Monitor::get_taskGraph() { return &task_graph_; }
+} // namespace gogort

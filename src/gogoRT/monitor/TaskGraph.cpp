@@ -3,6 +3,7 @@
 //
 
 #include "TaskGraph.h"
+#include "../utils/time_utils.h"
 
 #include <cstdio>
 #include <stack>
@@ -12,6 +13,12 @@ namespace gogort {
 bool TaskGraph::AddTask(std::string task_name, std::vector<std::string> pipe_in,
                         std::vector<std::string> pipe_out) {
   assert(name_to_node_pair_.contains(task_name) == false);
+
+  if (pipe_out.empty()) {
+    assert(exit_task_name_.empty() && "Redundant exit task!");
+  }
+
+  exit_task_name_ = task_name;
 
   // Task state nodes
   auto ready_node = std::make_shared<Node>(task_name);
@@ -59,6 +66,13 @@ bool TaskGraph::AddTask(std::string task_name, std::vector<std::string> pipe_in,
   // Cong! The graph back to connected component now!
 
   return true;
+}
+
+void TaskGraph::OnTaskUpdate(std::string task_name, UpdateType type) {
+  if (type == kUpFinish) {
+    auto &[ready_node, finish_node] = name_to_node_pair_[task_name];
+    finish_node->timestamp_ms_ = get_current_timestamp_ms();
+  }
 }
 
 void TaskGraph::Display() {
