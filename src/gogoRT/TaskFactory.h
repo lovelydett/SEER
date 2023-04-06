@@ -22,8 +22,8 @@ public:
   std::shared_ptr<TaskBase> CreateTask(const std::string type,
                                        const std::string name,
                                        const std::string config_path,
-                                       std::vector<std::string> &&in_pipes,
-                                       std::vector<std::string> &&out_pipes);
+                                       std::vector<std::string> &in_pipes,
+                                       std::vector<std::string> &out_pipes);
 };
 
 } // namespace gogort

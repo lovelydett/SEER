@@ -45,8 +45,7 @@ bool Dispatcher::init_config() {
 
     // Then create the task
     auto p_task = TaskFactory::Instance()->CreateTask(
-        task_type, task_name, config_file, std::move(in_pipe_names),
-        std::move(out_pipe_names));
+        task_type, task_name, config_file, in_pipe_names, out_pipe_names);
     if (p_task == nullptr) {
       LOG(ERROR) << "Failed to create task: " << task_name;
       exit(0);
@@ -54,8 +53,11 @@ bool Dispatcher::init_config() {
     // MUST keep a copy of the task pointer, otherwise we lose it!!!!!!!
     id_to_task_[p_task->get_task_id()] = p_task;
     invokers_.push_back(p_task->get_invoker());
+
+    assert(task_graph.AddTask(task_name, in_pipe_names, out_pipe_names));
   }
   LOG(INFO) << "In total " << invokers_.size() << " tasks are created";
+  // task_graph.Display();
   // exit(-1);
 
   // Init workers based on config file

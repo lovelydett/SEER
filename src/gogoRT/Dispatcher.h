@@ -14,6 +14,8 @@
 #include "Routine.h"
 #include "SchedulerFactory.h"
 #include "Task.h"
+#include "monitor/TaskGraph.h"
+
 #include <mutex>
 #include <unordered_map>
 
@@ -39,6 +41,9 @@ private:
 
   // All invokers
   std::vector<std::shared_ptr<InvokerBase>> invokers_;
+
+  // Test task graph builder
+  TaskGraph task_graph;
 
 private:
   Dispatcher();

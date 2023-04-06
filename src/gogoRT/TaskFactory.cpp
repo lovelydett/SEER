@@ -24,8 +24,8 @@ TaskFactory *TaskFactory::Instance() {
 std::shared_ptr<TaskBase>
 TaskFactory::CreateTask(const std::string type, const std::string name,
                         const std::string config_path,
-                        std::vector<std::string> &&in_pipes,
-                        std::vector<std::string> &&out_pipes) {
+                        std::vector<std::string> &in_pipes,
+                        std::vector<std::string> &out_pipes) {
   if (type == "DummyTask") {
     return std::make_shared<task::DummyTask>(
         name, config_path, std::move(in_pipes), std::move(out_pipes));
