@@ -1,7 +1,9 @@
 import os
 import pandas as pd
 import seaborn as sns
+import numpy as np
 import matplotlib.pyplot as plt
+from theme import next_color
 
 # Set working directory to the directory of this script
 working_dir = os.path.dirname(__file__)
@@ -10,14 +12,26 @@ os.chdir(working_dir)
 # Set plotting theme
 sns.set_theme(style="whitegrid", font_scale=1.4)
 
-PALLET1 = ['#2878b5', '#9ac9db', '#f8ac8c', '#c82423', '#ff8884', '#96c37d', '#c497b2', '#f3d266']
-color_idx = 0
-def next_color():
-    global color_idx
-    color_idx += 1
-    return PALLET1[color_idx % len(PALLET1)]
-
 # Motivation figures
+def plot_time_utilization_fps():
+    df = pd.read_csv("./data/time_utilization_fps.csv")
+    df = df.iloc[1:]
+    df['e2e'] = 1000 / df['fps']
+
+    fig= plt.figure()
+    ax = fig.add_subplot(111)
+    ax.set_ylim((0, 100))
+    # sns.barplot(data=df, x='timestamp', y='utilization', width=100, color=next_color())
+    ax.bar(x = df['timestamp'], height = df['utilization'], width=100, color='gray')
+
+    ax2 = ax.twinx()
+    ax2.set_ylim((0, 180))
+    sns.lineplot(data=df, x='timestamp', y='e2e', color=next_color(), linewidth=3,  marker='o', markersize=10, ax=ax2)
+    # ax2.plot(df['timestamp'], df['fps'], color = next_color())
+
+    plt.show()
+
+
 def plot_bf_adding_active_tasks():
     # Declaring a figure "gnt"
     fig, gnt = plt.subplots()
@@ -52,6 +66,9 @@ def plot_bf_adding_active_tasks():
     
     plt.show()
 
+def plot_utilization_wait_fps_thermal():
+    pass
+
 # Evaluation figures 
 def plot_core_utilization_rate():
     # Load data to pandas
@@ -69,7 +86,8 @@ def plot_core_utilization_rate():
     plt.show()
     
 if __name__ == "__main__":
+    plot_time_utilization_fps()
     # plot_core_utilization_rate()
-    plot_bf_adding_active_tasks()
+    # plot_bf_adding_active_tasks()
     
     
