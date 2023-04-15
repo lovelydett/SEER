@@ -67,7 +67,24 @@ def plot_bf_adding_active_tasks():
     plt.show()
 
 def plot_utilization_wait_fps_thermal():
-    pass
+    df = pd.read_csv("./data/time_utilization_fps.csv")
+    df = df.iloc[1:]
+    df['e2e'] = 600 / df['fps']
+    plt.scatter(data=df, x='utilization', y='wait', s='e2e')
+    plt.show()
+
+def plot_speed_sight_distance():
+    df = pd.DataFrame(columns=['speed', 'sight_distance', 'e2e'])
+    friction = 0.5
+    SPEED = {'120 km/h': 120, '100 km/h': 100, '80 km/h': 80, '60 km/h': 60, '40 km/h': 40}
+    for speed_type, v in SPEED.items():
+        for e2e in range(100, 310, 10):
+            s_distance = (0.278 * (e2e / 1000) * v) + v * v / (254 * friction)
+            print(s_distance)
+            df = df.append({'speed': speed_type, 'sight_distance': s_distance, 'e2e': e2e}, ignore_index=True)
+    sns.lineplot(data=df, x='e2e', y='sight_distance', hue='speed', marker='o', markersize=10, linewidth=3)
+    plt.show()
+
 
 # Evaluation figures 
 def plot_core_utilization_rate():
@@ -84,10 +101,27 @@ def plot_core_utilization_rate():
     
     sns.lineplot(data=ddf, x="core", y="val", hue="num_risk", style = 'type')
     plt.show()
+
+def plot_core_risk_fps_baseline():
+    pass
+
+def plot_nt_delayed_by_rt_baseline():
+    df = pd.read_csv("./data/nt_delay.csv")
+    df = df.iloc[1:]
+
+    f = plt.figure()
+    f.set_figwidth(8)
+    f.set_figheight(5)
+
+    sns.boxplot(data=df, x="baseline", y="delay")
+    plt.show()
     
 if __name__ == "__main__":
-    plot_time_utilization_fps()
+    # plot_utilization_wait_fps_thermal()
+    # plot_time_utilization_fps()
     # plot_core_utilization_rate()
     # plot_bf_adding_active_tasks()
+    # plot_nt_delayed_by_rt_baseline()
+    plot_speed_sight_distance()
     
     
