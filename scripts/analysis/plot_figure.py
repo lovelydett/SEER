@@ -76,15 +76,24 @@ def plot_utilization_wait_fps_thermal():
 def plot_speed_sight_distance():
     df = pd.DataFrame(columns=['speed', 'sight_distance', 'e2e'])
     friction = 0.5
-    SPEED = {'120 km/h': 120, '100 km/h': 100, '80 km/h': 80, '60 km/h': 60, '40 km/h': 40}
+    SPEED = {'120': 120, '100': 100, '80': 80, '60': 60, '40': 40}
     for speed_type, v in SPEED.items():
-        for e2e in range(100, 310, 10):
+        for e2e in range(100, 520, 20):
             s_distance = (0.278 * (e2e / 1000) * v) + v * v / (254 * friction)
-            print(s_distance)
             df = df.append({'speed': speed_type, 'sight_distance': s_distance, 'e2e': e2e}, ignore_index=True)
-    sns.lineplot(data=df, x='e2e', y='sight_distance', hue='speed', marker='o', markersize=10, linewidth=3)
+    sns.lineplot(data=df, x='e2e', y='sight_distance', hue='speed', markers=True, style='speed', markersize=8, linewidth=3)
+    plt.xlabel("Reaction time (ms)")
+    plt.ylabel("Sight distance (m)")
+    plt.tight_layout()
     plt.show()
 
+def plot_cache_miss_execution_time():
+    df = pd.read_csv("./data/cache_miss_fps.csv")
+    df['num_core'] = df['num_core'].astype(str)
+    # sns.lineplot(data=df, x='timestamp', y='execution_time', hue='num_core', markers=True, style='num_core', markersize=8, linewidth=3)
+    sns.boxplot(data=df, x='num_core', y='cache_miss', palette="Set3")
+    plt.show()
+    print(np.corrcoef(df['cache_miss'], df['execution_time']))
 
 # Evaluation figures 
 def plot_core_utilization_rate():
@@ -93,11 +102,6 @@ def plot_core_utilization_rate():
 
     ddf = pd.melt(df, id_vars=['core', 'num_risk'], value_vars=['utilization', 'reaction_rate'],
         var_name='type', value_name='val')
-    
-    # sns.lineplot(data=df, x="core", y="utilization", hue="num_risk", linestyle = '--')
-    # ax2 = plt.twinx()
-    # sns.lineplot(data=df, x="core", y="reaction_rate", hue="num_risk", ax = ax2)
-    # plt.show()
     
     sns.lineplot(data=ddf, x="core", y="val", hue="num_risk", style = 'type')
     plt.show()
@@ -122,6 +126,9 @@ if __name__ == "__main__":
     # plot_core_utilization_rate()
     # plot_bf_adding_active_tasks()
     # plot_nt_delayed_by_rt_baseline()
-    plot_speed_sight_distance()
+    # plot_speed_sight_distance()
+    # plot_cache_miss_execution_time()
+    pass
+
     
     
