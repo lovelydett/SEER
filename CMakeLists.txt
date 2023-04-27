@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
 set(CMAKE_CXX_STANDARD 20)
-project(gogo_proj)
 
 # Use GTest in CMake
 add_subdirectory(third_party/googletest)

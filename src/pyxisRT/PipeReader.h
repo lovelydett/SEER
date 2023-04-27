@@ -2,8 +2,8 @@
 // Created by Yuting Xie
 // 23-4-28
 
-#ifndef GOGO_PROJ_PIPEREADER_H
-#define GOGO_PROJ_PIPEREADER_H
+#ifndef SEER_PIPEREADER_H
+#define SEER_PIPEREADER_H
 
 #include "Pipe.h"
 
@@ -31,4 +31,4 @@ public:
 
 } // namespace pyxis
 
-#endif // GOGO_PROJ_PIPEREADER_H
+#endif // SEER_PIPEREADER_H

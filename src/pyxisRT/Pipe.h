@@ -2,8 +2,8 @@
 // Created by Yuting Xie
 // 23-4-28
 
-#ifndef GOGO_PROJ_PIPE_H
-#define GOGO_PROJ_PIPE_H
+#ifndef SEER_PIPE_H
+#define SEER_PIPE_H
 
 #include "../utils/utils.h"
 
@@ -42,4 +42,4 @@ public:
 
 } // namespace pyxis
 
-#endif // GOGO_PROJ_PIPE_H
+#endif // SEER_PIPE_H

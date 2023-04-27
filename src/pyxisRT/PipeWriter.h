@@ -2,8 +2,8 @@
 // Created by Yuting Xie
 // 23-4-28
 
-#ifndef GOGO_PROJ_PIPEWRITER_H
-#define GOGO_PROJ_PIPEWRITER_H
+#ifndef SEER_PIPEWRITER_H
+#define SEER_PIPEWRITER_H
 
 #include "Pipe.h"
 
@@ -23,4 +23,4 @@ public:
 
 } // namespace pyxis
 
-#endif // GOGO_PROJ_PIPEWRITER_H
+#endif // SEER_PIPEWRITER_H
