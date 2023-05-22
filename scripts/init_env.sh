@@ -1,2 +1,1 @@
-sudo apt-get update &
-sudo apt-get install yaml-cpp
+sudo apt-get update && sudo apt-get install libgflags-dev git && git submodule update --init --recursive
